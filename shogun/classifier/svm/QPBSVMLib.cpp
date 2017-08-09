@@ -592,9 +592,8 @@ int32_t CQPBSVMLib::qpbsvm_gauss_seidel(float64_t *x,
             float64_t **ptr_History,
             int32_t   verb)
 {
-  SGVector<float64_t> wrap_x(x, m_dim, false);
-	for (int32_t i=0; i<m_dim; i++)
-		x[i]=CMath::random(0.0, 1.0);
+	SGVector<float64_t> wrap_x(x, m_dim, false);
+	SGVector<float64_t>::random_vector(x, m_dim, 0.0, 1.0);
 
 	for (int32_t t=0; t<200; t++)
 	{
@@ -625,9 +624,8 @@ int32_t CQPBSVMLib::qpbsvm_gradient_descent(float64_t *x,
             float64_t **ptr_History,
             int32_t   verb)
 {
-  SGVector<float64_t> wrap_x(x, m_dim, false);
-	for (int32_t i=0; i<m_dim; i++)
-		x[i]=CMath::random(0.0, 1.0);
+	SGVector<float64_t> wrap_x(x, m_dim, false);
+	SGVector<float64_t>::random_vector(x, m_dim, 0.0, 1.0);
 
 	for (int32_t t=0; t<2000; t++)
 	{
