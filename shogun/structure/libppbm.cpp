@@ -14,7 +14,8 @@
 #include <shogun/structure/libppbm.h>
 #ifdef USE_GPL_SHOGUN
 #include <shogun/lib/external/libqp.h>
- #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/lib/Time.h>
 
 namespace shogun
@@ -34,7 +35,7 @@ static const float64_t *get_col( uint32_t i)
 
 BmrmStatistics svm_ppbm_solver(
 		CDualLibQPBMSOSVM *machine,
-		float64_t*      W,
+		SGVector<float64_t>& W,
 		float64_t       TolRel,
 		float64_t       TolAbs,
 		float64_t       _lambda,
@@ -48,8 +49,8 @@ BmrmStatistics svm_ppbm_solver(
 	BmrmStatistics ppbmrm;
 	libqp_state_T qp_exitflag={0, 0, 0, 0}, qp_exitflag_good={0, 0, 0, 0};
 	float64_t *b, *b2, *beta, *beta_good, *beta_start, *diag_H, *diag_H2;
-	float64_t R, *subgrad, *A, QPSolverTolRel, C=1.0;
-	float64_t *prevW, *wt, alpha, alpha_start, alpha_good=0.0, Fd_alpha0=0.0;
+	float64_t R, *A, QPSolverTolRel, C=1.0;
+	float64_t *wt, alpha, alpha_start, alpha_good=0.0, Fd_alpha0=0.0;
 	float64_t lastFp, wdist, gamma=0.0;
 	floatmax_t rsum, sq_norm_W, sq_norm_Wdiff, sq_norm_prevW, eps;
 	uint32_t *I, *I2, *I_start, *I_good;
@@ -59,7 +60,6 @@ BmrmStatistics svm_ppbm_solver(
 	CSOSVMHelper* helper = NULL;
 	uint32_t qp_cnt=0;
 	bmrm_ll *CPList_head, *CPList_tail, *cp_ptr, *cp_ptr2, *cp_list=NULL;
-	float64_t *A_1=NULL, *A_2=NULL;
 	bool *map=NULL, tuneAlpha=true, flag=true, alphaChanged=false, isThereGoodSolution=false;
 
 	CTime ttime;
@@ -75,10 +75,8 @@ BmrmStatistics svm_ppbm_solver(
 	b=NULL;
 	beta=NULL;
 	A=NULL;
-	subgrad=NULL;
 	diag_H=NULL;
 	I=NULL;
-	prevW=NULL;
 	wt=NULL;
 	diag_H2=NULL;
 	b2=NULL;
@@ -107,7 +105,7 @@ BmrmStatistics svm_ppbm_solver(
 
 	beta= (float64_t*) LIBBMRM_CALLOC(BufSize, float64_t);
 
-	subgrad= (float64_t*) LIBBMRM_CALLOC(nDim, float64_t);
+	SGVector<float64_t> subgrad(nDim);
 
 	diag_H= (float64_t*) LIBBMRM_CALLOC(BufSize, float64_t);
 
@@ -122,14 +120,14 @@ BmrmStatistics svm_ppbm_solver(
 
 	cp_list= (bmrm_ll*) LIBBMRM_CALLOC(1, bmrm_ll);
 
-	prevW= (float64_t*) LIBBMRM_CALLOC(nDim, float64_t);
+	SGVector<float64_t> prevW(nDim);
 
 	wt= (float64_t*) LIBBMRM_CALLOC(nDim, float64_t);
 
-	if (H==NULL || A==NULL || b==NULL || beta==NULL || subgrad==NULL ||
+	if (H==NULL || A==NULL || b==NULL || beta==NULL ||
 			diag_H==NULL || I==NULL || icp_stats.ICPcounter==NULL ||
 			icp_stats.ICPs==NULL || icp_stats.ACPs==NULL ||
-			cp_list==NULL || prevW==NULL || wt==NULL)
+			cp_list==NULL || wt==NULL)
 	{
 		ppbmrm.exitflag=-2;
 		goto cleanup;
@@ -192,7 +190,7 @@ BmrmStatistics svm_ppbm_solver(
 	b[0]=-R;
 
 	/* Cutting plane auxiliary double linked list */
-	LIBBMRM_MEMCPY(A, subgrad, nDim*sizeof(float64_t));
+	LIBBMRM_MEMCPY(A, subgrad.vector, nDim*sizeof(float64_t));
 	map[0]=false;
 	cp_list->address=&A[0];
 	cp_list->idx=0;
@@ -204,8 +202,8 @@ BmrmStatistics svm_ppbm_solver(
 	/* Compute initial value of Fp, Fd, assuming that W is zero vector */
 	sq_norm_Wdiff=0.0;
 
-	b[0] = CMath::dot(subgrad, W, nDim);
-	sq_norm_W = CMath::dot(W, W, nDim);
+	b[0] = linalg::dot(subgrad, W);
+	sq_norm_W = linalg::dot(W, W);
 	for (uint32_t j=0; j<nDim; ++j)
 	{
 		sq_norm_Wdiff+=(W[j]-prevW[j])*(W[j]-prevW[j]);
@@ -218,7 +216,7 @@ BmrmStatistics svm_ppbm_solver(
 
 	K = (sq_norm_W == 0.0) ? 0.4 : 0.01*CMath::sqrt(sq_norm_W);
 
-	LIBBMRM_MEMCPY(prevW, W, nDim*sizeof(float64_t));
+	LIBBMRM_MEMCPY(prevW.vector, W.vector, nDim*sizeof(float64_t));
 
 	tstop=ttime.cur_time_diff(false);
 
@@ -247,14 +245,14 @@ BmrmStatistics svm_ppbm_solver(
 
 		if (ppbmrm.nCP>0)
 		{
-			A_2=get_cutting_plane(CPList_tail);
+			SGVector<float64_t> A_2(get_cutting_plane(CPList_tail), nDim, false);
 			cp_ptr=CPList_head;
 
 			for (uint32_t i=0; i<ppbmrm.nCP; ++i)
 			{
-				A_1=get_cutting_plane(cp_ptr);
+				SGVector<float64_t> A_1(get_cutting_plane(cp_ptr), nDim, false);
 				cp_ptr=cp_ptr->next;
-				rsum=CMath::dot(A_1, A_2, nDim);
+				rsum=linalg::dot(A_1, A_2);
 
 				H[LIBBMRM_INDEX(ppbmrm.nCP, i, BufSize)]
 					= H[LIBBMRM_INDEX(i, ppbmrm.nCP, BufSize)]
@@ -262,8 +260,8 @@ BmrmStatistics svm_ppbm_solver(
 			}
 		}
 
-		A_2=get_cutting_plane(CPList_tail);
-		rsum = CMath::dot(A_2, A_2, nDim);
+		SGVector<float64_t> A_2(get_cutting_plane(CPList_tail), nDim, false);
+		rsum = linalg::dot(A_2, A_2);
 
 		H[LIBBMRM_INDEX(ppbmrm.nCP, ppbmrm.nCP, BufSize)]=rsum;
 
@@ -295,10 +293,10 @@ BmrmStatistics svm_ppbm_solver(
 
 			for (uint32_t i=0; i<ppbmrm.nCP; ++i)
 			{
-				A_1=get_cutting_plane(cp_ptr);
+				SGVector<float64_t> A_1(get_cutting_plane(cp_ptr), nDim, false);
 				cp_ptr=cp_ptr->next;
 
-				rsum = CMath::dot(A_1, prevW, nDim);
+				rsum = linalg::dot(A_1, prevW);
 
 				b2[i]=b[i]-((2*alpha)/(_lambda+2*alpha))*rsum;
 				diag_H2[i]=diag_H[i]/(_lambda+2*alpha);
@@ -323,7 +321,7 @@ BmrmStatistics svm_ppbm_solver(
 
 				for (uint32_t j=0; j<ppbmrm.nCP; ++j)
 				{
-					A_1=get_cutting_plane(cp_ptr);
+					SGVector<float64_t> A_1(get_cutting_plane(cp_ptr), nDim, false);
 					cp_ptr=cp_ptr->next;
 					rsum+=A_1[i]*beta[j];
 				}
@@ -360,10 +358,10 @@ BmrmStatistics svm_ppbm_solver(
 
 				for (uint32_t i=0; i<ppbmrm.nCP; ++i)
 				{
-					A_1=get_cutting_plane(cp_ptr);
+					SGVector<float64_t> A_1(get_cutting_plane(cp_ptr), nDim, false);
 					cp_ptr=cp_ptr->next;
 
-					rsum = CMath::dot(A_1, prevW, nDim);
+					rsum = linalg::dot(A_1, prevW);
 
 					b2[i]=b[i]-((2*alpha)/(_lambda+2*alpha))*rsum;
 					diag_H2[i]=diag_H[i]/(_lambda+2*alpha);
@@ -386,7 +384,7 @@ BmrmStatistics svm_ppbm_solver(
 
 					for (uint32_t j=0; j<ppbmrm.nCP; ++j)
 					{
-						A_1=get_cutting_plane(cp_ptr);
+						SGVector<float64_t> A_1(get_cutting_plane(cp_ptr), nDim, false);
 						cp_ptr=cp_ptr->next;
 						rsum+=A_1[i]*beta[j];
 					}
@@ -465,10 +463,10 @@ BmrmStatistics svm_ppbm_solver(
 
 			for (uint32_t i=0; i<ppbmrm.nCP; ++i)
 			{
-				A_1=get_cutting_plane(cp_ptr);
+				SGVector<float64_t> A_1(get_cutting_plane(cp_ptr), nDim, false);
 				cp_ptr=cp_ptr->next;
 
-				rsum = CMath::dot(A_1, prevW, nDim);
+				rsum = linalg::dot(A_1, prevW);
 
 				b2[i]=b[i]-((2*alpha)/(_lambda+2*alpha))*rsum;
 				diag_H2[i]=diag_H[i]/(_lambda+2*alpha);
@@ -510,7 +508,7 @@ BmrmStatistics svm_ppbm_solver(
 
 			for (uint32_t j=0; j<ppbmrm.nCP; ++j)
 			{
-				A_1=get_cutting_plane(cp_ptr);
+				SGVector<float64_t> A_1(get_cutting_plane(cp_ptr), nDim, false);
 				cp_ptr=cp_ptr->next;
 				rsum+=A_1[i]*beta[j];
 			}
@@ -521,11 +519,11 @@ BmrmStatistics svm_ppbm_solver(
 		/* risk and subgradient computation */
 		R = machine->risk(subgrad, W);
 		add_cutting_plane(&CPList_tail, map, A,
-				find_free_idx(map, BufSize), subgrad, nDim);
+				find_free_idx(map, BufSize), subgrad.vector, nDim);
 
-		sq_norm_W=CMath::dot(W, W, nDim);
-		sq_norm_prevW=CMath::dot(prevW, prevW, nDim);
-		b[ppbmrm.nCP]=CMath::dot(subgrad, W, nDim) - R;
+		sq_norm_W=linalg::dot(W, W);
+		sq_norm_prevW=linalg::dot(prevW, prevW);
+		b[ppbmrm.nCP]=linalg::dot(subgrad, W) - R;
 
 		sq_norm_Wdiff=0.0;
 		for (uint32_t j=0; j<nDim; ++j)
@@ -598,7 +596,7 @@ BmrmStatistics svm_ppbm_solver(
 		}
 
 		/* keep w_t + Fp */
-		LIBBMRM_MEMCPY(prevW, W, nDim*sizeof(float64_t));
+		LIBBMRM_MEMCPY(prevW.vector, W.vector, nDim*sizeof(float64_t));
 		lastFp=ppbmrm.Fp;
 
 		/* Inactive Cutting Planes (ICP) removal */
@@ -649,7 +647,6 @@ cleanup:
 	LIBBMRM_FREE(b);
 	LIBBMRM_FREE(beta);
 	LIBBMRM_FREE(A);
-	LIBBMRM_FREE(subgrad);
 	LIBBMRM_FREE(diag_H);
 	LIBBMRM_FREE(I);
 	LIBBMRM_FREE(icp_stats.ICPcounter);
@@ -657,7 +654,6 @@ cleanup:
 	LIBBMRM_FREE(icp_stats.ACPs);
 	LIBBMRM_FREE(icp_stats.H_buff);
 	LIBBMRM_FREE(map);
-	LIBBMRM_FREE(prevW);
 	LIBBMRM_FREE(wt);
 	LIBBMRM_FREE(beta_start);
 	LIBBMRM_FREE(beta_good);

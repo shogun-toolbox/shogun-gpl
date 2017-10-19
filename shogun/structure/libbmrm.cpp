@@ -16,6 +16,7 @@
 #include <shogun/lib/external/libqp.h>
 #include <shogun/lib/Time.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 #include <climits>
 #include <limits>
@@ -185,7 +186,7 @@ static const float64_t *get_col( uint32_t i)
 
 BmrmStatistics svm_bmrm_solver(
 		CDualLibQPBMSOSVM  *machine,
-		float64_t*       W,
+		SGVector<float64_t>& W,
 		float64_t        TolRel,
 		float64_t        TolAbs,
 		float64_t        _lambda,
@@ -198,8 +199,8 @@ BmrmStatistics svm_bmrm_solver(
 {
 	BmrmStatistics bmrm;
 	libqp_state_T qp_exitflag={0, 0, 0, 0};
-	float64_t *b, *beta, *diag_H, *prevW;
-	float64_t R, *subgrad, *A, QPSolverTolRel, C=1.0, wdist=0.0;
+	float64_t *b, *beta, *diag_H;
+	float64_t R, *A, QPSolverTolRel, C=1.0, wdist=0.0;
 	floatmax_t rsum, sq_norm_W, sq_norm_Wdiff=0.0;
 	uint32_t *I;
 	uint8_t S=1;
@@ -211,7 +212,6 @@ BmrmStatistics svm_bmrm_solver(
 	float64_t tstart, tstop;
 
 	bmrm_ll *CPList_head, *CPList_tail, *cp_ptr, *cp_ptr2, *cp_list=NULL;
-	float64_t *A_1=NULL, *A_2=NULL;
 	bool *map=NULL;
 
 
@@ -225,11 +225,10 @@ BmrmStatistics svm_bmrm_solver(
 	b=NULL;
 	beta=NULL;
 	A=NULL;
-	subgrad=NULL;
 	diag_H=NULL;
 	I=NULL;
-	prevW=NULL;
 
+	SGVector<float64_t> prevW(nDim), subgrad(nDim);
 
 	H= (float64_t*) LIBBMRM_CALLOC(BufSize*BufSize, float64_t);
 
@@ -266,14 +265,6 @@ BmrmStatistics svm_bmrm_solver(
 	beta= (float64_t*) LIBBMRM_CALLOC(BufSize, float64_t);
 
 	if (beta==NULL)
-	{
-		bmrm.exitflag=-2;
-		goto cleanup;
-	}
-
-	subgrad= (float64_t*) LIBBMRM_CALLOC(nDim, float64_t);
-
-	if (subgrad==NULL)
 	{
 		bmrm.exitflag=-2;
 		goto cleanup;
@@ -345,14 +336,6 @@ BmrmStatistics svm_bmrm_solver(
 		goto cleanup;
 	}
 
-	prevW= (float64_t*) LIBBMRM_CALLOC(nDim, float64_t);
-
-	if (prevW==NULL)
-	{
-		bmrm.exitflag=-2;
-		goto cleanup;
-	}
-
 	bmrm.hist_Fp = SGVector< float64_t >(histSize);
 	bmrm.hist_Fd = SGVector< float64_t >(histSize);
 	bmrm.hist_wdist = SGVector< float64_t >(histSize);
@@ -368,7 +351,7 @@ BmrmStatistics svm_bmrm_solver(
 
 	/* Cutting plane auxiliary double linked list */
 
-	LIBBMRM_MEMCPY(A, subgrad, nDim*sizeof(float64_t));
+	LIBBMRM_MEMCPY(A, subgrad.vector, nDim*sizeof(float64_t));
 	map[0]=false;
 	cp_list->address=&A[0];
 	cp_list->idx=0;
@@ -408,14 +391,14 @@ BmrmStatistics svm_bmrm_solver(
 
 		if (bmrm.nCP>0)
 		{
-			A_2=get_cutting_plane(CPList_tail);
+			SGVector<float64_t> A_2(get_cutting_plane(CPList_tail), nDim, false);
 			cp_ptr=CPList_head;
 
 			for (uint32_t i=0; i<bmrm.nCP; ++i)
 			{
-				A_1=get_cutting_plane(cp_ptr);
+				SGVector<float64_t> A_1(get_cutting_plane(cp_ptr), nDim, false);
 				cp_ptr=cp_ptr->next;
-				rsum= CMath::dot(A_1, A_2, nDim);
+				rsum= linalg::dot(A_1, A_2);
 
 				H[LIBBMRM_INDEX(bmrm.nCP, i, BufSize)]
 					= H[LIBBMRM_INDEX(i, bmrm.nCP, BufSize)]
@@ -423,8 +406,8 @@ BmrmStatistics svm_bmrm_solver(
 			}
 		}
 
-		A_2=get_cutting_plane(CPList_tail);
-		rsum = CMath::dot(A_2, A_2, nDim);
+		SGVector<float64_t> A_2(get_cutting_plane(CPList_tail), nDim, false);
+		rsum = linalg::dot(A_2, A_2);
 
 		H[LIBBMRM_INDEX(bmrm.nCP, bmrm.nCP, BufSize)]=rsum/_lambda;
 
@@ -475,13 +458,13 @@ BmrmStatistics svm_bmrm_solver(
 		}
 
 		/* W update */
-		memset(W, 0, sizeof(float64_t)*nDim);
+		linalg::zero(W);
 		cp_ptr=CPList_head;
 		for (uint32_t j=0; j<bmrm.nCP; ++j)
 		{
-			A_1=get_cutting_plane(cp_ptr);
+			SGVector<float64_t> A_1(get_cutting_plane(cp_ptr), nDim, false);
 			cp_ptr=cp_ptr->next;
-			SGVector<float64_t>::vec1_plus_scalar_times_vec2(W, -beta[j]/_lambda, A_1, nDim);
+			SGVector<float64_t>::vec1_plus_scalar_times_vec2(W.vector, -beta[j]/_lambda, A_1.vector, nDim);
 		}
 
 		/* risk and subgradient computation */
@@ -489,8 +472,8 @@ BmrmStatistics svm_bmrm_solver(
 		add_cutting_plane(&CPList_tail, map, A,
 				find_free_idx(map, BufSize), subgrad, nDim);
 
-		sq_norm_W=CMath::dot(W, W, nDim);
-		b[bmrm.nCP]=CMath::dot(subgrad, W, nDim) - R;
+		sq_norm_W=linalg::dot(W, W);
+		b[bmrm.nCP]=linalg::dot(subgrad, W) - R;
 
 		sq_norm_Wdiff=0.0;
 		for (uint32_t j=0; j<nDim; ++j)
@@ -532,7 +515,7 @@ BmrmStatistics svm_bmrm_solver(
 		bmrm.hist_wdist[bmrm.nIter]=wdist;
 
 		/* keep W (for wdist history track) */
-		LIBBMRM_MEMCPY(prevW, W, nDim*sizeof(float64_t));
+		LIBBMRM_MEMCPY(prevW.vector, W.vector, nDim*sizeof(float64_t));
 
 		/* Inactive Cutting Planes (ICP) removal */
 		if (cleanICP)
@@ -591,7 +574,6 @@ cleanup:
 	LIBBMRM_FREE(b);
 	LIBBMRM_FREE(beta);
 	LIBBMRM_FREE(A);
-	LIBBMRM_FREE(subgrad);
 	LIBBMRM_FREE(diag_H);
 	LIBBMRM_FREE(I);
 	LIBBMRM_FREE(icp_stats.ICPcounter);
@@ -599,7 +581,6 @@ cleanup:
 	LIBBMRM_FREE(icp_stats.ACPs);
 	LIBBMRM_FREE(icp_stats.H_buff);
 	LIBBMRM_FREE(map);
-	LIBBMRM_FREE(prevW);
 
 	if (cp_list)
 		LIBBMRM_FREE(cp_list);

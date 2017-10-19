@@ -150,7 +150,7 @@ inline uint32_t find_free_idx(bool *map, uint32_t size)
  */
 BmrmStatistics svm_bmrm_solver(
 		CDualLibQPBMSOSVM  *machine,
-		float64_t          *W,
+		SGVector<float64_t>& W,
 		float64_t          TolRel,
 		float64_t          TolAbs,
 		float64_t          _lambda,

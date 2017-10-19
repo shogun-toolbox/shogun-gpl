@@ -14,6 +14,7 @@
 #ifdef USE_GPL_SHOGUN
 #include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/labels/MulticlassLabels.h>
 
 using namespace shogun;
@@ -149,15 +150,15 @@ bool CMulticlassOCAS::train_machine(CFeatures* data)
 
 float64_t CMulticlassOCAS::msvm_update_W(float64_t t, void* user_data)
 {
-	float64_t* W = ((mocas_data*)user_data)->W;
 	float64_t* oldW = ((mocas_data*)user_data)->oldW;
 	uint32_t nY = ((mocas_data*)user_data)->nY;
 	uint32_t nDim = ((mocas_data*)user_data)->nDim;
+	SGVector<float64_t> W(((mocas_data*)user_data)->W, nDim*nY, false);
 
 	for(uint32_t j=0; j < nY*nDim; j++)
 		W[j] = oldW[j]*(1-t) + t*W[j];
 
-	float64_t sq_norm_W = CMath::dot(W,W,nDim*nY);
+	float64_t sq_norm_W = linalg::dot(W,W);
 
 	return sq_norm_W;
 }
@@ -165,16 +166,16 @@ float64_t CMulticlassOCAS::msvm_update_W(float64_t t, void* user_data)
 void CMulticlassOCAS::msvm_full_compute_W(float64_t *sq_norm_W, float64_t *dp_WoldW,
                                           float64_t *alpha, uint32_t nSel, void* user_data)
 {
-	float64_t* W = ((mocas_data*)user_data)->W;
-	float64_t* oldW = ((mocas_data*)user_data)->oldW;
 	float64_t* full_A = ((mocas_data*)user_data)->full_A;
 	uint32_t nY = ((mocas_data*)user_data)->nY;
 	uint32_t nDim = ((mocas_data*)user_data)->nDim;
+	SGVector<float64_t> W(((mocas_data*)user_data)->W, nDim*nY, false);
+	SGVector<float64_t> oldW(((mocas_data*)user_data)->oldW, nDim*nY, false);
 
 	uint32_t i,j;
 
-	sg_memcpy(oldW, W, sizeof(float64_t)*nDim*nY);
-	memset(W, 0, sizeof(float64_t)*nDim*nY);
+	sg_memcpy(oldW.vector, W.vector, sizeof(float64_t)*nDim*nY);
+	linalg::zero(W);
 
 	for(i=0; i<nSel; i++)
 	{
@@ -185,8 +186,8 @@ void CMulticlassOCAS::msvm_full_compute_W(float64_t *sq_norm_W, float64_t *dp_Wo
 		}
 	}
 
-	*sq_norm_W = CMath::dot(W,W,nDim*nY);
-	*dp_WoldW = CMath::dot(W,oldW,nDim*nY);
+	*sq_norm_W = linalg::dot(W,W);
+	*dp_WoldW = linalg::dot(W,oldW);
 
 	return;
 }
@@ -195,17 +196,17 @@ int CMulticlassOCAS::msvm_full_add_new_cut(float64_t *new_col_H, uint32_t *new_c
                                            uint32_t nSel, void* user_data)
 {
 	float64_t* full_A = ((mocas_data*)user_data)->full_A;
-	float64_t* new_a = ((mocas_data*)user_data)->new_a;
 	float64_t* data_y = ((mocas_data*)user_data)->data_y;
 	uint32_t nY = ((mocas_data*)user_data)->nY;
 	uint32_t nDim = ((mocas_data*)user_data)->nDim;
 	uint32_t nData = ((mocas_data*)user_data)->nData;
+	SGVector<float64_t> new_a(((mocas_data*)user_data)->new_a, nDim*nY, false);
 	CDotFeatures* features = ((mocas_data*)user_data)->features;
 
 	float64_t sq_norm_a;
 	uint32_t i, j, y, y2;
 
-	memset(new_a, 0, sizeof(float64_t)*nDim*nY);
+	linalg::zero(new_a);
 
 	for(i=0; i < nData; i++)
 	{
@@ -219,7 +220,7 @@ int CMulticlassOCAS::msvm_full_add_new_cut(float64_t *new_col_H, uint32_t *new_c
 	}
 
 	// compute new_a'*new_a and insert new_a to the last column of full_A
-	sq_norm_a = CMath::dot(new_a,new_a,nDim*nY);
+	sq_norm_a = linalg::dot(new_a,new_a);
 	for(j=0; j < nDim*nY; j++ )
 		full_A[LIBOCAS_INDEX(j,nSel,nDim*nY)] = new_a[j];
 

@@ -54,6 +54,7 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/mathematics/Cplex.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 #include <shogun/classifier/svm/QPBSVMLib.h>
 #include <shogun/lib/external/pr_loqo.h>
@@ -109,8 +110,7 @@ int32_t CQPBSVMLib::solve_qp(float64_t* result, int32_t len)
 	int32_t status = -1;
 	ASSERT(len==m_dim)
 	float64_t* Nabla=SG_MALLOC(float64_t, m_dim);
-	for (int32_t i=0; i<m_dim; i++)
-		Nabla[i]=m_f[i];
+  sg_memcpy(Nabla, m_f, m_dim*sizeof(float64_t));
 
 	SG_FREE(m_diag_H);
 	m_diag_H=SG_MALLOC(float64_t, m_dim);
@@ -592,6 +592,7 @@ int32_t CQPBSVMLib::qpbsvm_gauss_seidel(float64_t *x,
             float64_t **ptr_History,
             int32_t   verb)
 {
+  SGVector<float64_t> wrap_x(x, m_dim, false);
 	for (int32_t i=0; i<m_dim; i++)
 		x[i]=CMath::random(0.0, 1.0);
 
@@ -599,7 +600,8 @@ int32_t CQPBSVMLib::qpbsvm_gauss_seidel(float64_t *x,
 	{
 		for (int32_t i=0; i<m_dim; i++)
 		{
-			x[i]= (-m_f[i]-(CMath::dot(x,&m_H[m_dim*i], m_dim) -
+      SGVector<float64_t> wrap_H(&m_H[m_dim*i], m_dim, false);
+			x[i]= (-m_f[i]-(linalg::dot(wrap_x, wrap_H) -
 						m_H[m_dim*i+i]*x[i]))/m_H[m_dim*i+i];
 			x[i]=CMath::clamp(x[i], 0.0, 1.0);
 		}
@@ -623,6 +625,7 @@ int32_t CQPBSVMLib::qpbsvm_gradient_descent(float64_t *x,
             float64_t **ptr_History,
             int32_t   verb)
 {
+  SGVector<float64_t> wrap_x(x, m_dim, false);
 	for (int32_t i=0; i<m_dim; i++)
 		x[i]=CMath::random(0.0, 1.0);
 
@@ -630,7 +633,8 @@ int32_t CQPBSVMLib::qpbsvm_gradient_descent(float64_t *x,
 	{
 		for (int32_t i=0; i<m_dim; i++)
 		{
-			x[i]-=0.001*(CMath::dot(x,&m_H[m_dim*i], m_dim)+m_f[i]);
+      SGVector<float64_t> wrap_H(&m_H[m_dim*i], m_dim, false);
+			x[i]-=0.001*(linalg::dot(wrap_x, wrap_H)+m_f[i]);
 			x[i]=CMath::clamp(x[i], 0.0, 1.0);
 		}
 	}

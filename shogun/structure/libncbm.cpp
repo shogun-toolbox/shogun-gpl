@@ -12,6 +12,7 @@
 #ifdef USE_GPL_SHOGUN
 #include <shogun/lib/Time.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 #include <shogun/lib/external/libqp.h>
 #include <shogun/multiclass/GMNPLib.h>
@@ -92,10 +93,9 @@ inline static line_search_res zoom
 				initial_solution.vector, a_j,
 				search_dir.vector, cur_solution.vlen);
 
-		float64_t cur_fval = machine->risk(cur_grad.vector, cur_solution.vector);
+		float64_t cur_fval = machine->risk(cur_grad, cur_solution);
 		float64_t cur_reg
-			= 0.5*lambda*CMath::dot(cur_solution.vector,
-					cur_solution.vector, cur_solution.vlen);
+			= 0.5*lambda*linalg::dot(cur_solution, cur_solution);
 		cur_fval += cur_reg;
 
 		cur_grad.vec1_plus_scalar_times_vec2(cur_grad.vector, lambda, cur_solution.vector, cur_grad.vlen);
@@ -109,12 +109,11 @@ inline static line_search_res zoom
 		{
 			a_hi = a_j;
 			f_hi = cur_fval;
-			g_hi = CMath::dot(cur_grad.vector, search_dir.vector, cur_grad.vlen);
+			g_hi = linalg::dot(cur_grad, search_dir);
 		}
 		else
 		{
-			float64_t cur_lgrad
-				= CMath::dot(cur_grad.vector, search_dir.vector, cur_grad.vlen);
+			float64_t cur_lgrad	= linalg::dot(cur_grad, search_dir);
 
 			if (CMath::abs(cur_lgrad) < -wolfe_c2*init_lgrad)
 			{
@@ -184,7 +183,7 @@ inline std::vector<line_search_res> line_search_with_strong_wolfe
 
 	initial_grad.vec1_plus_scalar_times_vec2(initial_grad.vector, lambda, initial_solution.vector, initial_grad.vlen);
 
-	float64_t initial_lgrad = CMath::dot(initial_grad.vector, search_dir.vector, initial_grad.vlen);
+	float64_t initial_lgrad = linalg::dot(initial_grad, search_dir);
 	float64_t prev_lgrad = initial_lgrad;
 	float64_t prev_fval = initial_val;
 
@@ -198,8 +197,8 @@ inline std::vector<line_search_res> line_search_with_strong_wolfe
 		SGVector<float64_t> cur_subgrad(initial_solution.vlen);
 
 		x.add(x.vector, 1.0, initial_solution.vector, cur_a, search_dir.vector, x.vlen);
-		float64_t cur_fval = machine->risk(cur_subgrad.vector, x.vector);
-		float64_t cur_reg = 0.5*lambda*CMath::dot(x.vector, x.vector, x.vlen);
+		float64_t cur_fval = machine->risk(cur_subgrad, x);
+		float64_t cur_reg = 0.5*lambda*linalg::dot(x, x);
 		cur_fval += cur_reg;
 
 		cur_subgrad.vec1_plus_scalar_times_vec2(cur_subgrad.vector, lambda, x.vector, x.vlen);
@@ -214,8 +213,7 @@ inline std::vector<line_search_res> line_search_with_strong_wolfe
 		}
 
 		float64_t cur_lgrad
-			= CMath::dot(cur_subgrad.vector, search_dir.vector,
-					cur_subgrad.vlen);
+			= linalg::dot(cur_subgrad, search_dir);
 		if
 			(
 			 (cur_fval > initial_val+wolfe_c1*cur_a*initial_lgrad)
@@ -282,15 +280,15 @@ inline void update_H(BmrmStatistics& ncbm,
 		uint32_t maxCP,
 		int32_t w_dim)
 {
-	float64_t* a_2 = get_cutting_plane(tail);
+	SGVector<float64_t> a_2(get_cutting_plane(tail), w_dim, false);
 	bmrm_ll* cp_ptr=head;
 
 	for (uint32_t i=0; i < ncbm.nCP; ++i)
 	{
-		float64_t* a_1 = get_cutting_plane(cp_ptr);
+		SGVector<float64_t> a_1(get_cutting_plane(cp_ptr), w_dim, false);
 		cp_ptr=cp_ptr->next;
 
-		float64_t dot_val = CMath::dot(a_2, a_1, w_dim);
+		float64_t dot_val = linalg::dot(a_2, a_1);
 
 		H.matrix[LIBBMRM_INDEX(ncbm.nCP, i, maxCP)]
 			= H.matrix[LIBBMRM_INDEX(i, ncbm.nCP, maxCP)]
@@ -298,7 +296,7 @@ inline void update_H(BmrmStatistics& ncbm,
 	}
 
 	/* set the diagonal element, i.e. subgrad_i*subgrad_i' */
-	float64_t dot_val = CMath::dot(a_2, a_2, w_dim);
+	float64_t dot_val = linalg::dot(a_2, a_2);
 	H[LIBBMRM_INDEX(ncbm.nCP, ncbm.nCP, maxCP)]=dot_val/lambda;
 
 	diag_H[ncbm.nCP]=H[LIBBMRM_INDEX(ncbm.nCP, ncbm.nCP, maxCP)];
@@ -309,7 +307,7 @@ inline void update_H(BmrmStatistics& ncbm,
 
 BmrmStatistics svm_ncbm_solver(
 		CDualLibQPBMSOSVM *machine,
-		float64_t         *w,
+		SGVector<float64_t>& w,
 		float64_t         TolRel,
 		float64_t         TolAbs,
 		float64_t         _lambda,
@@ -406,9 +404,9 @@ BmrmStatistics svm_ncbm_solver(
 	SGVector<float64_t> cur_w(w_dim);
 	sg_memcpy(cur_w.vector, w, sizeof(float64_t)*w_dim);
 
-	float64_t cur_risk = machine->risk(cur_subgrad.vector, cur_w.vector);
+	float64_t cur_risk = machine->risk(cur_subgrad, cur_w);
 	bias[0] = -cur_risk;
-	best_Fp = 0.5*_lambda*CMath::dot(cur_w.vector, cur_w.vector, cur_w.vlen) + cur_risk;
+	best_Fp = 0.5*_lambda*linalg::dot(cur_w, cur_w) + cur_risk;
 	best_risk = cur_risk;
 	sg_memcpy(best_w.vector, cur_w.vector, sizeof(float64_t)*w_dim);
 	sg_memcpy(best_subgrad.vector, cur_subgrad.vector, sizeof(float64_t)*w_dim);
@@ -505,13 +503,13 @@ BmrmStatistics svm_ncbm_solver(
 
 			for (uint32_t i=0; i < ncbm.nCP; ++i)
 			{
-				float64_t* a_1 = get_cutting_plane(cp_ptr);
+				SGVector<float64_t> a_1(get_cutting_plane(cp_ptr), w_dim, false);
 				cp_ptr = cp_ptr->next;
-				scores[i] = CMath::dot(cur_w.vector, a_1, w_dim);
+				scores[i] = linalg::dot(cur_w, a_1);
 			}
 			scores.vec1_plus_scalar_times_vec2(scores.vector, -1.0, bias.vector, scores.vlen);
 
-			float64_t w_norm = CMath::dot(cur_w.vector, cur_w.vector, cur_w.vlen);
+			float64_t w_norm = linalg::dot(cur_w, cur_w);
 			float64_t PO = 0.5*_lambda*w_norm + CMath::max(scores.vector, scores.vlen);
 			float64_t QP_gap = PO - ncbm.Fd;
 
@@ -546,18 +544,18 @@ BmrmStatistics svm_ncbm_solver(
 		std::vector<line_search_res> wbest_candidates;
 		if (!line_search)
 		{
-			cur_risk = machine->risk(cur_subgrad.vector, cur_w.vector);
+			cur_risk = machine->risk(cur_subgrad, cur_w);
 
 			add_cutting_plane(&CPList_tail, map, A.matrix,
 					find_free_idx(map, maxCPs), cur_subgrad.vector, w_dim);
 
-			bias[ncbm.nCP] = CMath::dot(cur_w.vector, cur_subgrad.vector, cur_w.vlen) - cur_risk;
+			bias[ncbm.nCP] = linalg::dot(cur_w, cur_subgrad) - cur_risk;
 
 			update_H(ncbm, CPList_head, CPList_tail, H, diag_H, _lambda, maxCPs, w_dim);
 
 			// add as a new wbest candidate
 			line_search_res ls;
-			ls.fval = cur_risk+0.5*_lambda*CMath::dot(cur_w.vector, cur_w.vector, cur_w.vlen);
+			ls.fval = cur_risk+0.5*_lambda*linalg::dot(cur_w, cur_w);
 			ls.solution = cur_w;
 			ls.gradient = cur_subgrad;
 
@@ -596,7 +594,7 @@ BmrmStatistics svm_ncbm_solver(
 						find_free_idx(map, maxCPs), ls_res[0].gradient, w_dim);
 
 				bias[ncbm.nCP]
-					= CMath::dot(ls_res[0].solution.vector, ls_res[0].gradient, w_dim)
+					= linalg::dot(ls_res[0].solution, ls_res[0].gradient)
 					- (ls_res[0].fval - ls_res[0].reg);
 
 				update_H(ncbm, CPList_head, CPList_tail, H, diag_H, _lambda, maxCPs, w_dim);
@@ -610,7 +608,7 @@ BmrmStatistics svm_ncbm_solver(
 					find_free_idx(map, maxCPs), ls_res[1].gradient.vector, w_dim);
 
 			bias[ncbm.nCP]
-				= CMath::dot(ls_res[1].solution.vector, ls_res[1].gradient.vector, w_dim)
+				= linalg::dot(ls_res[1].solution, ls_res[1].gradient)
 				- (ls_res[1].fval - ls_res[1].reg);
 
 			update_H(ncbm, CPList_head, CPList_tail, H, diag_H, _lambda, maxCPs, w_dim);
@@ -619,19 +617,18 @@ BmrmStatistics svm_ncbm_solver(
 
 			if ((best_Fp <= ls_res[1].fval) && (astart != 1))
 			{
-				cur_risk = machine->risk(cur_subgrad.vector, cur_w.vector);
+				cur_risk = machine->risk(cur_subgrad, cur_w);
 
 				add_cutting_plane(&CPList_tail, map, A.matrix,
 							find_free_idx(map, maxCPs), cur_subgrad.vector, w_dim);
 
-				bias[ncbm.nCP]
-					=  CMath::dot(cur_w.vector, cur_subgrad.vector, cur_w.vlen) - cur_risk;
+				bias[ncbm.nCP] = linalg::dot(cur_w, cur_subgrad) - cur_risk;
 
 				update_H(ncbm, CPList_head, CPList_tail, H, diag_H, _lambda, maxCPs, w_dim);
 
 				/* add as a new wbest candidate */
 				line_search_res ls;
-				ls.fval = cur_risk+0.5*_lambda*CMath::dot(cur_w.vector, cur_w.vector, cur_w.vlen);
+				ls.fval = cur_risk+0.5*_lambda*linalg::dot(cur_w, cur_w);
 				ls.solution = cur_w;
 				ls.gradient = cur_subgrad;
 				SG_SPRINT("%lf\n", ls.fval)
@@ -673,20 +670,17 @@ BmrmStatistics svm_ncbm_solver(
 
 				/* conflict */
 				float64_t score
-					= CMath::dot(best_w.vector,
-							wbest_candidates[i].gradient.vector, w_dim)
+					= linalg::dot(best_w, wbest_candidates[i].gradient)
 					+ (-1.0*bias[cp_idx]);
 				if (score > best_risk)
 				{
 					float64_t U
 						= best_risk
-						- CMath::dot(best_w.vector,
-								wbest_candidates[i].gradient.vector, w_dim);
+						- linalg::dot(best_w, wbest_candidates[i].gradient);
 
 					float64_t L
 						= best_Fp - wbest_candidates[i].reg
-						- CMath::dot(wbest_candidates[i].solution.vector,
-								wbest_candidates[i].gradient.vector, w_dim);
+						- linalg::dot(wbest_candidates[i].solution,	wbest_candidates[i].gradient);
 
 					if (verbose)
 						SG_SPRINT("CONFLICT Rbest=%.6lg score=%g L=%.6lg U=%.6lg\n", best_risk, score, L, U)
@@ -715,10 +709,10 @@ BmrmStatistics svm_ncbm_solver(
 						cp_ptr = CPList_head;
 						for (uint32_t j = 0; j < ncbm.nCP-1; ++j)
 						{
-							float64_t* a = get_cutting_plane(cp_ptr);
+							SGVector<float64_t> a(get_cutting_plane(cp_ptr), w_dim, false);
 							cp_ptr = cp_ptr->next;
 							float64_t dot_val
-								= CMath::dot(a, wbest_candidates[i].gradient.vector, w_dim);
+								= linalg::dot(a, wbest_candidates[i].gradient);
 
 							H.matrix[LIBBMRM_INDEX(cp_idx, j, maxCPs)]
 								= H.matrix[LIBBMRM_INDEX(j, cp_idx, maxCPs)]
@@ -726,14 +720,12 @@ BmrmStatistics svm_ncbm_solver(
 						}
 
 						diag_H[LIBBMRM_INDEX(cp_idx, cp_idx, maxCPs)]
-							= CMath::dot(wbest_candidates[i].gradient.vector,
-									wbest_candidates[i].gradient.vector, w_dim);
+							= linalg::dot(wbest_candidates[i].gradient,	wbest_candidates[i].gradient);
 
 
 						bias[cp_idx]
 							= best_Fp - wbest_candidates[i].reg
-							- CMath::dot(wbest_candidates[i].solution.vector,
-									wbest_candidates[i].gradient.vector, w_dim);
+							- linalg::dot(wbest_candidates[i].solution, wbest_candidates[i].gradient);
 
 						if (verbose)
 							SG_SPRINT("solved by changing nCP=%d bias:%g (%g)\n", cp_idx, bias[cp_idx], L)

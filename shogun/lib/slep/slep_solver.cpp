@@ -12,6 +12,7 @@
 #include <shogun/lib/slep/slep_solver.h>
 #ifdef USE_GPL_SHOGUN
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/lib/slep/q1/eppMatrix.h>
 #include <shogun/lib/slep/q1/eppVector.h>
 #include <shogun/lib/slep/flsa/flsa.h>
@@ -319,8 +320,6 @@ double search_point_gradient_and_objective(CDotFeatures* features, double* ATx, 
                                            const slep_options& options)
 {
 	double fun_s = 0.0;
-	//SG_SDEBUG("As=%f\n", CMath::dot(As,As,n_vecs))
-	//SG_SDEBUG("sc=%f\n", CMath::dot(sc,sc,n_tasks))
 	switch (options.mode)
 	{
 		case MULTITASK_GROUP:
@@ -396,7 +395,6 @@ double search_point_gradient_and_objective(CDotFeatures* features, double* ATx, 
 			}
 		break;
 	}
-	SG_SDEBUG("G=%f\n", CMath::dot(g,g,n_feats*n_tasks))
 
 	return fun_s;
 }
@@ -467,8 +465,8 @@ slep_result_t slep_solver(
 
 	double* s = SG_CALLOC(double, n_feats*n_tasks);
 	double* sc = SG_CALLOC(double, n_tasks);
-	double* g = SG_CALLOC(double, n_feats*n_tasks);
-	double* v = SG_CALLOC(double, n_feats*n_tasks);
+	SGVector<float64_t> g(n_feats*n_tasks);
+	SGVector<float64_t> v(n_feats*n_tasks);
 	double* z_flsa = SG_CALLOC(double, n_feats);
 	double* z0_flsa = SG_CALLOC(double, n_feats);
 
@@ -507,13 +505,13 @@ slep_result_t slep_solver(
 	if (options.mode==FUSED)
 		L += rsL2;
 
-	double* wp = SG_CALLOC(double, n_feats*n_tasks);
+	SGVector<float64_t> wp(n_feats*n_tasks);
 	for (i=0; i<n_feats*n_tasks; i++)
 		wp[i] = w[i];
 	double* Awp = SG_MALLOC(double, n_vecs);
 	for (i=0; i<n_vecs; i++)
 		Awp[i] = Aw[i];
-	double* wwp = SG_CALLOC(double, n_feats*n_tasks);
+	SGVector<float64_t> wwp(n_feats*n_tasks);
 
 	double* cp = SG_MALLOC(double, n_tasks);
 	for (t=0; t<n_tasks; t++)
@@ -543,7 +541,10 @@ slep_result_t slep_solver(
 		//SG_SDEBUG("fun_s = %f\n", fun_s)
 
 		if (options.mode==PLAIN || options.mode==FUSED)
-			fun_s += rsL2/2 * CMath::dot(w.matrix,w.matrix,n_feats);
+		{
+			SGVector<float64_t> wrap_w(w.matrix,n_feats, false);
+			fun_s += rsL2/2 * linalg::dot(wrap_w, wrap_w);
+		}
 
 		for (i=0; i<n_feats*n_tasks; i++)
 			wp[i] = w[i];
@@ -609,14 +610,17 @@ slep_result_t slep_solver(
 			if (options.loss==LOGISTIC)
 				fun_x /= n_vecs;
 			if (options.mode==PLAIN || options.mode==FUSED)
-				fun_x += rsL2/2 * CMath::dot(w.matrix,w.matrix,n_feats);
+			{
+				SGVector<float64_t> wrap_w(w.matrix, n_feats, false);
+				fun_x += rsL2/2 * linalg::dot(wrap_w, wrap_w);
+			}
 
 			double l_sum = 0.0, r_sum = 0.0;
 			switch (options.loss)
 			{
 				case LOGISTIC:
-					r_sum = CMath::dot(v,v,n_feats*n_tasks);
-					l_sum = fun_x - fun_s - CMath::dot(v,g,n_feats*n_tasks);
+					r_sum = linalg::dot(v,v);
+					l_sum = fun_x - fun_s - linalg::dot(v,g);
 					for (t=0; t<n_tasks; t++)
 					{
 						r_sum += CMath::sq(c[t] - sc[t]);
@@ -625,7 +629,7 @@ slep_result_t slep_solver(
 					r_sum /= 2.0;
 				break;
 				case LEAST_SQUARES:
-					r_sum = CMath::dot(v,v,n_feats*n_tasks);
+					r_sum = linalg::dot(v,v);
 					for (i=0; i<n_vecs; i++)
 						l_sum += CMath::sq(Aw[i]-As[i]);
 				break;
@@ -705,13 +709,13 @@ slep_result_t slep_solver(
 				}
 			break;
 			case 3:
-				norm_wwp = CMath::sqrt(CMath::dot(wwp,wwp,n_feats*n_tasks));
+				norm_wwp = CMath::sqrt(linalg::dot(wwp,wwp));
 				if (norm_wwp <= options.tolerance)
 					done = true;
 			break;
 			case 4:
-				norm_wp = CMath::sqrt(CMath::dot(wp,wp,n_feats*n_tasks));
-				norm_wwp = CMath::sqrt(CMath::dot(wwp,wwp,n_feats*n_tasks));
+				norm_wp = CMath::sqrt(linalg::dot(wp,wp));
+				norm_wwp = CMath::sqrt(linalg::dot(wwp,wwp));
 				if (norm_wwp <= options.tolerance*CMath::max(norm_wp,1.0))
 					done = true;
 			break;
@@ -724,14 +728,10 @@ slep_result_t slep_solver(
 	SG_SINFO("Finished %d iterations, objective = %f\n", iter, func)
 
 	SG_FREE(ATx);
-	SG_FREE(wp);
-	SG_FREE(wwp);
 	SG_FREE(s);
 	SG_FREE(sc);
 	SG_FREE(cp);
 	SG_FREE(ccp);
-	SG_FREE(g);
-	SG_FREE(v);
 	SG_FREE(Aw);
 	SG_FREE(Awp);
 	SG_FREE(Av);

@@ -21,6 +21,7 @@
 #include <shogun/features/DotFeatures.h>
 #include <shogun/labels/Labels.h>
 #include <shogun/labels/BinaryLabels.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 
 using namespace shogun;
 
@@ -60,7 +61,7 @@ bool CSVMOcas::train_machine(CFeatures* data)
 	SG_DEBUG("use_bias = %i\n", get_bias_enabled())
 
 	ASSERT(m_labels)
-  ASSERT(m_labels->get_label_type() == LT_BINARY)
+	ASSERT(m_labels->get_label_type() == LT_BINARY)
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
@@ -301,9 +302,9 @@ void CSVMOcas::compute_W(
 	CSVMOcas* o = (CSVMOcas*) ptr;
 	uint32_t nDim= (uint32_t) o->current_w.vlen;
 	CMath::swap(o->current_w.vector, o->old_w);
-	float64_t* W=o->current_w.vector;
-	float64_t* oldW=o->old_w;
-	memset(W, 0, sizeof(float64_t)*nDim);
+	SGVector<float64_t> W(o->current_w.vector, nDim, false);
+	SGVector<float64_t> oldW(o->old_w, nDim, false);
+	linalg::zero(W);
 	float64_t old_bias=o->bias;
 	float64_t bias=0;
 
@@ -324,8 +325,8 @@ void CSVMOcas::compute_W(
 		bias += c_bias[i]*alpha[i];
 	}
 
-	*sq_norm_W = CMath::dot(W,W, nDim) + CMath::sq(bias);
-	*dp_WoldW = CMath::dot(W,oldW, nDim) + bias*old_bias;
+	*sq_norm_W = linalg::dot(W, W) + CMath::sq(bias);
+	*dp_WoldW = linalg::dot(W, oldW) + bias*old_bias;
 	//SG_PRINT("nSel=%d sq_norm_W=%f dp_WoldW=%f\n", nSel, *sq_norm_W, *dp_WoldW)
 
 	o->bias = bias;

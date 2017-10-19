@@ -41,7 +41,7 @@ namespace shogun
 	 */
 	BmrmStatistics svm_ppbm_solver(
 			CDualLibQPBMSOSVM  *machine,
-			float64_t	*W,
+			SGVector<float64_t>& W,
 			float64_t	TolRel,
 			float64_t	TolAbs,
 			float64_t	_lambda,

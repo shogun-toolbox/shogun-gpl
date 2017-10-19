@@ -104,22 +104,22 @@ bool CDualLibQPBMSOSVM::train_machine(CFeatures* data)
 	switch(m_solver)
 	{
 		case BMRM:
-			m_result=svm_bmrm_solver(this, m_w.vector, m_TolRel, m_TolAbs,
+			m_result=svm_bmrm_solver(this, m_w, m_TolRel, m_TolAbs,
 					m_lambda, m_BufSize, m_cleanICP, m_cleanAfter, m_K, m_Tmax,
 					m_store_train_info);
 			break;
 		case PPBMRM:
-			m_result=svm_ppbm_solver(this, m_w.vector, m_TolRel, m_TolAbs,
+			m_result=svm_ppbm_solver(this, m_w, m_TolRel, m_TolAbs,
 					m_lambda, m_BufSize, m_cleanICP, m_cleanAfter, m_K, m_Tmax,
 					m_verbose);
 			break;
 		case P3BMRM:
-			m_result=svm_p3bm_solver(this, m_w.vector, m_TolRel, m_TolAbs,
+			m_result=svm_p3bm_solver(this, m_w, m_TolRel, m_TolAbs,
 					m_lambda, m_BufSize, m_cleanICP, m_cleanAfter, m_K, m_Tmax,
 					m_cp_models, m_verbose);
 			break;
 		case NCBM:
-			m_result=svm_ncbm_solver(this, m_w.vector, m_TolRel, m_TolAbs,
+			m_result=svm_ncbm_solver(this, m_w, m_TolRel, m_TolAbs,
 					m_lambda, m_BufSize, m_cleanICP, m_cleanAfter, true /* convex */,
 					true /* use line search*/, m_verbose);
 			break;

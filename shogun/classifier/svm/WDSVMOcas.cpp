@@ -14,6 +14,7 @@
 
 #include <shogun/labels/Labels.h>
 #include <shogun/mathematics/Math.h>
+#include <shogun/mathematics/linalg/LinalgNamespace.h>
 #include <shogun/lib/DynamicArray.h>
 #include <shogun/lib/Time.h>
 #include <shogun/base/Parallel.h>
@@ -360,8 +361,7 @@ int CWDSVMOcas::add_new_cut(
 	float64_t* c_bias = o->cp_bias;
 	uint32_t nDim=(uint32_t) o->w_dim;
 	float32_t** cuts=o->cuts;
-	float32_t* new_a=SG_MALLOC(float32_t, nDim);
-	memset(new_a, 0, sizeof(float32_t)*nDim);
+	SGVector<float32_t> new_a(nDim);
 #ifdef HAVE_PTHREAD
 
 	wdocas_thread_params_add* params_add=SG_MALLOC(wdocas_thread_params_add, o->parallel->get_num_threads());
@@ -382,7 +382,7 @@ int CWDSVMOcas::add_new_cut(
 	{
 		params_add[t].wdocas=o;
 		//params_add[t].new_a=NULL;
-		params_add[t].new_a=new_a;
+		params_add[t].new_a=new_a.vector;
 		params_add[t].new_cut=new_cut;
 		params_add[t].start = step*t;
 		params_add[t].end = step*(t+1);
@@ -398,7 +398,7 @@ int CWDSVMOcas::add_new_cut(
 
 	params_add[t].wdocas=o;
 	//params_add[t].new_a=NULL;
-	params_add[t].new_a=new_a;
+	params_add[t].new_a=new_a.vector;
 	params_add[t].new_cut=new_cut;
 	params_add[t].start = step*t;
 	params_add[t].end = string_length;
@@ -427,8 +427,11 @@ int CWDSVMOcas::add_new_cut(
 
 	// insert new_a into the last column of sparse_A
 	for(i=0; i < nSel; i++)
-		new_col_H[i] = CMath::dot(new_a, cuts[i], nDim) + c_bias[nSel]*c_bias[i];
-	new_col_H[nSel] = CMath::dot(new_a, new_a, nDim) + CMath::sq(c_bias[nSel]);
+	{
+		SGVector<float32_t> cut_wrap(cuts[i], nDim, false);
+		new_col_H[i] = linalg::dot(new_a, cut_wrap) + c_bias[nSel]*c_bias[i];
+	}
+	new_col_H[nSel] = linalg::dot(new_a, new_a) + CMath::sq(c_bias[nSel]);
 
 	cuts[nSel]=new_a;
 	//CMath::display_vector(new_col_H, nSel+1, "new_col_H");
@@ -618,10 +621,10 @@ void CWDSVMOcas::compute_W(
 	CWDSVMOcas* o = (CWDSVMOcas*) ptr;
 	uint32_t nDim= (uint32_t) o->w_dim;
 	CMath::swap(o->w, o->old_w);
-	float32_t* W=o->w;
-	float32_t* oldW=o->old_w;
+	SGVector<float32_t> W(o->w, nDim, false);
+	linalg::zero(W);
+	SGVector<float32_t> oldW(o->old_w, nDim, false);
 	float32_t** cuts=o->cuts;
-	memset(W, 0, sizeof(float32_t)*nDim);
 	float64_t* c_bias = o->cp_bias;
 	float64_t old_bias=o->bias;
 	float64_t bias=0;
@@ -629,13 +632,13 @@ void CWDSVMOcas::compute_W(
 	for (uint32_t i=0; i<nSel; i++)
 	{
 		if (alpha[i] > 0)
-			SGVector<float32_t>::vec1_plus_scalar_times_vec2(W, (float32_t) alpha[i], cuts[i], nDim);
+			SGVector<float32_t>::vec1_plus_scalar_times_vec2(W.vector, (float32_t) alpha[i], cuts[i], nDim);
 
 		bias += c_bias[i]*alpha[i];
 	}
 
-	*sq_norm_W = CMath::dot(W,W, nDim) +CMath::sq(bias);
-	*dp_WoldW = CMath::dot(W,oldW, nDim) + bias*old_bias;;
+	*sq_norm_W = linalg::dot(W, W) +CMath::sq(bias);
+	*dp_WoldW = linalg::dot(W, oldW) + bias*old_bias;;
 	//SG_PRINT("nSel=%d sq_norm_W=%f dp_WoldW=%f\n", nSel, *sq_norm_W, *dp_WoldW)
 
 	o->bias = bias;
