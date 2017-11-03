@@ -56,7 +56,7 @@ BmrmStatistics svm_p3bm_solver(
 	float64_t *wt, alpha, alpha_start, alpha_good=0.0, Fd_alpha0=0.0;
 	float64_t lastFp, wdist, gamma=0.0;
 	floatmax_t rsum, sq_norm_W, sq_norm_Wdiff, sq_norm_prevW, eps;
-	uint32_t *I, *I2, *I_start, *I_good;
+	uint32_t *Ivector, *I2, *I_start, *I_good;
 	uint8_t *S=NULL;
 	uint32_t qp_cnt=0;
 	bmrm_ll *CPList_head, *CPList_tail, *cp_ptr, *cp_ptr2, *cp_list=NULL;
@@ -82,7 +82,7 @@ BmrmStatistics svm_p3bm_solver(
 	beta=NULL;
 	A=NULL;
 	diag_H=NULL;
-	I=NULL;
+	Ivector=NULL;
 	wt=NULL;
 	diag_H2=NULL;
 	b2=NULL;
@@ -109,7 +109,7 @@ BmrmStatistics svm_p3bm_solver(
 
 	diag_H= (float64_t*) LIBBMRM_CALLOC(BufSize, float64_t);
 
-	I= (uint32_t*) LIBBMRM_CALLOC(BufSize, uint32_t);
+	Ivector= (uint32_t*) LIBBMRM_CALLOC(BufSize, uint32_t);
 
 	cp_list= (bmrm_ll*) LIBBMRM_CALLOC(1, bmrm_ll);
 
@@ -136,7 +136,7 @@ BmrmStatistics svm_p3bm_solver(
 	icp_stats.H_buff= (float64_t*) LIBBMRM_CALLOC(BufSize*BufSize, float64_t);
 
 	if (H==NULL || A==NULL || b==NULL || beta==NULL ||
-			diag_H==NULL || I==NULL || icp_stats.ICPcounter==NULL ||
+			diag_H==NULL || Ivector==NULL || icp_stats.ICPcounter==NULL ||
 			icp_stats.ICPs==NULL || icp_stats.ACPs==NULL ||
 			cp_list==NULL || wt==NULL || Rt==NULL || C==NULL ||
 			S==NULL || info==NULL || icp_stats.H_buff==NULL)
@@ -333,12 +333,12 @@ BmrmStatistics svm_p3bm_solver(
 
 		for (uint32_t p=0; p<cp_models; ++p)
 		{
-			I[p3bmrm.nCP-cp_models+p]=p+1;
+			Ivector[p3bmrm.nCP-cp_models+p]=p+1;
 			beta[p3bmrm.nCP-cp_models+p]=0.0;
 		}
 
 		LIBBMRM_MEMCPY(beta_start, beta, p3bmrm.nCP*sizeof(float64_t));
-		LIBBMRM_MEMCPY(I_start, I, p3bmrm.nCP*sizeof(uint32_t));
+		LIBBMRM_MEMCPY(I_start, Ivector, p3bmrm.nCP*sizeof(uint32_t));
 		qp_cnt=0;
 
 		if (tuneAlpha)
@@ -650,7 +650,7 @@ BmrmStatistics svm_p3bm_solver(
 		{
 			clean_icp(&icp_stats, p3bmrm, &CPList_head,
 					&CPList_tail, H, diag_H, beta, map,
-					cleanAfter, b, I, cp_models);
+					cleanAfter, b, Ivector, cp_models);
 		}
 
 		// next CP would exceed BufSize
@@ -696,7 +696,7 @@ cleanup:
 	LIBBMRM_FREE(beta);
 	LIBBMRM_FREE(A);
 	LIBBMRM_FREE(diag_H);
-	LIBBMRM_FREE(I);
+	LIBBMRM_FREE(Ivector);
 	LIBBMRM_FREE(icp_stats.ICPcounter);
 	LIBBMRM_FREE(icp_stats.ICPs);
 	LIBBMRM_FREE(icp_stats.ACPs);

@@ -102,7 +102,7 @@ void clean_icp(ICP_stats* icp_stats,
 		bool*& map,
 		uint32_t cleanAfter,
 		float64_t*& b,
-		uint32_t*& I,
+		uint32_t*& Ivector,
 		uint32_t cp_models
 		)
 {
@@ -150,7 +150,7 @@ void clean_icp(ICP_stats* icp_stats,
 					(bmrm.nCP-tmp_idx)*sizeof(float64_t));
 			LIBBMRM_MEMMOVE(diag_H+tmp_idx, diag_H+tmp_idx+1,
 					(bmrm.nCP-tmp_idx)*sizeof(float64_t));
-			LIBBMRM_MEMMOVE(I+tmp_idx, I+tmp_idx+1,
+			LIBBMRM_MEMMOVE(Ivector+tmp_idx, Ivector+tmp_idx+1,
 					(bmrm.nCP-tmp_idx)*sizeof(uint32_t));
 			LIBBMRM_MEMMOVE(icp_stats->ICPcounter+tmp_idx, icp_stats->ICPcounter+tmp_idx+1,
 					(bmrm.nCP-tmp_idx)*sizeof(uint32_t));
@@ -202,7 +202,7 @@ BmrmStatistics svm_bmrm_solver(
 	float64_t *b, *beta, *diag_H;
 	float64_t R, *A, QPSolverTolRel, C=1.0, wdist=0.0;
 	floatmax_t rsum, sq_norm_W, sq_norm_Wdiff=0.0;
-	uint32_t *I;
+	uint32_t *Ivector;
 	uint8_t S=1;
 	CStructuredModel* model=machine->get_model();
 	uint32_t nDim=model->get_dim();
@@ -226,7 +226,7 @@ BmrmStatistics svm_bmrm_solver(
 	beta=NULL;
 	A=NULL;
 	diag_H=NULL;
-	I=NULL;
+	Ivector=NULL;
 
 	SGVector<float64_t> prevW(nDim), subgrad(nDim);
 
@@ -278,9 +278,9 @@ BmrmStatistics svm_bmrm_solver(
 		goto cleanup;
 	}
 
-	I= (uint32_t*) LIBBMRM_CALLOC(BufSize, uint32_t);
+	Ivector= (uint32_t*) LIBBMRM_CALLOC(BufSize, uint32_t);
 
-	if (I==NULL)
+	if (Ivector==NULL)
 	{
 		bmrm.exitflag=-2;
 		goto cleanup;
@@ -412,7 +412,7 @@ BmrmStatistics svm_bmrm_solver(
 		H[LIBBMRM_INDEX(bmrm.nCP, bmrm.nCP, BufSize)]=rsum/_lambda;
 
 		diag_H[bmrm.nCP]=H[LIBBMRM_INDEX(bmrm.nCP, bmrm.nCP, BufSize)];
-		I[bmrm.nCP]=1;
+		Ivector[bmrm.nCP]=1;
 
 		beta[bmrm.nCP]=0.0; // [beta; 0]
 		bmrm.nCP++;
@@ -434,7 +434,7 @@ BmrmStatistics svm_bmrm_solver(
 				bmrm.nCP, QPSolverMaxIter, 0.0, QPSolverTolRel, -LIBBMRM_PLUS_INF, 0);
 #else
 		/* call QP solver */
-		qp_exitflag=libqp_splx_solver(&get_col, diag_H, b, &C, I, &S, beta,
+		qp_exitflag=libqp_splx_solver(&get_col, diag_H, b, &C, Ivector, &S, beta,
 				bmrm.nCP, QPSolverMaxIter, 0.0, QPSolverTolRel, -LIBBMRM_PLUS_INF, 0);
 #endif
 
@@ -520,7 +520,7 @@ BmrmStatistics svm_bmrm_solver(
 		/* Inactive Cutting Planes (ICP) removal */
 		if (cleanICP)
 		{
-			clean_icp(&icp_stats, bmrm, &CPList_head, &CPList_tail, H, diag_H, beta, map, cleanAfter, b, I);
+			clean_icp(&icp_stats, bmrm, &CPList_head, &CPList_tail, H, diag_H, beta, map, cleanAfter, b, Ivector);
 			ASSERT(bmrm.nCP<BufSize);
 		}
 
@@ -575,7 +575,7 @@ cleanup:
 	LIBBMRM_FREE(beta);
 	LIBBMRM_FREE(A);
 	LIBBMRM_FREE(diag_H);
-	LIBBMRM_FREE(I);
+	LIBBMRM_FREE(Ivector);
 	LIBBMRM_FREE(icp_stats.ICPcounter);
 	LIBBMRM_FREE(icp_stats.ICPs);
 	LIBBMRM_FREE(icp_stats.ACPs);

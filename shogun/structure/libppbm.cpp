@@ -53,7 +53,7 @@ BmrmStatistics svm_ppbm_solver(
 	float64_t *wt, alpha, alpha_start, alpha_good=0.0, Fd_alpha0=0.0;
 	float64_t lastFp, wdist, gamma=0.0;
 	floatmax_t rsum, sq_norm_W, sq_norm_Wdiff, sq_norm_prevW, eps;
-	uint32_t *I, *I2, *I_start, *I_good;
+	uint32_t *Ivector, *I2, *I_start, *I_good;
 	uint8_t S=1;
 	CStructuredModel* model=machine->get_model();
 	uint32_t nDim=model->get_dim();
@@ -76,7 +76,7 @@ BmrmStatistics svm_ppbm_solver(
 	beta=NULL;
 	A=NULL;
 	diag_H=NULL;
-	I=NULL;
+	Ivector=NULL;
 	wt=NULL;
 	diag_H2=NULL;
 	b2=NULL;
@@ -109,7 +109,7 @@ BmrmStatistics svm_ppbm_solver(
 
 	diag_H= (float64_t*) LIBBMRM_CALLOC(BufSize, float64_t);
 
-	I= (uint32_t*) LIBBMRM_CALLOC(BufSize, uint32_t);
+	Ivector= (uint32_t*) LIBBMRM_CALLOC(BufSize, uint32_t);
 
 	/* structure for maintaining inactive CPs info */
 	ICP_stats icp_stats;
@@ -125,7 +125,7 @@ BmrmStatistics svm_ppbm_solver(
 	wt= (float64_t*) LIBBMRM_CALLOC(nDim, float64_t);
 
 	if (H==NULL || A==NULL || b==NULL || beta==NULL ||
-			diag_H==NULL || I==NULL || icp_stats.ICPcounter==NULL ||
+			diag_H==NULL || Ivector==NULL || icp_stats.ICPcounter==NULL ||
 			icp_stats.ICPs==NULL || icp_stats.ACPs==NULL ||
 			cp_list==NULL || wt==NULL)
 	{
@@ -266,7 +266,7 @@ BmrmStatistics svm_ppbm_solver(
 		H[LIBBMRM_INDEX(ppbmrm.nCP, ppbmrm.nCP, BufSize)]=rsum;
 
 		diag_H[ppbmrm.nCP]=H[LIBBMRM_INDEX(ppbmrm.nCP, ppbmrm.nCP, BufSize)];
-		I[ppbmrm.nCP]=1;
+		Ivector[ppbmrm.nCP]=1;
 
 		beta[ppbmrm.nCP]=0.0; // [beta; 0]
 		ppbmrm.nCP++;
@@ -277,7 +277,7 @@ BmrmStatistics svm_ppbm_solver(
 		flag=true;
 		isThereGoodSolution=false;
 		LIBBMRM_MEMCPY(beta_start, beta, ppbmrm.nCP*sizeof(float64_t));
-		LIBBMRM_MEMCPY(I_start, I, ppbmrm.nCP*sizeof(uint32_t));
+		LIBBMRM_MEMCPY(I_start, Ivector, ppbmrm.nCP*sizeof(uint32_t));
 		qp_cnt=0;
 		alpha_good=alpha;
 
@@ -602,7 +602,7 @@ BmrmStatistics svm_ppbm_solver(
 		/* Inactive Cutting Planes (ICP) removal */
 		if (cleanICP)
 		{
-			clean_icp(&icp_stats, ppbmrm, &CPList_head, &CPList_tail, H, diag_H, beta, map, cleanAfter, b, I);
+			clean_icp(&icp_stats, ppbmrm, &CPList_head, &CPList_tail, H, diag_H, beta, map, cleanAfter, b, Ivector);
 		}
 
 		// next CP would exceed BufSize
@@ -648,7 +648,7 @@ cleanup:
 	LIBBMRM_FREE(beta);
 	LIBBMRM_FREE(A);
 	LIBBMRM_FREE(diag_H);
-	LIBBMRM_FREE(I);
+	LIBBMRM_FREE(Ivector);
 	LIBBMRM_FREE(icp_stats.ICPcounter);
 	LIBBMRM_FREE(icp_stats.ICPs);
 	LIBBMRM_FREE(icp_stats.ACPs);

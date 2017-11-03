@@ -361,8 +361,8 @@ BmrmStatistics svm_ncbm_solver(
 	/* for sum_{i in I_k} x[i] <= b[k] for all k such that S[k] == 1 */
 	float64_t b = 1.0;
 	uint8_t S = 1;
-	SGVector<uint32_t> I(maxCPs);
-	I.set_const(1);
+	SGVector<uint32_t> Ivector(maxCPs);
+	Ivector.set_const(1);
 
 	/* libqp paramteres */
 	uint32_t QPSolverMaxIter = 0xFFFFFFFF;
@@ -450,7 +450,7 @@ BmrmStatistics svm_ncbm_solver(
 		 *
 		 */
 		qp_exitflag =
-			libqp_splx_solver(&get_col, diag_H.vector, bias.vector, &b, I.vector, &S, x.vector,
+			libqp_splx_solver(&get_col, diag_H.vector, bias.vector, &b, Ivector.vector, &S, x.vector,
 					ncbm.nCP, QPSolverMaxIter, 0.0, QPSolverTolRel, -LIBBMRM_PLUS_INF, 0);
 
 		ncbm.Fd = -qp_exitflag.QP;
@@ -480,7 +480,7 @@ BmrmStatistics svm_ncbm_solver(
 		{
 			clean_icp(&icp_stats, ncbm, &CPList_head, &CPList_tail,
 					H.matrix, diag_H.vector, x.vector,
-					map.vector, cleanAfter, bias.vector, I.vector);
+					map.vector, cleanAfter, bias.vector, Ivector.vector);
 		}
 
 		/* calculate the new w
