@@ -120,7 +120,7 @@ slep_result_t slep_mc_tree_lr(
 				double aa = ((vec_class == j) ? -1.0 : 1.0)*(As(i,j) + search_c(j));
 				double bb = aa > 0.0 ? aa : 0.0;
 				// avoid underflow via log-sum-exp trick
-				fun_s += CMath::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb;
+				fun_s += std::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb;
 				double prob = 1.0/(1+CMath::exp(aa));
 				double b = ((vec_class == j) ? -1.0 : 1.0)*(1-prob);///(n_vecs*n_classes);
 				// update gradient of intercepts
@@ -165,7 +165,7 @@ slep_result_t slep_mc_tree_lr(
 				{
 					double aa = ((vec_class == j) ? -1.0 : 1.0)*(Aw(i,j) + c(j));
 					double bb = aa > 0.0 ? aa : 0.0;
-					fun_x += CMath::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb;
+					fun_x += std::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb;
 				}
 			}
 			//fun_x /= (n_vecs*n_classes);

@@ -73,7 +73,7 @@ malsar_result_t malsar_low_rank(
 				double bb = CMath::max(aa,0.0);
 
 				// avoid underflow when computing exponential loss
-				Fs += (CMath::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb)/n_task_vecs;
+				Fs += (std::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb)/n_task_vecs;
 				double b = -y[task_idx[i]]*(1 - 1/(1+CMath::exp(aa)))/n_task_vecs;
 
 				gCs[task] += b;
@@ -118,7 +118,7 @@ malsar_result_t malsar_low_rank(
 					double aa = -y[task_idx[i]]*(features->dense_dot(task_idx[i], Wzp.col(task).data(), n_feats)+Czp[task]);
 					double bb = CMath::max(aa,0.0);
 
-					Fzp += (CMath::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb)/n_task_vecs;
+					Fzp += (std::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb)/n_task_vecs;
 				}
 			}
 			Fzp += rho_L2*Wzp.squaredNorm();
