@@ -336,8 +336,8 @@ double search_point_gradient_and_objective(CDotFeatures* features, double* ATx, 
 						{
 							double aa = -y[task_idx[i]]*(As[task_idx[i]]+sc[t]);
 							double bb = CMath::max(aa,0.0);
-							fun_s += (std::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb)/ n_vecs;
-							double prob = 1.0/(1.0+CMath::exp(aa));
+							fun_s += (std::log(std::exp(-bb) + std::exp(aa-bb)) + bb)/ n_vecs;
+							double prob = 1.0/(1.0+std::exp(aa));
 							double b = -y[task_idx[i]]*(1.0-prob) / n_vecs;
 							gc[t] += b;
 							features->add_to_dense_vec(b,task_idx[i],g+t*n_feats,n_feats);
@@ -365,14 +365,14 @@ double search_point_gradient_and_objective(CDotFeatures* features, double* ATx, 
 					{
 						double aa = -y[i]*(As[i]+sc[0]);
 						double bb = CMath::max(aa,0.0);
-						fun_s += (std::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb);
+						fun_s += (std::log(std::exp(-bb) + std::exp(aa-bb)) + bb);
 						/*
 						if (y[i]>0)
-							fun_s += (std::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb)*pos_weight;
+							fun_s += (std::log(std::exp(-bb) + std::exp(aa-bb)) + bb)*pos_weight;
 						else
-							fun_s += (std::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb)*neg_weight;
+							fun_s += (std::log(std::exp(-bb) + std::exp(aa-bb)) + bb)*neg_weight;
 						*/
-						double prob = 1.0/(1.0+CMath::exp(aa));
+						double prob = 1.0/(1.0+std::exp(aa));
 						//double b = 0;
 						double b = -y[i]*(1.0-prob)/n_vecs;
 						/*
@@ -583,7 +583,7 @@ slep_result_t slep_solver(
 							{
 								double aa = -y[task_idx[i]]*(Aw[task_idx[i]]+c[t]);
 								double bb = CMath::max(aa,0.0);
-								fun_x += (std::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb);
+								fun_x += (std::log(std::exp(-bb) + std::exp(aa-bb)) + bb);
 							}
 						}
 					}
@@ -600,9 +600,9 @@ slep_result_t slep_solver(
 							double aa = -y[i]*(Aw[i]+c[0]);
 							double bb = CMath::max(aa,0.0);
 							if (y[i]>0)
-								fun_x += (std::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb);//*pos_weight;
+								fun_x += (std::log(std::exp(-bb) + std::exp(aa-bb)) + bb);//*pos_weight;
 							else
-								fun_x += (std::log(CMath::exp(-bb) + CMath::exp(aa-bb)) + bb);//*neg_weight;
+								fun_x += (std::log(std::exp(-bb) + std::exp(aa-bb)) + bb);//*neg_weight;
 						}
 					}
 				break;
