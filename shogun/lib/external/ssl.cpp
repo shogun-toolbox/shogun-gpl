@@ -960,7 +960,7 @@ void optimize_p(
 	for (int32_t i=0;i<u;i++)
 	{
 		s=exp((g[i]-nu)/T);
-		if(!(CMath::is_infinity(s)))
+		if(!(std::isinf(s)))
 		{
 			tmp=1.0/(1.0+s);
 			Bnu+=tmp;
@@ -985,7 +985,7 @@ void optimize_p(
 		for(int32_t i=0;i<u;i++)
 		{
 			s=exp((g[i]-nu)/T);
-			if(!(CMath::is_infinity(s)))
+			if(!(std::isinf(s)))
 			{
 				tmp=1.0/(1.0+s);
 				Bnu+=tmp;
@@ -1008,7 +1008,7 @@ void optimize_p(
 	for (int32_t i=0;i<u;i++)
 	{
 		s=exp((g[i]-nu)/T);
-		if(CMath::is_infinity(s)) p[i]=0.0;
+		if(std::isinf(s)) p[i]=0.0;
 		else p[i]=1.0/(1.0+s);
 	}
 	SG_SINFO(" root (nu) = %f B(nu) = %f", nu, Bnu)
