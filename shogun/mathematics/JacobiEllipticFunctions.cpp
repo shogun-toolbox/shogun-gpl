@@ -71,9 +71,9 @@ void CJacobiEllipticFunctions
 	{
 #if defined HAVE_ARPREC
 		complex128_t _u(dble(u.real),dble(u.imag));
-		complex128_t t=CMath::tanh(_u);
-		complex128_t b=CMath::cosh(_u);
-		complex128_t twon=b*CMath::sinh(_u);
+		complex128_t t = std::tanh(_u);
+		complex128_t b = std::cosh(_u);
+		complex128_t twon = b * std::sinh(_u);
 		complex128_t ai=0.25*(1.0-dble(m));
 		complex128_t _sn=t+ai*(twon-_u)/(b*b);
 		complex128_t phi=1.0/b;
@@ -83,10 +83,10 @@ void CJacobiEllipticFunctions
 		cn=mp_complex(_cn.real(),_cn.imag());
 		dn=mp_complex(_dn.real(),_dn.imag());
 #else
-		Complex t=CMath::tanh(u);
-		Complex b=CMath::cosh(u);
+		Complex t = std::tanh(u);
+		Complex b = std::cosh(u);
 		Complex ai=0.25*(1.0-m);
-		Complex twon=b*CMath::sinh(u);
+		Complex twon = b * std::sinh(u);
 		sn=t+ai*(twon-u)/(b*b);
 		Complex phi=Real(1.0)/b;
 		ai*=t*phi;
