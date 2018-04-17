@@ -22,12 +22,14 @@ CMulticlassLogisticRegression::CMulticlassLogisticRegression() :
 	CLinearMulticlassMachine()
 {
 	init_defaults();
+	register_parameters();
 }
 
 CMulticlassLogisticRegression::CMulticlassLogisticRegression(float64_t z, CDotFeatures* feats, CLabels* labs) :
 	CLinearMulticlassMachine(new CMulticlassOneVsRestStrategy(),feats,NULL,labs)
 {
 	init_defaults();
+	register_parameters();
 	set_z(z);
 }
 
