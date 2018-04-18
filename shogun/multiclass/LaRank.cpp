@@ -616,6 +616,7 @@ bool CLaRank::train_machine(CFeatures* data)
 	ASSERT(m_kernel)
 	ASSERT(m_labels && m_labels->get_num_labels())
 	ASSERT(m_labels->get_label_type() == LT_MULTICLASS)
+	init_strategy();
 
 	if (data)
 	{
