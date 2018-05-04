@@ -56,14 +56,13 @@ bool CMulticlassLogisticRegression::train_machine(CFeatures* data)
 	if (data)
 		set_features((CDotFeatures*)data);
 
-	REQUIRE(m_features, "%s::train_machine(): No features attached!\n");
-	REQUIRE(m_labels, "%s::train_machine(): No labels attached!\n");
-	REQUIRE(m_labels->get_label_type()==LT_MULTICLASS, "%s::train_machine(): "
-			"Attached labels are no multiclass labels\n");
-	REQUIRE(m_multiclass_strategy, "%s::train_machine(): No multiclass strategy"
+	REQUIRE(m_features, "No features attached!\n");
+	REQUIRE(m_labels, "No labels attached!\n");
+	REQUIRE(m_multiclass_strategy, "No multiclass strategy"
 			" attached!\n");
 
-	int32_t n_classes = ((CMulticlassLabels*)m_labels)->get_num_classes();
+	auto mc_labels = multiclass_labels(m_labels);
+	int32_t n_classes = mc_labels->get_num_classes();
 	int32_t n_feats = m_features->get_dim_feature_space();
 
 	slep_options options = slep_options::default_options();
@@ -85,7 +84,7 @@ bool CMulticlassLogisticRegression::train_machine(CFeatures* data)
 	}
 	options.tolerance = m_epsilon;
 	options.max_iter = m_max_iter;
-	slep_result_t result = slep_mc_plain_lr(m_features,(CMulticlassLabels*)m_labels,m_z,options);
+	slep_result_t result = slep_mc_plain_lr(m_features,mc_labels,m_z,options);
 
 	SGMatrix<float64_t> all_w = result.w;
 	SGVector<float64_t> all_c = result.c;
