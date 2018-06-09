@@ -636,7 +636,7 @@ bool CLaRank::train_machine(CFeatures* data)
 	int32_t n_it = 1;
 	float64_t gap = DBL_MAX;
 
-	auto pb = progress(range(0, 10), *this->io);
+	auto pb = SG_PROGRESS(range(0, 10));
 	SG_INFO("Training on %d examples\n", nb_train)
 	while (gap > get_C() && (!cancel_computation()) &&
 	       n_it < max_iteration) // stopping criteria
