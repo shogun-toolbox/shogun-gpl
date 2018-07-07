@@ -71,8 +71,7 @@ void CSVMSGD::set_loss_function(CLossFunction* loss_func)
 bool CSVMSGD::train_machine(CFeatures* data)
 {
 	// allocate memory for w and initialize everyting w and bias with 0
-	ASSERT(m_labels)
-	ASSERT(m_labels->get_label_type() == LT_BINARY)
+	auto labels = binary_labels(m_labels);
 
 	if (data)
 	{
@@ -83,7 +82,7 @@ bool CSVMSGD::train_machine(CFeatures* data)
 
 	ASSERT(features)
 
-	int32_t num_train_labels=m_labels->get_num_labels();
+	int32_t num_train_labels = labels->get_num_labels();
 	int32_t num_vec=features->get_num_vectors();
 
 	ASSERT(num_vec==num_train_labels)
@@ -122,7 +121,7 @@ bool CSVMSGD::train_machine(CFeatures* data)
 		for (int32_t i=0; i<num_vec; i++)
 		{
 			float64_t eta = 1.0 / (lambda * t);
-			float64_t y = ((CBinaryLabels*) m_labels)->get_label(i);
+			float64_t y = labels->get_label(i);
 			float64_t z = y * (features->dense_dot(i, w.vector, w.vlen) + bias);
 
 			if (z < 1 || is_log_loss)
@@ -214,13 +213,16 @@ void CSVMSGD::init()
 	loss=new CHingeLoss();
 	SG_REF(loss);
 
-    m_parameters->add(&C1, "C1",  "Cost constant 1.");
-    m_parameters->add(&C2, "C2",  "Cost constant 2.");
-    m_parameters->add(&wscale, "wscale",  "W scale");
-    m_parameters->add(&bscale, "bscale",  "b scale");
-    m_parameters->add(&epochs, "epochs",  "epochs");
-    m_parameters->add(&skip, "skip",  "skip");
-    m_parameters->add(&count, "count",  "count");
-    m_parameters->add(&use_bias, "use_bias",  "Indicates if bias is used.");
-    m_parameters->add(&use_regularized_bias, "use_regularized_bias",  "Indicates if bias is regularized.");
+	SG_ADD(&C1, "C1", "Cost constant 1.", MS_AVAILABLE);
+	SG_ADD(&C2, "C2", "Cost constant 2.", MS_AVAILABLE);
+	SG_ADD(&wscale, "wscale", "W scale", MS_NOT_AVAILABLE);
+	SG_ADD(&bscale, "bscale", "b scale", MS_NOT_AVAILABLE);
+	SG_ADD(&epochs, "epochs", "epochs", MS_NOT_AVAILABLE);
+	SG_ADD(&skip, "skip", "skip", MS_NOT_AVAILABLE);
+	SG_ADD(&count, "count", "count", MS_NOT_AVAILABLE);
+	SG_ADD(
+	    &use_bias, "use_bias", "Indicates if bias is used.", MS_NOT_AVAILABLE);
+	SG_ADD(
+	    &use_regularized_bias, "use_regularized_bias",
+	    "Indicates if bias is regularized.", MS_NOT_AVAILABLE);
 }
