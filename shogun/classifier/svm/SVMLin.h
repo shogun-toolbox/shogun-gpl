@@ -104,6 +104,9 @@ class CSVMLin : public CLinearMachine
 		 */
 		virtual bool train_machine(CFeatures* data=NULL);
 
+		/** set up parameters */
+		void init();
+
 	protected:
 		/** C1 */
 		float64_t C1;

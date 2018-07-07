@@ -22,6 +22,7 @@ using namespace shogun;
 CSVMLin::CSVMLin()
 : CLinearMachine(), C1(1), C2(1), epsilon(1e-5), use_bias(true)
 {
+	init();
 }
 
 CSVMLin::CSVMLin(
@@ -30,11 +31,24 @@ CSVMLin::CSVMLin(
 {
 	set_features(traindat);
 	set_labels(trainlab);
+
+	init();
 }
 
 
 CSVMLin::~CSVMLin()
 {
+}
+
+void CSVMLin::init()
+{
+	SG_ADD(
+	    &use_bias, "use_bias", "Indicates if bias is used.", MS_NOT_AVAILABLE);
+	SG_ADD(
+	    &C1, "C1", "C constant for negatively labeled examples.", MS_AVAILABLE);
+	SG_ADD(
+	    &C2, "C2", "C constant for positively labeled examples.", MS_AVAILABLE);
+	SG_ADD(&epsilon, "epsilon", "Convergence precision.", MS_NOT_AVAILABLE);
 }
 
 bool CSVMLin::train_machine(CFeatures* data)
