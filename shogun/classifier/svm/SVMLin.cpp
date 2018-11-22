@@ -43,12 +43,12 @@ CSVMLin::~CSVMLin()
 void CSVMLin::init()
 {
 	SG_ADD(
-	    &use_bias, "use_bias", "Indicates if bias is used.", MS_NOT_AVAILABLE);
+	    &use_bias, "use_bias", "Indicates if bias is used.");
 	SG_ADD(
-	    &C1, "C1", "C constant for negatively labeled examples.", MS_AVAILABLE);
+	    &C1, "C1", "C constant for negatively labeled examples.", ParameterProperties::HYPER);
 	SG_ADD(
-	    &C2, "C2", "C constant for positively labeled examples.", MS_AVAILABLE);
-	SG_ADD(&epsilon, "epsilon", "Convergence precision.", MS_NOT_AVAILABLE);
+	    &C2, "C2", "C constant for positively labeled examples.", ParameterProperties::HYPER);
+	SG_ADD(&epsilon, "epsilon", "Convergence precision.");
 }
 
 bool CSVMLin::train_machine(CFeatures* data)

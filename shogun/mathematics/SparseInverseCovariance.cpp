@@ -31,12 +31,11 @@ CSparseInverseCovariance::~CSparseInverseCovariance()
 void CSparseInverseCovariance::register_parameters()
 {
 	SG_ADD(&m_lasso_max_iter,"lasso_max_iter",
-	       "maximum iteration of LASSO step",MS_NOT_AVAILABLE);
-	SG_ADD(&m_max_iter,"max_iter","maximum total iteration",
-	       MS_NOT_AVAILABLE);
-	SG_ADD(&m_f_gap,"f_gap","f gap",MS_NOT_AVAILABLE);
-	SG_ADD(&m_x_gap,"x_gap","x gap",MS_NOT_AVAILABLE);
-	SG_ADD(&m_xtol,"xtol","xtol",MS_NOT_AVAILABLE);
+	       "maximum iteration of LASSO step");
+	SG_ADD(&m_max_iter,"max_iter","maximum total iteration");
+	SG_ADD(&m_f_gap,"f_gap","f gap");
+	SG_ADD(&m_x_gap,"x_gap","x gap");
+	SG_ADD(&m_xtol,"xtol","xtol");
 }
 
 SGMatrix<float64_t> CSparseInverseCovariance::estimate(SGMatrix<float64_t> S, float64_t lambda_c)

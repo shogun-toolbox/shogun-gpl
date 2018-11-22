@@ -55,21 +55,17 @@ CDualLibQPBMSOSVM::~CDualLibQPBMSOSVM()
 
 void CDualLibQPBMSOSVM::init()
 {
-	SG_ADD(&m_TolRel, "m_TolRel", "Relative tolerance", MS_AVAILABLE);
-	SG_ADD(&m_TolAbs, "m_TolAbs", "Absolute tolerance", MS_AVAILABLE);
-	SG_ADD(&m_BufSize, "m_BuffSize", "Size of CP Buffer", MS_AVAILABLE);
-	SG_ADD(&m_lambda, "m_lambda", "Regularization constant lambda",
-			MS_AVAILABLE);
-	SG_ADD(&m_cleanICP, "m_cleanICP", "Inactive cutting plane removal flag",
-			MS_AVAILABLE);
+	SG_ADD(&m_TolRel, "m_TolRel", "Relative tolerance", ParameterProperties::HYPER);
+	SG_ADD(&m_TolAbs, "m_TolAbs", "Absolute tolerance", ParameterProperties::HYPER);
+	SG_ADD(&m_BufSize, "m_BuffSize", "Size of CP Buffer", ParameterProperties::HYPER);
+	SG_ADD(&m_lambda, "m_lambda", "Regularization constant lambda");
+	SG_ADD(&m_cleanICP, "m_cleanICP", "Inactive cutting plane removal flag");
 	SG_ADD(&m_cleanAfter,
 			"m_cleanAfter",
-			"Number of inactive iterations after which ICP will be removed",
-			MS_AVAILABLE);
-	SG_ADD(&m_K, "m_K", "Parameter K", MS_NOT_AVAILABLE);
-	SG_ADD(&m_Tmax, "m_Tmax", "Parameter Tmax", MS_AVAILABLE);
-	SG_ADD(&m_cp_models, "m_cp_models", "Number of cutting plane models",
-			MS_AVAILABLE);
+			"Number of inactive iterations after which ICP will be removed");
+	SG_ADD(&m_K, "m_K", "Parameter K");
+	SG_ADD(&m_Tmax, "m_Tmax", "Parameter Tmax", ParameterProperties::HYPER);
+	SG_ADD(&m_cp_models, "m_cp_models", "Number of cutting plane models");
 
 	set_TolRel(0.001);
 	set_TolAbs(0.0);
