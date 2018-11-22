@@ -49,8 +49,8 @@ CMultitaskL12LogisticRegression::CMultitaskL12LogisticRegression(
 
 void CMultitaskL12LogisticRegression::init()
 {
-	SG_ADD(&self->m_rho1,"rho1","rho L1/L2 regularization parameter",MS_AVAILABLE);
-	SG_ADD(&self->m_rho2,"rho2","rho L2 regularization parameter",MS_AVAILABLE);
+	SG_ADD(&self->m_rho1,"rho1","rho L1/L2 regularization parameter", ParameterProperties::HYPER);
+	SG_ADD(&self->m_rho2,"rho2","rho L2 regularization parameter", ParameterProperties::HYPER);
 }
 
 void CMultitaskL12LogisticRegression::set_rho1(float64_t rho1)

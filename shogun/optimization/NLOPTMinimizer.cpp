@@ -57,13 +57,13 @@ void CNLOPTMinimizer::init()
 	m_target_variable=SGVector<float64_t>();
 	set_nlopt_parameters();
 	SG_ADD(&m_max_iterations, "CNLOPTMinimizer__m_max_iterations",
-		"max_iterations in CNLOPTMinimizer", MS_NOT_AVAILABLE);
+		"max_iterations in CNLOPTMinimizer");
 	SG_ADD(&m_variable_tolerance, "CNLOPTMinimizer__m_variable_tolerance",
-		"variable_tolerance in CNLOPTMinimizer", MS_NOT_AVAILABLE);
+		"variable_tolerance in CNLOPTMinimizer");
 	SG_ADD(&m_function_tolerance, "CNLOPTMinimizer__m_function_tolerance",
-		"function_tolerance in CNLOPTMinimizer", MS_NOT_AVAILABLE);
+		"function_tolerance in CNLOPTMinimizer");
 	SG_ADD(&m_nlopt_algorithm_id, "CNLOPTMinimizer__m_nlopt_algorithm_id",
-		"nlopt_algorithm_id in CNLOPTMinimizer", MS_NOT_AVAILABLE);
+		"nlopt_algorithm_id in CNLOPTMinimizer");
 #endif
 }
 

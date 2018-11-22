@@ -36,7 +36,7 @@ CMultitaskTraceLogisticRegression::CMultitaskTraceLogisticRegression(
 
 void CMultitaskTraceLogisticRegression::init()
 {
-	SG_ADD(&m_rho,"rho","rho",MS_AVAILABLE);
+	SG_ADD(&m_rho,"rho","rho", ParameterProperties::HYPER);
 }
 
 void CMultitaskTraceLogisticRegression::set_rho(float64_t rho)

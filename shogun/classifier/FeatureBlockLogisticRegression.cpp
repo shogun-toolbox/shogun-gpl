@@ -57,13 +57,13 @@ CFeatureBlockLogisticRegression::~CFeatureBlockLogisticRegression()
 
 void CFeatureBlockLogisticRegression::register_parameters()
 {
-	SG_ADD((CSGObject**)&m_feature_relation, "feature_relation", "feature relation", MS_NOT_AVAILABLE);
-	SG_ADD(&m_z, "z", "regularization coefficient", MS_AVAILABLE);
-	SG_ADD(&m_q, "q", "q of L1/Lq", MS_AVAILABLE);
-	SG_ADD(&m_termination, "termination", "termination", MS_NOT_AVAILABLE);
-	SG_ADD(&m_regularization, "regularization", "regularization", MS_NOT_AVAILABLE);
-	SG_ADD(&m_tolerance, "tolerance", "tolerance", MS_NOT_AVAILABLE);
-	SG_ADD(&m_max_iter, "max_iter", "maximum number of iterations", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**)&m_feature_relation, "feature_relation", "feature relation");
+	SG_ADD(&m_z, "z", "regularization coefficient", ParameterProperties::HYPER);
+	SG_ADD(&m_q, "q", "q of L1/Lq", ParameterProperties::HYPER);
+	SG_ADD(&m_termination, "termination", "termination");
+	SG_ADD(&m_regularization, "regularization", "regularization");
+	SG_ADD(&m_tolerance, "tolerance", "tolerance");
+	SG_ADD(&m_max_iter, "max_iter", "maximum number of iterations");
 }
 
 CIndexBlockRelation* CFeatureBlockLogisticRegression::get_feature_relation() const

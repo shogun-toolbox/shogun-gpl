@@ -46,7 +46,7 @@ CMultitaskLinearMachine::~CMultitaskLinearMachine()
 
 void CMultitaskLinearMachine::register_parameters()
 {
-	SG_ADD((CSGObject**)&m_task_relation, "task_relation", "task relation", MS_NOT_AVAILABLE);
+	SG_ADD((CSGObject**)&m_task_relation, "task_relation", "task relation");
 }
 
 int32_t CMultitaskLinearMachine::get_current_task() const

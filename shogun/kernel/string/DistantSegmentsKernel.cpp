@@ -43,8 +43,8 @@ bool CDistantSegmentsKernel::init(CFeatures* l, CFeatures* r)
 
 void CDistantSegmentsKernel::init()
 {
-	SG_ADD(&m_delta, "delta", "Delta parameter of the DS-Kernel", MS_AVAILABLE);
-	SG_ADD(&m_theta, "theta", "Theta parameter of the DS-Kernel", MS_AVAILABLE);
+	SG_ADD(&m_delta, "delta", "Delta parameter of the DS-Kernel", ParameterProperties::HYPER);
+	SG_ADD(&m_theta, "theta", "Theta parameter of the DS-Kernel", ParameterProperties::HYPER);
 }
 
 float64_t CDistantSegmentsKernel::compute(int32_t idx_a, int32_t idx_b)

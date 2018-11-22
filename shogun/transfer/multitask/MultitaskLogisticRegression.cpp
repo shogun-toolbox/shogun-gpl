@@ -40,12 +40,12 @@ CMultitaskLogisticRegression::~CMultitaskLogisticRegression()
 
 void CMultitaskLogisticRegression::register_parameters()
 {
-	SG_ADD(&m_z, "z", "regularization coefficient", MS_AVAILABLE);
-	SG_ADD(&m_q, "q", "q of L1/Lq", MS_AVAILABLE);
-	SG_ADD(&m_termination, "termination", "termination", MS_NOT_AVAILABLE);
-	SG_ADD(&m_regularization, "regularization", "regularization", MS_NOT_AVAILABLE);
-	SG_ADD(&m_tolerance, "tolerance", "tolerance", MS_NOT_AVAILABLE);
-	SG_ADD(&m_max_iter, "max_iter", "maximum number of iterations", MS_NOT_AVAILABLE);
+	SG_ADD(&m_z, "z", "regularization coefficient", ParameterProperties::HYPER);
+	SG_ADD(&m_q, "q", "q of L1/Lq", ParameterProperties::HYPER);
+	SG_ADD(&m_termination, "termination", "termination");
+	SG_ADD(&m_regularization, "regularization", "regularization");
+	SG_ADD(&m_tolerance, "tolerance", "tolerance");
+	SG_ADD(&m_max_iter, "max_iter", "maximum number of iterations");
 }
 
 void CMultitaskLogisticRegression::initialize_parameters()

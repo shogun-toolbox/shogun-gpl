@@ -41,9 +41,9 @@ void CMulticlassTreeGuidedLogisticRegression::init_defaults()
 
 void CMulticlassTreeGuidedLogisticRegression::register_parameters()
 {
-	SG_ADD(&m_z, "m_z", "regularization constant",MS_AVAILABLE);
-	SG_ADD(&m_epsilon, "m_epsilon", "tolerance epsilon",MS_NOT_AVAILABLE);
-	SG_ADD(&m_max_iter, "m_max_iter", "max number of iterations",MS_NOT_AVAILABLE);
+	SG_ADD(&m_z, "m_z", "regularization constant", ParameterProperties::HYPER);
+	SG_ADD(&m_epsilon, "m_epsilon", "tolerance epsilon");
+	SG_ADD(&m_max_iter, "m_max_iter", "max number of iterations");
 }
 
 CMulticlassTreeGuidedLogisticRegression::~CMulticlassTreeGuidedLogisticRegression()
