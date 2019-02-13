@@ -106,7 +106,7 @@ int32_t CGLS(
 	float64_t *r = SG_MALLOC(float64_t, n);
 	for (int32_t i = n ; i-- ;)
 		r[i] = 0.0;
-	for (register int32_t j=0; j < active; j++)
+	for (int32_t j=0; j < active; j++)
 	{
 		features->add_to_dense_vec(z[j], J[j], r, n-1);
 		r[n-1]+=Options->bias*z[j]; //bias (modelled as last dim)
@@ -134,7 +134,7 @@ int32_t CGLS(
 		cgiter++;
 		omega_q=0.0;
 		float64_t t=0.0;
-		register int32_t i,j;
+		int32_t i,j;
 		// #pragma omp parallel for private(i,j)
 		for (i=0; i < active; i++)
 		{
@@ -267,7 +267,7 @@ int32_t L2_SVM_MFN(
 			o_bar[i]=o[i];
 
 		opt=CGLS(Data,Options,ActiveSubset,Weights_bar,Outputs_bar);
-		for(register int32_t i=active; i < m; i++)
+		for(int32_t i=active; i < m; i++)
 		{
 			ii=ActiveSubset->vec[i];
 

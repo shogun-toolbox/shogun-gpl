@@ -998,7 +998,7 @@ int32_t ProjectDai(
   return (iter);
 }
 
-#define SWAP(a,b) { register float64_t t=(a);(a)=(b);(b)=t; }
+#define SWAP(a,b) { float64_t t=(a);(a)=(b);(b)=t; }
 
 /*** Median computation using Quick Select ***/
 float64_t quick_select(float64_t *arr, int32_t n)

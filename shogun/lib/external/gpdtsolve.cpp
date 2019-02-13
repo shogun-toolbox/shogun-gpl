@@ -335,7 +335,7 @@ int32_t QPproblem::optimal()
    * Returns 1 if the computed solution is optimal, otherwise returns 0. *
    * To verify the optimality it checks the KKT optimality conditions.   *
    ***********************************************************************/
-  register int32_t i, j, margin_sv_number, z, k, s, kin, z1, znew=0, nnew;
+  int32_t i, j, margin_sv_number, z, k, s, kin, z1, znew=0, nnew;
 
   float64_t gx_i, aux, s1, s2;
 
