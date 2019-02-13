@@ -26,7 +26,7 @@ namespace shogun
  * The underlying solver is based on the SLEP library.
  *
  */
-class CMultitaskLeastSquaresRegression : public CMultitaskLinearMachine
+class SHOGUN_EXPORT CMultitaskLeastSquaresRegression : public CMultitaskLinearMachine
 {
 
 	public:

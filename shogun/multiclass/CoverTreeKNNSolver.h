@@ -21,7 +21,7 @@ namespace shogun
  * For more information, see https://en.wikipedia.org/wiki/Cover_tree
  *
  */
-class CCoverTreeKNNSolver : public CKNNSolver
+class SHOGUN_EXPORT CCoverTreeKNNSolver : public CKNNSolver
 {
 	public:
 		/** default constructor */

@@ -21,7 +21,7 @@ namespace shogun
 
 /** @brief multiclass tree guided logistic regression
  */
-class CMulticlassTreeGuidedLogisticRegression : public CLinearMulticlassMachine
+class SHOGUN_EXPORT CMulticlassTreeGuidedLogisticRegression : public CLinearMulticlassMachine
 {
 	public:
 		MACHINE_PROBLEM_TYPE(PT_MULTICLASS)

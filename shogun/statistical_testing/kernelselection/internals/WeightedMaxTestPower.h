@@ -48,7 +48,7 @@ template <typename T> class SGVector;
 namespace internal
 {
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-class WeightedMaxTestPower : public WeightedMaxMeasure
+class SHOGUN_EXPORT WeightedMaxTestPower : public WeightedMaxMeasure
 {
 public:
 	WeightedMaxTestPower(KernelManager&, CMMD*);

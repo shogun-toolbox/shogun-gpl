@@ -47,7 +47,7 @@ template <typename T> class SGMatrix;
 namespace internal
 {
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-class OptimizationSolver
+class SHOGUN_EXPORT OptimizationSolver
 {
 public:
 	OptimizationSolver(const SGVector<float64_t>& mmds, const SGMatrix<float64_t>& Q);

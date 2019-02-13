@@ -23,7 +23,7 @@ namespace shogun
 	 * an structured output based machine for classification
 	 * problems with latent variables.
 	 */
-	class CLatentSOSVM: public CLinearLatentMachine
+	class SHOGUN_EXPORT CLatentSOSVM: public CLinearLatentMachine
 	{
 		public:
 			/** default ctor*/

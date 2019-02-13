@@ -26,7 +26,7 @@ namespace shogun
 /** @brief class MultitaskLinearMachine, a base class
  * for linear multitask classifiers
  */
-class CMultitaskLinearMachine : public CLinearMachine
+class SHOGUN_EXPORT CMultitaskLinearMachine : public CLinearMachine
 {
 
 	public:

@@ -92,7 +92,7 @@ namespace shogun
 	 ** OUTPUT: one per class of the raining set, keep tracks of support
 	 * vectors and their beta coefficients
 	 */
-	class LaRankOutput
+	class SHOGUN_EXPORT LaRankOutput
 	{
 		public:
 			LaRankOutput () : g(NULL), kernel(NULL), l(0)
@@ -175,7 +175,7 @@ namespace shogun
 	/*
 	 **	LARANKPATTERN: to keep track of the support patterns
 	 */
-	class LaRankPattern
+	class SHOGUN_EXPORT LaRankPattern
 	{
 		public:
 			LaRankPattern (int32_t x_index, int32_t label)
@@ -200,7 +200,7 @@ namespace shogun
 	/*
 	 **  LARANKPATTERNS: the collection of support patterns
 	 */
-	class LaRankPatterns
+	class SHOGUN_EXPORT LaRankPatterns
 	{
 		public:
 			LaRankPatterns () {}
@@ -315,7 +315,7 @@ namespace shogun
 	 The current value of the upper limit can be queried
 	 with get_max_iteration() method.
 	 */
-	class CLaRank:  public CMulticlassSVM
+	class SHOGUN_EXPORT CLaRank:  public CMulticlassSVM
 	{
 		public:
                         /** Default constructor

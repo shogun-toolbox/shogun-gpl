@@ -25,7 +25,7 @@ namespace shogun
  *
  * @see CTaskGroup
  * */
-class CMultitaskL12LogisticRegression : public CMultitaskLogisticRegression
+class SHOGUN_EXPORT CMultitaskL12LogisticRegression : public CMultitaskLogisticRegression
 {
 
 	public:

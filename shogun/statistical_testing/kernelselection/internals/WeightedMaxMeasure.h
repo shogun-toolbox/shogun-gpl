@@ -48,7 +48,7 @@ class CMMD;
 namespace internal
 {
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-class WeightedMaxMeasure : public MaxMeasure
+class SHOGUN_EXPORT WeightedMaxMeasure : public MaxMeasure
 {
 public:
 	WeightedMaxMeasure(KernelManager&, CMMD*);

@@ -40,7 +40,7 @@ enum E_QPB_SOLVER
 #endif
 
 /** @brief class QPBSVMLib */
-class CQPBSVMLib: public CSGObject
+class SHOGUN_EXPORT CQPBSVMLib: public CSGObject
 {
 	public:
 		/** default constructor  */

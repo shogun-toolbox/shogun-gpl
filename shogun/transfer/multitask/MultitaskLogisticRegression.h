@@ -30,7 +30,7 @@ namespace shogun
  * The underlying solver is based on the SLEP library.
  *
  */
-class CMultitaskLogisticRegression : public CMultitaskLinearMachine
+class SHOGUN_EXPORT CMultitaskLogisticRegression : public CMultitaskLinearMachine
 {
 
 	public:

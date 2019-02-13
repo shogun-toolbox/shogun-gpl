@@ -45,7 +45,7 @@ namespace shogun
  * and unconstrainted minimization using the NLOPT library
  *
  */
-class CNLOPTMinimizer: public FirstOrderMinimizer
+class SHOGUN_EXPORT CNLOPTMinimizer: public FirstOrderMinimizer
 {
 public:
 	/** Default constructor */

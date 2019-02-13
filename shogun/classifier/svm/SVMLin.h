@@ -19,7 +19,7 @@
 namespace shogun
 {
 /** @brief class SVMLin */
-class CSVMLin : public CLinearMachine
+class SHOGUN_EXPORT CSVMLin : public CLinearMachine
 {
 	public:
 

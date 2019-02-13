@@ -21,7 +21,7 @@
 namespace shogun
 {
 /** @brief class GPBTSVM */
-class CGPBTSVM : public CSVM
+class SHOGUN_EXPORT CGPBTSVM : public CSVM
 {
 	public:
 		/** default constructor */

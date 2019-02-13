@@ -23,7 +23,7 @@ namespace shogun
  *
  * implementation is based on SLEP library's code
  */
-class CSparseInverseCovariance : public CSGObject
+class SHOGUN_EXPORT CSparseInverseCovariance : public CSGObject
 {
 public:
 

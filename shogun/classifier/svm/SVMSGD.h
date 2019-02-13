@@ -33,7 +33,7 @@
 namespace shogun
 {
 /** @brief class SVMSGD */
-class CSVMSGD : public CLinearMachine
+class SHOGUN_EXPORT CSVMSGD : public CLinearMachine
 {
 	public:
 

@@ -39,7 +39,7 @@ template<class T> class SGVector;
 /** @brief Class that contains certain methods related to numerical
  * integration
  */
-class CIntegration : public CSGObject
+class SHOGUN_EXPORT CIntegration : public CSGObject
 {
 public:
 	/** numerically evaluate definite integral \f$\int_a^b f(x) dx\f$,

@@ -47,7 +47,7 @@ enum ESolver
  *     Bundle Methods for Regularized Risk Minimization
  *     http://users.cecs.anu.edu.au/~chteo/pub/TeoVisSmoLe10.pdf
  */
-class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
+class SHOGUN_EXPORT CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 {
 	public:
 		/** default constructor */

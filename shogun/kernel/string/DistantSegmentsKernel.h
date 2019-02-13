@@ -33,7 +33,7 @@ namespace shogun
  * multiple alignments: an application of string kernels.
  * Retrovirology, 5(1):110, Dec 2008.
  */
-class CDistantSegmentsKernel: public CStringKernel<char>
+class SHOGUN_EXPORT CDistantSegmentsKernel: public CStringKernel<char>
 {
 public:
 	/** default constructor */

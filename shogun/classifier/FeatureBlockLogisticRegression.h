@@ -30,7 +30,7 @@ namespace shogun
  * @see CIndexBlockGroup
  * @see CIndexBlockTree
  */
-class CFeatureBlockLogisticRegression : public CLinearMachine
+class SHOGUN_EXPORT CFeatureBlockLogisticRegression : public CLinearMachine
 {
 
 	public:
