@@ -9,7 +9,6 @@
 
 #include <shogun/transfer/multitask/MultitaskClusteredLogisticRegression.h>
 
-#include <shogun/lib/malsar/malsar_clustered.h>
 #include <shogun/lib/malsar/malsar_options.h>
 #include <shogun/lib/SGVector.h>
 #include <shogun/features/DotFeatures.h>
@@ -81,20 +80,13 @@ bool CMultitaskClusteredLogisticRegression::train_locked_implementation(SGVector
 	options.tasks_indices = tasks;
 	options.n_clusters = m_num_clusters;
 
-#ifndef HAVE_CXX11
-	malsar_result_t model = malsar_clustered(
-		features, y.vector, m_rho1, m_rho2, options);
-
-	m_tasks_w = model.w;
-	m_tasks_c = model.c;
-#else
 	SG_WARNING("Clustered LR is unstable with C++11\n")
 	m_tasks_w = SGMatrix<float64_t>(((CDotFeatures*)features)->get_dim_feature_space(), options.n_tasks);
 	m_tasks_w.set_const(0);
 	m_tasks_c = SGVector<float64_t>(options.n_tasks);
 	m_tasks_c.set_const(0);
-#endif
-	return true;
+	
+    return true;
 }
 
 bool CMultitaskClusteredLogisticRegression::train_machine(CFeatures* data)
@@ -118,19 +110,11 @@ bool CMultitaskClusteredLogisticRegression::train_machine(CFeatures* data)
 	options.tasks_indices = ((CTaskGroup*)m_task_relation)->get_tasks_indices();
 	options.n_clusters = m_num_clusters;
 
-#ifndef HAVE_CXX11
-	malsar_result_t model = malsar_clustered(
-		features, y.vector, m_rho1, m_rho2, options);
-
-	m_tasks_w = model.w;
-	m_tasks_c = model.c;
-#else
 	SG_WARNING("Clustered LR is unstable with C++11\n")
 	m_tasks_w = SGMatrix<float64_t>(((CDotFeatures*)features)->get_dim_feature_space(), options.n_tasks);
 	m_tasks_w.set_const(0);
 	m_tasks_c = SGVector<float64_t>(options.n_tasks);
 	m_tasks_c.set_const(0);
-#endif
 
 	SG_FREE(options.tasks_indices);
 
