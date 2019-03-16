@@ -27,15 +27,15 @@ CFeatureBlockLogisticRegression::CFeatureBlockLogisticRegression() :
 }
 
 CFeatureBlockLogisticRegression::CFeatureBlockLogisticRegression(
-     float64_t z, CDotFeatures* train_features,
-     CBinaryLabels* train_labels, CIndexBlockRelation* feature_relation) :
+     float64_t z, CFeatures* train_features,
+     CLabels* train_labels, CIndexBlockRelation* feature_relation) :
 	CLinearMachine()
 {
 	init();
 	set_feature_relation(feature_relation);
 	set_z(z);
-	set_features(train_features);
-	set_labels(train_labels);
+	set_features(train_features->as<CDotFeatures>());
+	set_labels(train_labels->as<CBinaryLabels>());
 	register_parameters();
 }
 

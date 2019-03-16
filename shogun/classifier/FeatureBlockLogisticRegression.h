@@ -47,8 +47,8 @@ class CFeatureBlockLogisticRegression : public CLinearMachine
 		 * @param task_relation task relation
 		 */
 		CFeatureBlockLogisticRegression(
-		     float64_t z, CDotFeatures* training_data,
-		     CBinaryLabels* training_labels, CIndexBlockRelation* task_relation);
+		     float64_t z, CFeatures* training_data,
+		     CLabels* training_labels, CIndexBlockRelation* task_relation);
 
 		/** destructor */
 		virtual ~CFeatureBlockLogisticRegression();
