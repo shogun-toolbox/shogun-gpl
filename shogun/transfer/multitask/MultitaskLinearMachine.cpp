@@ -29,11 +29,11 @@ CMultitaskLinearMachine::CMultitaskLinearMachine() :
 }
 
 CMultitaskLinearMachine::CMultitaskLinearMachine(
-     CDotFeatures* train_features,
+     CFeatures* train_features,
      CLabels* train_labels, CTaskRelation* task_relation) :
 	CLinearMachine(), m_current_task(0), m_task_relation(NULL)
 {
-	set_features(train_features);
+	set_features(train_features->as<CDotFeatures>());
 	set_labels(train_labels);
 	set_task_relation(task_relation);
 	register_parameters();

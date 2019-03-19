@@ -40,7 +40,7 @@ class CMultitaskTraceLogisticRegression : public CMultitaskLogisticRegression
 		 * @param task_relation task relation
 		 */
 		CMultitaskTraceLogisticRegression(
-		     float64_t rho, CDotFeatures* training_data,
+		     float64_t rho, CFeatures* training_data,
 		     CBinaryLabels* training_labels, CTaskGroup* task_relation);
 
 		/** destructor */

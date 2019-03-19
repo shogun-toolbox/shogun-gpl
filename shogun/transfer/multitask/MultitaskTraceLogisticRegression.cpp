@@ -26,7 +26,7 @@ CMultitaskTraceLogisticRegression::CMultitaskTraceLogisticRegression() :
 }
 
 CMultitaskTraceLogisticRegression::CMultitaskTraceLogisticRegression(
-     float64_t rho, CDotFeatures* train_features,
+     float64_t rho, CFeatures* train_features,
      CBinaryLabels* train_labels, CTaskGroup* task_group) :
 	CMultitaskLogisticRegression(0.0,train_features,train_labels,(CTaskRelation*)task_group)
 {

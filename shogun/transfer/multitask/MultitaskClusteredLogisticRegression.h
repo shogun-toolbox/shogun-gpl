@@ -42,7 +42,7 @@ class CMultitaskClusteredLogisticRegression : public CMultitaskLogisticRegressio
 		 * @param num_clusters number of task clusters
 		 */
 		CMultitaskClusteredLogisticRegression(
-		     float64_t rho1, float64_t rho2, CDotFeatures* training_data,
+		     float64_t rho1, float64_t rho2, CFeatures* training_data,
 		     CBinaryLabels* training_labels, CTaskGroup* task_group,
 		     int32_t num_clusters);
 

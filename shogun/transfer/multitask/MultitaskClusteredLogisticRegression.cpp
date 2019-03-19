@@ -23,7 +23,7 @@ CMultitaskClusteredLogisticRegression::CMultitaskClusteredLogisticRegression() :
 }
 
 CMultitaskClusteredLogisticRegression::CMultitaskClusteredLogisticRegression(
-     float64_t rho1, float64_t rho2, CDotFeatures* train_features,
+     float64_t rho1, float64_t rho2, CFeatures* train_features,
      CBinaryLabels* train_labels, CTaskGroup* task_group, int32_t n_clusters) :
 	CMultitaskLogisticRegression(0.0,train_features,train_labels,(CTaskRelation*)task_group)
 {

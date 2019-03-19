@@ -39,11 +39,11 @@ class CMultitaskL12LogisticRegression : public CMultitaskLogisticRegression
 		 * @param rho1 rho1 regularization coefficient of L1/L2 term
 		 * @param rho2 rho2 regularization coefficient of L2 term
 		 * @param training_data training features
-		 * @param training_labels training labels
+		 * @param training_labels training labelspython_legacy-structure_multiclass_bmrm
 		 * @param task_group task group
 		 */
 		CMultitaskL12LogisticRegression(
-		     float64_t rho1, float64_t rho2, CDotFeatures* training_data,
+		     float64_t rho1, float64_t rho2, CFeatures* training_data,
 		     CBinaryLabels* training_labels, CTaskGroup* task_group);
 
 		/** destructor */

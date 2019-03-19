@@ -44,7 +44,7 @@ class CMultitaskLeastSquaresRegression : public CMultitaskLinearMachine
 		 * @param task_relation task relation
 		 */
 		CMultitaskLeastSquaresRegression(
-		     float64_t z, CDotFeatures* training_data,
+		     float64_t z, CFeatures* training_data,
 		     CRegressionLabels* training_labels, CTaskRelation* task_relation);
 
 		/** destructor */

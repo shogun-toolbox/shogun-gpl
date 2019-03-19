@@ -25,7 +25,7 @@ CMultitaskLogisticRegression::CMultitaskLogisticRegression() :
 }
 
 CMultitaskLogisticRegression::CMultitaskLogisticRegression(
-     float64_t z, CDotFeatures* train_features,
+     float64_t z, CFeatures* train_features,
      CBinaryLabels* train_labels, CTaskRelation* task_relation) :
 	CMultitaskLinearMachine(train_features,(CLabels*)train_labels,task_relation)
 {

@@ -40,7 +40,7 @@ class CMultitaskLinearMachine : public CLinearMachine
 		 * @param task_relation task relation
 		 */
 		CMultitaskLinearMachine(
-		     CDotFeatures* training_data,
+		     CFeatures* training_data,
 		     CLabels* training_labels, CTaskRelation* task_relation);
 
 		/** destructor */
