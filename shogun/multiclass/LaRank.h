@@ -369,12 +369,6 @@ namespace shogun
 			/** get Dual */
 			float64_t getDual ();
 
-			/** get classifier type
-			 *
-			 * @return classifier type LIBSVM
-			 */
-			virtual EMachineType get_classifier_type() { return CT_LARANK; }
-
 			/** @return object name */
 			virtual const char* get_name() const { return "LaRank"; }
 
