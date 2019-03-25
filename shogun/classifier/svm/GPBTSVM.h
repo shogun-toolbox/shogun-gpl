@@ -36,12 +36,6 @@ class CGPBTSVM : public CSVM
 		CGPBTSVM(float64_t C, CKernel* k, CLabels* lab);
 		virtual ~CGPBTSVM();
 
-		/** get classifier type
-		 *
-		 * @return classifier type GPBT
-		 */
-		virtual EMachineType get_classifier_type() { return CT_GPBT; }
-
 		/** @return object name */
 		virtual const char* get_name() const { return "GPBTSVM"; }
 

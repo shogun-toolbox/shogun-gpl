@@ -61,12 +61,6 @@ class CSVMSGD : public CLinearMachine
 
 		virtual ~CSVMSGD();
 
-		/** get classifier type
-		 *
-		 * @return classifier type SVMOCAS
-		 */
-		virtual EMachineType get_classifier_type() { return CT_SVMSGD; }
-
 		/** set C
 		 *
 		 * @param c_neg new C constant for negatively labeled examples

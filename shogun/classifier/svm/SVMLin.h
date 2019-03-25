@@ -40,12 +40,6 @@ class CSVMLin : public CLinearMachine
 			CLabels* trainlab);
 		virtual ~CSVMLin();
 
-		/** get classifier type
-		 *
-		 * @return classifier type SVMLIN
-		 */
-		virtual EMachineType get_classifier_type() { return CT_SVMLIN; }
-
 		/** set C
 		 *
 		 * @param c_neg new C constant for negatively labeled examples
