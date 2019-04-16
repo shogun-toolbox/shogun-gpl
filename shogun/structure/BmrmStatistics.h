@@ -15,7 +15,6 @@
 #ifdef USE_GPL_SHOGUN
 
 #include <shogun/lib/common.h>
-#include <shogun/io/SerializableFile.h>
 #include <shogun/lib/SGVector.h>
 
 namespace shogun
@@ -38,12 +37,6 @@ struct BmrmStatistics
 
 	/** destructor */
 	virtual ~BmrmStatistics() { };
-
-	/** dummy load serializable */
-	bool load_serializable(CSerializableFile* file, const char* prefix="") { return false; }
-
-	/** dummy save serializable */
-	bool save_serializable(CSerializableFile* file, const char* prefix="") { return false; }
 
 	/** number of iterations  */
 	uint32_t nIter;
