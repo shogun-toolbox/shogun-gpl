@@ -23,7 +23,7 @@ namespace shogun
 {
 
 malsar_result_t malsar_joint_feature_learning(
-		CDotFeatures* features,
+		std::shared_ptr<DotFeatures> features,
 		double* y,
 		double rho1,
 		double rho2,
@@ -78,7 +78,7 @@ malsar_result_t malsar_joint_feature_learning(
 			for (int i=0; i<n_task_vecs; i++)
 			{
 				double aa = -y[task_idx[i]]*(features->dot(task_idx[i], Ws_sgmat.get_column(task))+Cs[task]);
-				double bb = CMath::max(aa,0.0);
+				double bb = Math::max(aa,0.0);
 
 				// avoid underflow when computing exponential loss
 				Fs += (std::log(std::exp(-bb) + std::exp(aa-bb)) + bb)/n_task_vecs;
@@ -131,7 +131,7 @@ malsar_result_t malsar_joint_feature_learning(
 				for (int i=0; i<n_task_vecs; i++)
 				{
 					double aa = -y[task_idx[i]]*(features->dot(task_idx[i], Wzp_sgmat.get_column(task))+Czp[task]);
-					double bb = CMath::max(aa,0.0);
+					double bb = Math::max(aa,0.0);
 
 					Fzp += (std::log(std::exp(-bb) + std::exp(aa-bb)) + bb)/n_task_vecs;
 				}
@@ -189,7 +189,7 @@ malsar_result_t malsar_joint_feature_learning(
 			case 0:
 				if (iter>=2)
 				{
-					if ( CMath::abs(obj-obj_old) <= options.tolerance )
+					if ( Math::abs(obj-obj_old) <= options.tolerance )
 					{
 						SG_DEBUG("Objective changes less than tolerance")
 						done = true;
@@ -199,12 +199,12 @@ malsar_result_t malsar_joint_feature_learning(
 			case 1:
 				if (iter>=2)
 				{
-					if ( CMath::abs(obj-obj_old) <= options.tolerance*CMath::abs(obj_old))
+					if ( Math::abs(obj-obj_old) <= options.tolerance*Math::abs(obj_old))
 						done = true;
 				}
 			break;
 			case 2:
-				if (CMath::abs(obj) <= options.tolerance)
+				if (Math::abs(obj) <= options.tolerance)
 					done = true;
 			break;
 			case 3:
@@ -215,7 +215,7 @@ malsar_result_t malsar_joint_feature_learning(
 
 		iter++;
 		t_old = t;
-		t = 0.5 * (1 + CMath::sqrt(1.0 + 4*t*t));
+		t = 0.5 * (1 + Math::sqrt(1.0 + 4*t*t));
 	}
 	//internal::set_is_malloc_allowed(true);
 	io::progress_done();

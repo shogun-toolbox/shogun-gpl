@@ -27,7 +27,7 @@ namespace shogun
 	 * where R(w) is a risk funciton of any kind.
 	 */
 	BmrmStatistics svm_ncbm_solver(
-			CDualLibQPBMSOSVM  *machine,
+			DualLibQPBMSOSVM  *machine,
 			SGVector<float64_t>& w,
 			float64_t        TolRel,
 			float64_t        TolAbs,

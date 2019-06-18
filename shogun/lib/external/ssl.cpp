@@ -86,7 +86,7 @@ int32_t CGLS(
 	/* Disassemble the structures */
 	int32_t active = Subset->d;
 	int32_t *J = Subset->vec;
-	CDotFeatures* features=Data->features;
+	DotFeatures* features=Data->features;
 	float64_t *Y = Data->Y;
 	float64_t *C = Data->C;
 	int32_t n  = Data->n;
@@ -197,7 +197,7 @@ int32_t L2_SVM_MFN(
 	int32_t ini)
 {
 	/* Disassemble the structures */
-	CDotFeatures* features=Data->features;
+	DotFeatures* features=Data->features;
 	float64_t *Y = Data->Y;
 	float64_t *C = Data->C;
 	int32_t n  = Data->n;
@@ -334,7 +334,7 @@ int32_t L2_SVM_MFN(
 			}
 		}
 		ActiveSubset->d=active;
-		if(CMath::abs(F-F_old)<RELATIVE_STOP_EPS*CMath::abs(F_old))
+		if(Math::abs(F-F_old)<RELATIVE_STOP_EPS*Math::abs(F_old))
 		{
 			SG_FREE(ActiveSubset->vec);
 			SG_FREE(ActiveSubset);
@@ -652,7 +652,7 @@ int32_t optimize_w(
 	struct vector_double *Weights, struct vector_double *Outputs, int32_t ini)
 {
 	int32_t i,j;
-	CDotFeatures* features=Data->features;
+	DotFeatures* features=Data->features;
 	int32_t n  = Data->n;
 	int32_t m  = Data->m;
 	int32_t u  = Data->u;
@@ -699,7 +699,7 @@ int32_t optimize_w(
 			C[m+j]=lambda_u_by_u*(1-p[j]);
 			ActiveSubset->vec[active]=i;
 			active++;
-			diff = 1 - CMath::abs(o[i]);
+			diff = 1 - Math::abs(o[i]);
 			if(diff>0)
 			{
 				Data->Y[i] = 2*p[j]-1;
@@ -797,10 +797,10 @@ int32_t optimize_w(
 					opt2=(opt2 && (Data->Y[ii]*o_bar[ii]<=1+epsilon));
 				else
 				{
-					if(CMath::abs(o[ii])<1)
-						opt2=(opt2 && (CMath::abs(o_bar[ii])<=1+epsilon));
+					if(Math::abs(o[ii])<1)
+						opt2=(opt2 && (Math::abs(o_bar[ii])<=1+epsilon));
 					else
-						opt2=(opt2 && (CMath::abs(o_bar[ii])>=1-epsilon));
+						opt2=(opt2 && (Math::abs(o_bar[ii])>=1-epsilon));
 				}
 			}
 			else
@@ -853,7 +853,7 @@ int32_t optimize_w(
 				o[m+j]=o[i];
 				ActiveSubset->vec[active]=i;
 				active++;
-				diff = 1 - CMath::abs(o[i]);
+				diff = 1 - Math::abs(o[i]);
 				if(diff>0)
 				{
 					Data->Y[i] = 2*p[j]-1;
@@ -897,7 +897,7 @@ int32_t optimize_w(
 		}
 		F=0.5*F;
 		ActiveSubset->d=active;
-		if(CMath::abs(F-F_old)<EPSILON)
+		if(Math::abs(F-F_old)<EPSILON)
 			break;
 	}
 	for(i=m; i-- ;)
@@ -950,12 +950,12 @@ void optimize_p(
 	Bnu-=r;
 	BnuPrime=BnuPrime/(T*u);
 	float64_t nuHat=0.0;
-	while((CMath::abs(Bnu)>epsilon) && (iter < maxiter))
+	while((Math::abs(Bnu)>epsilon) && (iter < maxiter))
 	{
 		iter++;
-		if(CMath::abs(BnuPrime)>0.0)
+		if(Math::abs(BnuPrime)>0.0)
 			nuHat=nu-Bnu/BnuPrime;
-		if((CMath::abs(BnuPrime) > 0.0) | (nuHat>nu_plus)  | (nuHat < nu_minus))
+		if((Math::abs(BnuPrime) > 0.0) | (nuHat>nu_plus)  | (nuHat < nu_minus))
 			nu=(nu_minus+nu_plus)/2.0;
 		else
 			nu=nuHat;
@@ -978,10 +978,11 @@ void optimize_p(
 			nu_minus=nu;
 		else
 			nu_plus=nu;
-		if(CMath::abs(nu_minus-nu_plus)<epsilon)
+		if(Math::abs(nu_minus-nu_plus)<epsilon)
 			break;
 	}
-	if(CMath::abs(Bnu)>epsilon)
+
+	if(Math::abs(Bnu)>epsilon)
 		io::warn("Warning (Root): root not found to required precision");
 
 	for (int32_t i=0;i<u;i++)
@@ -1004,7 +1005,7 @@ float64_t transductive_cost(
 		o=Outputs[i];
 		y=Y[i];
 		if(y==0.0)
-		{F1 += CMath::abs(o) > 1 ? 0 : (1 - CMath::abs(o))*(1 - CMath::abs(o)); u++;}
+		{F1 += Math::abs(o) > 1 ? 0 : (1 - Math::abs(o))*(1 - Math::abs(o)); u++;}
 		else
 		{F2 += y*o > 1 ? 0 : (1-y*o)*(1-y*o); l++;}
 	}
@@ -1021,7 +1022,7 @@ float64_t entropy(const float64_t *p, int32_t u)
 	{
 		q=p[i];
 		if(q>0 && q<1)
-			h+= -(q*CMath::log2(q) + (1-q)*CMath::log2(1-q));
+			h+= -(q*Math::log2(q) + (1-q)*Math::log2(1-q));
 	}
 	return h/u;
 }
@@ -1040,8 +1041,8 @@ float64_t KL(const float64_t *p, const float64_t *q, int32_t u)
 		if(p1<1-1e-8) p1+=1e-8;
 		if(q1>1-1e-8) q1-=1e-8;
 		if(q1<1-1e-8) q1+=1e-8;
-		g= (p1*CMath::log2(p1/q1) + (1-p1)*CMath::log2((1-p1)/(1-q1)));
-		if(CMath::abs(g)<1e-12 || CMath::is_nan(g)) g=0.0;
+		g= (p1*Math::log2(p1/q1) + (1-p1)*Math::log2((1-p1)/(1-q1)));
+		if(Math::abs(g)<1e-12 || Math::is_nan(g)) g=0.0;
 		h+=g;
 	}
 	return h/u;

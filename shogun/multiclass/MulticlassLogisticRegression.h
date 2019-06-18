@@ -21,23 +21,23 @@ namespace shogun
 /** @brief multiclass logistic regression
  *
  */
-class CMulticlassLogisticRegression : public CLinearMulticlassMachine
+class MulticlassLogisticRegression : public LinearMulticlassMachine
 {
 	public:
 		MACHINE_PROBLEM_TYPE(PT_MULTICLASS)
 
 		/** default constructor  */
-		CMulticlassLogisticRegression();
+		MulticlassLogisticRegression();
 
 		/** standard constructor
 		 * @param z z regularization constant value
 		 * @param feats features
 		 * @param labs labels
 		 */
-		CMulticlassLogisticRegression(float64_t z, CDotFeatures* feats, CLabels* labs);
+		MulticlassLogisticRegression(float64_t z, std::shared_ptr<DotFeatures> feats, std::shared_ptr<Labels> labs);
 
 		/** destructor */
-		virtual ~CMulticlassLogisticRegression();
+		virtual ~MulticlassLogisticRegression();
 
 		/** get name */
 		virtual const char* get_name() const
@@ -87,7 +87,7 @@ class CMulticlassLogisticRegression : public CLinearMulticlassMachine
 	protected:
 
 		/** train machine */
-		virtual bool train_machine(CFeatures* data = NULL);
+		virtual bool train_machine(std::shared_ptr<Features> data = NULL);
 
 private:
 

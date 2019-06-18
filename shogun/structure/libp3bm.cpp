@@ -36,7 +36,7 @@ static const float64_t *get_col( uint32_t i)
 }
 
 BmrmStatistics svm_p3bm_solver(
-		CDualLibQPBMSOSVM *machine,
+		DualLibQPBMSOSVM *machine,
 		SGVector<float64_t>& W,
 		float64_t       TolRel,
 		float64_t       TolAbs,
@@ -63,12 +63,12 @@ BmrmStatistics svm_p3bm_solver(
 	bool *map=NULL, tuneAlpha=true, flag=true;
 	bool alphaChanged=false, isThereGoodSolution=false;
 	TMultipleCPinfo **info=NULL;
-	CStructuredModel* model=machine->get_model();
-	CSOSVMHelper* helper = NULL;
+	auto model=machine->get_model();
+	std::shared_ptr<SOSVMHelper> helper = NULL;
 	uint32_t nDim=model->get_dim();
 	uint32_t to=0, N=0, cp_i=0;
 
-	CTime ttime;
+	Time ttime;
 	float64_t tstart, tstop;
 
 
@@ -123,9 +123,8 @@ BmrmStatistics svm_p3bm_solver(
 
 	info= (TMultipleCPinfo**) LIBBMRM_CALLOC(cp_models, TMultipleCPinfo*);
 
-	CFeatures* features = model->get_features();
+	auto features = model->get_features();
 	int32_t num_feats = features->get_num_vectors();
-	SG_UNREF(features);
 
 	/* CP cleanup variables */
 	ICP_stats icp_stats;
@@ -246,14 +245,14 @@ BmrmStatistics svm_p3bm_solver(
 		sq_norm_Wdiff+=(W[j]-prevW[j])*(W[j]-prevW[j]);
 	}
 
-	wdist=CMath::sqrt(sq_norm_Wdiff);
+	wdist=Math::sqrt(sq_norm_Wdiff);
 
 	p3bmrm.Fp=R+0.5*_lambda*sq_norm_W + alpha*sq_norm_Wdiff;
 	p3bmrm.Fd=-LIBBMRM_PLUS_INF;
 	lastFp=p3bmrm.Fp;
 
 	/* if there is initial W, then set K to be 0.01 times its norm */
-	K = (sq_norm_W == 0.0) ? 0.4 : 0.01*CMath::sqrt(sq_norm_W);
+	K = (sq_norm_W == 0.0) ? 0.4 : 0.01*Math::sqrt(sq_norm_W);
 
 	LIBBMRM_MEMCPY(prevW.vector, W.vector, nDim*sizeof(float64_t));
 
@@ -388,7 +387,7 @@ BmrmStatistics svm_p3bm_solver(
 			for (uint32_t i=0; i<nDim; ++i)
 				sq_norm_Wdiff+=(wt[i]-prevW[i])*(wt[i]-prevW[i]);
 
-			if (CMath::sqrt(sq_norm_Wdiff) <= K)
+			if (Math::sqrt(sq_norm_Wdiff) <= K)
 			{
 				flag=false;
 
@@ -444,7 +443,7 @@ BmrmStatistics svm_p3bm_solver(
 				for (uint32_t i=0; i<nDim; ++i)
 					sq_norm_Wdiff+=(wt[i]-prevW[i])*(wt[i]-prevW[i]);
 
-				if (CMath::sqrt(sq_norm_Wdiff) > K)
+				if (Math::sqrt(sq_norm_Wdiff) > K)
 				{
 					/* if there is a record of some good solution (i.e. adjust alpha by division by 2) */
 
@@ -620,7 +619,7 @@ BmrmStatistics svm_p3bm_solver(
 			sq_norm_Wdiff+=(W[i]-prevW[i])*(W[i]-prevW[i]);
 		}
 
-		wdist=CMath::sqrt(sq_norm_Wdiff);
+		wdist=Math::sqrt(sq_norm_Wdiff);
 
 		/* Keep history of Fp, Fd and wdist */
 		p3bmrm.hist_Fp[p3bmrm.nIter]=p3bmrm.Fp;
@@ -661,8 +660,8 @@ BmrmStatistics svm_p3bm_solver(
 		if (verbose)
 		{
 			SGVector<float64_t> w_debug(W, nDim, false);
-			float64_t primal = CSOSVMHelper::primal_objective(w_debug, model, _lambda);
-			float64_t train_error = CSOSVMHelper::average_loss(w_debug, model);
+			float64_t primal = SOSVMHelper::primal_objective(w_debug, model, _lambda);
+			float64_t train_error = SOSVMHelper::average_loss(w_debug, model);
 			helper->add_debug_info(primal, p3bmrm.nIter, train_error);
 		}
 	} /* end of main loop */
@@ -670,7 +669,6 @@ BmrmStatistics svm_p3bm_solver(
 	if (verbose)
 	{
 		helper->terminate();
-		SG_UNREF(helper);
 	}
 
 	p3bmrm.hist_Fp.resize_vector(p3bmrm.nIter);
@@ -725,8 +723,6 @@ cleanup:
 	subgrad_t.clear();
 
 	LIBBMRM_FREE(info);
-
-	SG_UNREF(model);
 
 	return(p3bmrm);
 }

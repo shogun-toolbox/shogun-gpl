@@ -43,7 +43,7 @@
 using namespace shogun;
 using namespace internal;
 
-WeightedMaxTestPower::WeightedMaxTestPower(KernelManager& km, CMMD* est) : WeightedMaxMeasure(km, est), lambda(1E-5)
+WeightedMaxTestPower::WeightedMaxTestPower(KernelManager& km, std::shared_ptr<MMD> est) : WeightedMaxMeasure(km, est), lambda(1E-5)
 {
 }
 
@@ -57,7 +57,7 @@ void WeightedMaxTestPower::init_measures()
 
 void WeightedMaxTestPower::compute_measures()
 {
-	auto casted_estimator=dynamic_cast<CStreamingMMD*>(estimator);
+	auto casted_estimator=estimator->as<StreamingMMD>();
 	ASSERT(casted_estimator);
 	const auto& estimates=casted_estimator->compute_statistic_and_Q(kernel_mgr);
 	measures=estimates.first;

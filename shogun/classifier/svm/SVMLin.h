@@ -19,7 +19,7 @@
 namespace shogun
 {
 /** @brief class SVMLin */
-class CSVMLin : public CLinearMachine
+class SVMLin : public LinearMachine
 {
 	public:
 
@@ -27,7 +27,7 @@ class CSVMLin : public CLinearMachine
 		MACHINE_PROBLEM_TYPE(PT_BINARY);
 
 		/** default constructor */
-		CSVMLin();
+		SVMLin();
 
 		/** constructor
 		 *
@@ -35,10 +35,10 @@ class CSVMLin : public CLinearMachine
 		 * @param traindat training features
 		 * @param trainlab labels for features
 		 */
-		CSVMLin(
-			float64_t C, CDotFeatures* traindat,
-			CLabels* trainlab);
-		virtual ~CSVMLin();
+		SVMLin(
+			float64_t C, std::shared_ptr<DotFeatures> traindat,
+			std::shared_ptr<Labels> trainlab);
+		virtual ~SVMLin();
 
 		/** set C
 		 *
@@ -96,7 +96,7 @@ class CSVMLin : public CLinearMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
 
 		/** set up parameters */
 		void init();

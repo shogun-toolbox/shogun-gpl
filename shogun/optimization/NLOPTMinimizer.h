@@ -45,26 +45,26 @@ namespace shogun
  * and unconstrainted minimization using the NLOPT library
  *
  */
-class CNLOPTMinimizer: public FirstOrderMinimizer
+class NLOPTMinimizer: public FirstOrderMinimizer
 {
 public:
 	/** Default constructor */
-	CNLOPTMinimizer();
+	NLOPTMinimizer();
 
 	/** Constructor
 	 * @param fun cost function
 	 */
-	CNLOPTMinimizer(FirstOrderCostFunction *fun);
+	NLOPTMinimizer(std::shared_ptr<FirstOrderCostFunction> fun);
 
 	/** returns the name of the class
 	 *
-	 * @return name CNLOPTMinimizer
+	 * @return name NLOPTMinimizer
 	 */
 	virtual const char* get_name() const { return "NLOPTMinimizer"; }
 
 
 	/** Destructor */
-	virtual ~CNLOPTMinimizer();
+	virtual ~NLOPTMinimizer();
 
 	/** Do minimization and get the optimal value 
 	 * 

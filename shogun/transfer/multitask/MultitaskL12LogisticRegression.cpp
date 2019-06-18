@@ -18,7 +18,7 @@
 namespace shogun
 {
 
-class CMultitaskL12LogisticRegression::Self
+class MultitaskL12LogisticRegression::Self
 {
 public:
 
@@ -29,65 +29,66 @@ public:
 	float64_t m_rho2;
 };
 
-CMultitaskL12LogisticRegression::CMultitaskL12LogisticRegression() :
-	CMultitaskLogisticRegression(), self()
+MultitaskL12LogisticRegression::MultitaskL12LogisticRegression() :
+	MultitaskLogisticRegression(), self()
 {
 	set_rho1(0.0);
 	set_rho2(0.0);
 	init();
 }
 
-CMultitaskL12LogisticRegression::CMultitaskL12LogisticRegression(
-     float64_t rho1, float64_t rho2, CFeatures* train_features,
-     CBinaryLabels* train_labels, CTaskGroup* task_group) :
-	CMultitaskLogisticRegression(0.0,train_features,train_labels,(CTaskRelation*)task_group)
+MultitaskL12LogisticRegression::MultitaskL12LogisticRegression(
+     float64_t rho1, float64_t rho2, std::shared_ptr<Features> train_features,
+     std::shared_ptr<BinaryLabels> train_labels, std::shared_ptr<TaskGroup> task_group) :
+	MultitaskLogisticRegression(0.0,train_features,train_labels,task_group->as<TaskRelation>())
 {
 	set_rho1(rho1);
 	set_rho2(rho2);
 	init();
 }
 
-void CMultitaskL12LogisticRegression::init()
+void MultitaskL12LogisticRegression::init()
 {
 	SG_ADD(&self->m_rho1,"rho1","rho L1/L2 regularization parameter", ParameterProperties::HYPER);
 	SG_ADD(&self->m_rho2,"rho2","rho L2 regularization parameter", ParameterProperties::HYPER);
 }
 
-void CMultitaskL12LogisticRegression::set_rho1(float64_t rho1)
+void MultitaskL12LogisticRegression::set_rho1(float64_t rho1)
 {
 	self->m_rho1 = rho1;
 }
 
-void CMultitaskL12LogisticRegression::set_rho2(float64_t rho2)
+void MultitaskL12LogisticRegression::set_rho2(float64_t rho2)
 {
 	self->m_rho2 = rho2;
 }
 
-float64_t CMultitaskL12LogisticRegression::get_rho1() const
+float64_t MultitaskL12LogisticRegression::get_rho1() const
 {
 	return self->m_rho1;
 }
 
-float64_t CMultitaskL12LogisticRegression::get_rho2() const
+float64_t MultitaskL12LogisticRegression::get_rho2() const
 {
 	return self->m_rho2;
 }
 
-CMultitaskL12LogisticRegression::~CMultitaskL12LogisticRegression()
+MultitaskL12LogisticRegression::~MultitaskL12LogisticRegression()
 {
 }
 
-bool CMultitaskL12LogisticRegression::train_locked_implementation(SGVector<index_t>* tasks)
+bool MultitaskL12LogisticRegression::train_locked_implementation(SGVector<index_t>* tasks)
 {
 	SGVector<float64_t> y(m_labels->get_num_labels());
+	auto bl = binary_labels(m_labels);
 	for (int32_t i=0; i<y.vlen; i++)
-		y[i] = ((CBinaryLabels*)m_labels)->get_label(i);
+		y[i] = bl->get_label(i);
 
 	malsar_options options = malsar_options::default_options();
 	options.termination = m_termination;
 	options.tolerance = m_tolerance;
 	options.max_iter = m_max_iter;
-	options.n_tasks = ((CTaskGroup*)m_task_relation)->get_num_tasks();
+	options.n_tasks = m_task_relation->as<TaskGroup>()->get_num_tasks();
 	options.tasks_indices = tasks;
 	malsar_result_t model = malsar_joint_feature_learning(
 		features, y.vector, self->m_rho1, self->m_rho2, options);
@@ -98,25 +99,26 @@ bool CMultitaskL12LogisticRegression::train_locked_implementation(SGVector<index
 	return true;
 }
 
-bool CMultitaskL12LogisticRegression::train_machine(CFeatures* data)
+bool MultitaskL12LogisticRegression::train_machine(std::shared_ptr<Features> data)
 {
-	if (data && (CDotFeatures*)data)
-		set_features((CDotFeatures*)data);
+	if (data)
+		set_features(data->as<DotFeatures>());
 
 	ASSERT(features)
 	ASSERT(m_labels)
 	ASSERT(m_task_relation)
 
 	SGVector<float64_t> y(m_labels->get_num_labels());
+	auto bl = binary_labels(m_labels);
 	for (int32_t i=0; i<y.vlen; i++)
-		y[i] = ((CBinaryLabels*)m_labels)->get_label(i);
+		y[i] = bl->get_label(i);
 
 	malsar_options options = malsar_options::default_options();
 	options.termination = m_termination;
 	options.tolerance = m_tolerance;
 	options.max_iter = m_max_iter;
-	options.n_tasks = ((CTaskGroup*)m_task_relation)->get_num_tasks();
-	options.tasks_indices = ((CTaskGroup*)m_task_relation)->get_tasks_indices();
+	options.n_tasks = m_task_relation->as<TaskGroup>()->get_num_tasks();
+	options.tasks_indices = m_task_relation->as<TaskGroup>()->get_tasks_indices();
 
 	malsar_result_t model = malsar_joint_feature_learning(
 		features, y.vector, self->m_rho1, self->m_rho2, options);

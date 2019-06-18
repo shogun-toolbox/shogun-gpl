@@ -28,8 +28,8 @@ namespace shogun
  * @param options options of solver
  */
 slep_result_t slep_mc_plain_lr(
-		CDotFeatures* features,
-		CMulticlassLabels* labels,
+		std::shared_ptr<DotFeatures> features,
+		std::shared_ptr<MulticlassLabels> labels,
 		float64_t z,
 		const slep_options& options);
 

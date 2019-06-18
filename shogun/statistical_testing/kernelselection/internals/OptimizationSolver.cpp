@@ -100,7 +100,7 @@ SGVector<float64_t> OptimizationSolver::Self::solve() const
 		std::vector<float64_t> Q_diag(num_kernels);
 		std::vector<float64_t> f(num_kernels, 0);
 		std::vector<float64_t> lb(num_kernels, 0);
-		std::vector<float64_t> ub(num_kernels, CMath::INFTY);
+		std::vector<float64_t> ub(num_kernels, Math::INFTY);
 
 		// initial point has to be feasible, i.e. m_mmds'*x = b
 		std::fill(weights.data(), weights.data()+weights.size(), 1.0/sum_m_mmds);

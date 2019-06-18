@@ -32,42 +32,42 @@
 #include <shogun/optimization/NLOPTMinimizer.h>
 #include <shogun/optimization/FirstOrderBoundConstraintsCostFunction.h>
 #include <shogun/base/Parameter.h>
-#include <algorithm> 
+#include <algorithm>
 
 using namespace shogun;
-CNLOPTMinimizer::CNLOPTMinimizer()
+NLOPTMinimizer::NLOPTMinimizer()
 	:FirstOrderMinimizer()
 {
 	init();
 }
 
-CNLOPTMinimizer::~CNLOPTMinimizer()
+NLOPTMinimizer::~NLOPTMinimizer()
 {
 }
 
-CNLOPTMinimizer::CNLOPTMinimizer(FirstOrderCostFunction *fun)
+NLOPTMinimizer::NLOPTMinimizer(std::shared_ptr<FirstOrderCostFunction> fun)
 	:FirstOrderMinimizer(fun)
 {
 	init();
 }
 
-void CNLOPTMinimizer::init()
+void NLOPTMinimizer::init()
 {
 #ifdef HAVE_NLOPT
 	m_target_variable=SGVector<float64_t>();
 	set_nlopt_parameters();
-	SG_ADD(&m_max_iterations, "CNLOPTMinimizer__m_max_iterations",
-		"max_iterations in CNLOPTMinimizer");
-	SG_ADD(&m_variable_tolerance, "CNLOPTMinimizer__m_variable_tolerance",
-		"variable_tolerance in CNLOPTMinimizer");
-	SG_ADD(&m_function_tolerance, "CNLOPTMinimizer__m_function_tolerance",
-		"function_tolerance in CNLOPTMinimizer");
-	SG_ADD(&m_nlopt_algorithm_id, "CNLOPTMinimizer__m_nlopt_algorithm_id",
-		"nlopt_algorithm_id in CNLOPTMinimizer");
+	SG_ADD(&m_max_iterations, "NLOPTMinimizer__m_max_iterations",
+		"max_iterations in NLOPTMinimizer");
+	SG_ADD(&m_variable_tolerance, "NLOPTMinimizer__m_variable_tolerance",
+		"variable_tolerance in NLOPTMinimizer");
+	SG_ADD(&m_function_tolerance, "NLOPTMinimizer__m_function_tolerance",
+		"function_tolerance in NLOPTMinimizer");
+	SG_ADD(&m_nlopt_algorithm_id, "NLOPTMinimizer__m_nlopt_algorithm_id",
+		"nlopt_algorithm_id in NLOPTMinimizer");
 #endif
 }
 
-float64_t CNLOPTMinimizer::minimize()
+float64_t NLOPTMinimizer::minimize()
 {
 #ifdef HAVE_NLOPT
 	init_minimization();
@@ -76,8 +76,8 @@ float64_t CNLOPTMinimizer::minimize()
 		m_target_variable.vlen);
 
 	//add bound constraints
-	FirstOrderBoundConstraintsCostFunction* bound_constraints_fun
-		=dynamic_cast<FirstOrderBoundConstraintsCostFunction *>(m_fun);
+	auto bound_constraints_fun
+		=m_fun->as<FirstOrderBoundConstraintsCostFunction>();
 	if(bound_constraints_fun)
 	{
 		SGVector<float64_t> bound=bound_constraints_fun->get_lower_bound();
@@ -105,7 +105,7 @@ float64_t CNLOPTMinimizer::minimize()
 				m_target_variable.vlen, bound.vlen);
 			nlopt_set_upper_bounds(opt, bound.vector);
 		}
-	
+
 	}
 	// set maximum number of evaluations
 	nlopt_set_maxeval(opt, m_max_iterations);
@@ -113,7 +113,7 @@ float64_t CNLOPTMinimizer::minimize()
 	nlopt_set_xtol_abs1(opt, m_variable_tolerance);
 	nlopt_set_ftol_abs(opt, m_function_tolerance);
 
-	nlopt_set_min_objective(opt, CNLOPTMinimizer::nlopt_function, this);
+	nlopt_set_min_objective(opt, NLOPTMinimizer::nlopt_function, this);
 
 #endif
 	// the minimum objective value, upon return
@@ -136,110 +136,110 @@ float64_t CNLOPTMinimizer::minimize()
 }
 
 #ifdef HAVE_NLOPT
-int16_t CNLOPTMinimizer::get_nlopt_algorithm_id(ENLOPTALGORITHM method)
+int16_t NLOPTMinimizer::get_nlopt_algorithm_id(ENLOPTALGORITHM method)
 {
 	int16_t method_id=-1;
 	switch(method)
 	{
 	case  GN_DIRECT:
 		method_id = (int16_t) NLOPT_GN_DIRECT;
-		break; 
+		break;
 	case  GN_DIRECT_L:
 		method_id = (int16_t) NLOPT_GN_DIRECT_L;
-		break; 
+		break;
 	case  GN_DIRECT_L_RAND:
 		method_id = (int16_t) NLOPT_GN_DIRECT_L_RAND;
-		break; 
+		break;
 	case  GN_DIRECT_NOSCAL:
 		method_id = (int16_t) NLOPT_GN_DIRECT_NOSCAL;
-		break; 
+		break;
 	case  GN_DIRECT_L_NOSCAL:
 		method_id = (int16_t) NLOPT_GN_DIRECT_L_NOSCAL;
-		break; 
+		break;
 	case  GN_DIRECT_L_RAND_NOSCAL:
 		method_id = (int16_t) NLOPT_GN_DIRECT_L_RAND_NOSCAL;
-		break; 
+		break;
 	case  GN_ORIG_DIRECT:
 		method_id = (int16_t) NLOPT_GN_ORIG_DIRECT;
-		break; 
+		break;
 	case  GN_ORIG_DIRECT_L:
 		method_id = (int16_t) NLOPT_GN_ORIG_DIRECT_L;
-		break; 
+		break;
 	case  GN_CRS2_LM:
 		method_id = (int16_t) NLOPT_GN_CRS2_LM;
-		break; 
+		break;
 	case  GN_ISRES:
 		method_id = (int16_t) NLOPT_GN_ISRES;
-		break; 
+		break;
 	case  LD_MMA:
 		method_id = (int16_t) NLOPT_LD_MMA;
-		break; 
+		break;
 	case  LD_LBFGS:
 		method_id = (int16_t) NLOPT_LD_LBFGS;
-		break; 
+		break;
 	case  LD_LBFGS_NOCEDAL:
 		method_id = (int16_t) NLOPT_LD_LBFGS_NOCEDAL;
-		break; 
+		break;
 	case  LD_VAR1:
 		method_id = (int16_t) NLOPT_LD_VAR1;
-		break; 
+		break;
 	case  LD_VAR2:
 		method_id = (int16_t) NLOPT_LD_VAR2;
-		break; 
+		break;
 	case  LD_TNEWTON:
 		method_id = (int16_t) NLOPT_LD_TNEWTON;
-		break; 
+		break;
 	case  LD_TNEWTON_RESTART:
 		method_id = (int16_t) NLOPT_LD_TNEWTON_RESTART;
-		break; 
+		break;
 	case  LD_TNEWTON_PRECOND:
 		method_id = (int16_t) NLOPT_LD_TNEWTON_PRECOND;
-		break; 
+		break;
 	case  LD_TNEWTON_PRECOND_RESTART:
 		method_id = (int16_t) NLOPT_LD_TNEWTON_PRECOND_RESTART;
-		break; 
+		break;
 	case  LD_SLSQP:
 		method_id = (int16_t) NLOPT_LD_SLSQP;
-		break; 
+		break;
 	case  LN_PRAXIS:
 		method_id = (int16_t) NLOPT_LN_PRAXIS;
-		break; 
+		break;
 	case  LN_COBYLA:
 		method_id = (int16_t) NLOPT_LN_COBYLA;
-		break; 
+		break;
 	case  LN_NEWUOA:
 		method_id = (int16_t) NLOPT_LN_NEWUOA;
-		break; 
+		break;
 	case  LN_NEWUOA_BOUND:
 		method_id = (int16_t) NLOPT_LN_NEWUOA_BOUND;
-		break; 
+		break;
 	case  LN_NELDERMEAD:
 		method_id = (int16_t) NLOPT_LN_NELDERMEAD;
-		break; 
+		break;
 	case  LN_SBPLX:
 		method_id = (int16_t) NLOPT_LN_SBPLX;
-		break; 
+		break;
 	case  LN_BOBYQA:
 		method_id = (int16_t) NLOPT_LN_BOBYQA;
-		break; 
+		break;
 	case  AUGLAG:
 		method_id = (int16_t) NLOPT_AUGLAG;
-		break; 
+		break;
 	case  AUGLAG_EQ:
 		method_id = (int16_t) NLOPT_AUGLAG_EQ;
-		break; 
+		break;
 	case  G_MLSL:
 		method_id = (int16_t) NLOPT_G_MLSL;
-		break; 
+		break;
 	case G_MLSL_LDS:
 		method_id = (int16_t) NLOPT_G_MLSL_LDS;
-		break; 
+		break;
 	};
 	require(method_id>=0, "Unsupported algorithm");
 	return method_id;
 }
 
-void CNLOPTMinimizer::set_nlopt_parameters(ENLOPTALGORITHM algorithm,
+void NLOPTMinimizer::set_nlopt_parameters(ENLOPTALGORITHM algorithm,
 	float64_t max_iterations,
 	float64_t variable_tolerance,
 	float64_t function_tolerance)
@@ -250,10 +250,10 @@ void CNLOPTMinimizer::set_nlopt_parameters(ENLOPTALGORITHM algorithm,
 	m_function_tolerance=function_tolerance;
 };
 
-double CNLOPTMinimizer::nlopt_function(unsigned dim, const double* variable, double* gradient,
+double NLOPTMinimizer::nlopt_function(unsigned dim, const double* variable, double* gradient,
 	void* func_data)
 {
-	CNLOPTMinimizer* obj_prt=static_cast<CNLOPTMinimizer *>(func_data);
+	NLOPTMinimizer* obj_prt=static_cast<NLOPTMinimizer *>(func_data);
 	require(obj_prt, "The instance object passed to NLopt optimizer should not be NULL");
 	require((index_t)dim==(obj_prt->m_target_variable).vlen, "Length must be matched");
 
@@ -275,7 +275,7 @@ double CNLOPTMinimizer::nlopt_function(unsigned dim, const double* variable, dou
 	return cost;
 }
 
-void CNLOPTMinimizer::init_minimization()
+void NLOPTMinimizer::init_minimization()
 {
 	require(m_fun, "Cost function not set!");
 	m_target_variable=m_fun->obtain_variable_reference();

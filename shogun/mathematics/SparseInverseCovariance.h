@@ -23,15 +23,15 @@ namespace shogun
  *
  * implementation is based on SLEP library's code
  */
-class CSparseInverseCovariance : public CSGObject
+class SparseInverseCovariance : public SGObject
 {
 public:
 
 	/** constructor */
-	CSparseInverseCovariance();
+	SparseInverseCovariance();
 
 	/** destructor */
-	virtual ~CSparseInverseCovariance();
+	virtual ~SparseInverseCovariance();
 
 	/** estimate inverse covariance matrix
 	 *

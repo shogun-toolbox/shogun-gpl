@@ -30,12 +30,14 @@
 
 using namespace shogun;
 
-CSVMSGD::CSVMSGD() : CLinearMachine()
+SVMSGD::SVMSGD()
+: LinearMachine()
 {
 	init();
 }
 
-CSVMSGD::CSVMSGD(float64_t C) : CLinearMachine()
+SVMSGD::SVMSGD(float64_t C)
+: LinearMachine()
 {
 	init();
 
@@ -43,8 +45,8 @@ CSVMSGD::CSVMSGD(float64_t C) : CLinearMachine()
 	C2 = C;
 }
 
-CSVMSGD::CSVMSGD(float64_t C, CDotFeatures* traindat, CLabels* trainlab)
-    : CLinearMachine()
+SVMSGD::SVMSGD(float64_t C, std::shared_ptr<DotFeatures> traindat, std::shared_ptr<Labels> trainlab)
+: LinearMachine()
 {
 	init();
 	C1 = C;
@@ -54,19 +56,16 @@ CSVMSGD::CSVMSGD(float64_t C, CDotFeatures* traindat, CLabels* trainlab)
 	set_labels(trainlab);
 }
 
-CSVMSGD::~CSVMSGD()
+SVMSGD::~SVMSGD()
 {
-	SG_UNREF(loss);
 }
 
-void CSVMSGD::set_loss_function(CLossFunction* loss_func)
+void SVMSGD::set_loss_function(std::shared_ptr<LossFunction> loss_func)
 {
-	SG_REF(loss_func);
-	SG_UNREF(loss);
 	loss=loss_func;
 }
 
-bool CSVMSGD::train_machine(CFeatures* data)
+bool SVMSGD::train_machine(std::shared_ptr<Features> data)
 {
 	// allocate memory for w and initialize everyting w and bias with 0
 	auto labels = binary_labels(m_labels);
@@ -75,7 +74,7 @@ bool CSVMSGD::train_machine(CFeatures* data)
 	{
 		if (!data->has_property(FP_DOT))
 			error("Specified features are not of type CDotFeatures");
-		set_features((CDotFeatures*) data);
+		set_features(data->as<DotFeatures>());
 	}
 
 	ASSERT(features)
@@ -97,7 +96,7 @@ bool CSVMSGD::train_machine(CFeatures* data)
 	// This assumes |x| \approx 1.
 	float64_t maxw = 1.0 / sqrt(lambda);
 	float64_t typw = sqrt(maxw);
-	float64_t eta0 = typw / CMath::max(1.0,-loss->first_derivative(-typw,1));
+	float64_t eta0 = typw / Math::max(1.0,-loss->first_derivative(-typw,1));
 	t = 1 / (eta0 * lambda);
 
 	io::info("lambda={}, epochs={}, eta0={}", lambda, epochs, eta0);
@@ -155,7 +154,7 @@ bool CSVMSGD::train_machine(CFeatures* data)
 	return true;
 }
 
-void CSVMSGD::calibrate()
+void SVMSGD::calibrate()
 {
 	ASSERT(features)
 	int32_t num_vec=features->get_num_vectors();
@@ -181,7 +180,7 @@ void CSVMSGD::calibrate()
 
 		//waste cpu cycles for readability
 		//(only changed dims need checking)
-		m=CMath::max(c, c_dim);
+		m=Math::max(c, c_dim);
 	}
 
 	// bias update scaling
@@ -194,22 +193,21 @@ void CSVMSGD::calibrate()
 	SG_FREE(c);
 }
 
-void CSVMSGD::init()
+void SVMSGD::init()
 {
-	t = 1;
-	C1 = 1;
-	C2 = 1;
-	wscale = 1;
-	bscale = 1;
-	epochs = 5;
-	skip = 1000;
-	count = 1000;
-	use_bias = true;
+	t=1;
+	C1=1;
+	C2=1;
+	wscale=1;
+	bscale=1;
+	epochs=5;
+	skip=1000;
+	count=1000;
+	use_bias=true;
 
-	use_regularized_bias = false;
+	use_regularized_bias=false;
 
-	loss = new CHingeLoss();
-	SG_REF(loss);
+	loss=std::shared_ptr<HingeLoss>();
 
 	SG_ADD(&C1, "C1", "Cost constant 1.", ParameterProperties::HYPER);
 	SG_ADD(&C2, "C2", "Cost constant 2.", ParameterProperties::HYPER);

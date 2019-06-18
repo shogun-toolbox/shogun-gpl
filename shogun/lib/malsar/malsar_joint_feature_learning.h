@@ -25,7 +25,7 @@ namespace shogun
  *
  */
 malsar_result_t malsar_joint_feature_learning(
-		CDotFeatures* features,
+		std::shared_ptr<DotFeatures> features,
 		double* y,
 		double rho1,
 		double rho2,

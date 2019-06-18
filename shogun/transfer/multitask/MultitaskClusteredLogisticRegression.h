@@ -21,16 +21,16 @@ namespace shogun
  * Supports only task group relations. Based on solver ported from the MALSAR library.
  * Assumes task in group are related with a clustered structure.
  *
- * @see CTaskGroup
+ * @see TaskGroup
  */
-class CMultitaskClusteredLogisticRegression : public CMultitaskLogisticRegression
+class MultitaskClusteredLogisticRegression : public MultitaskLogisticRegression
 {
 
 	public:
 		MACHINE_PROBLEM_TYPE(PT_BINARY)
 
 		/** default constructor */
-		CMultitaskClusteredLogisticRegression();
+		MultitaskClusteredLogisticRegression();
 
 		/** constructor
 		 *
@@ -41,13 +41,13 @@ class CMultitaskClusteredLogisticRegression : public CMultitaskLogisticRegressio
 		 * @param task_group task group
 		 * @param num_clusters number of task clusters
 		 */
-		CMultitaskClusteredLogisticRegression(
-		     float64_t rho1, float64_t rho2, CFeatures* training_data,
-		     CBinaryLabels* training_labels, CTaskGroup* task_group,
+		MultitaskClusteredLogisticRegression(
+		     float64_t rho1, float64_t rho2, std::shared_ptr<Features> training_data,
+		     std::shared_ptr<BinaryLabels> training_labels, std::shared_ptr<TaskGroup> task_group,
 		     int32_t num_clusters);
 
 		/** destructor */
-		virtual ~CMultitaskClusteredLogisticRegression();
+		virtual ~MultitaskClusteredLogisticRegression();
 
 		/** get rho1 regularization coefficient
 		 *
@@ -95,7 +95,7 @@ class CMultitaskClusteredLogisticRegression : public CMultitaskLogisticRegressio
 		 *
 		 * @param data features to use for training
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
 
 		/** train locked implementation
 		 *

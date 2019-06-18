@@ -43,7 +43,7 @@ IGNORE_IN_CLASSLIST struct line_search_res
 
 inline static line_search_res zoom
 (
- CDualLibQPBMSOSVM *machine,
+ DualLibQPBMSOSVM *machine,
  float64_t lambda,
  float64_t a_lo,
  float64_t a_hi,
@@ -71,7 +71,7 @@ inline static line_search_res zoom
 	while (1)
 	{
 		float64_t d1 = g_lo+g_hi - 3*(f_lo-f_hi)/(a_lo-a_hi);
-		float64_t d2 = CMath::sqrt(d1*d1 - g_lo*g_hi);
+		float64_t d2 = Math::sqrt(d1*d1 - g_lo*g_hi);
 		float64_t a_j = a_hi -(a_hi-a_lo)*(g_hi+d2-d1)/(g_hi-g_lo+2*d2);
 
 		if (a_lo < a_hi)
@@ -115,7 +115,7 @@ inline static line_search_res zoom
 		{
 			float64_t cur_lgrad	= linalg::dot(cur_grad, search_dir);
 
-			if (CMath::abs(cur_lgrad) < -wolfe_c2*init_lgrad)
+			if (Math::abs(cur_lgrad) < -wolfe_c2*init_lgrad)
 			{
 				ls_res.a = a_j;
 				ls_res.fval = cur_fval;
@@ -139,7 +139,7 @@ inline static line_search_res zoom
 
 		if
 			(
-			 (CMath::abs(a_lo - a_hi) <= 0.01*a_lo)
+			 (Math::abs(a_lo - a_hi) <= 0.01*a_lo)
 			 ||
 			 (iter >= 5)
 			)
@@ -158,7 +158,7 @@ inline static line_search_res zoom
 
 inline std::vector<line_search_res> line_search_with_strong_wolfe
 (
-		CDualLibQPBMSOSVM *machine,
+		DualLibQPBMSOSVM *machine,
 		float64_t lambda,
 		float64_t initial_val,
 		SGVector<float64_t>& initial_solution,
@@ -229,7 +229,7 @@ inline std::vector<line_search_res> line_search_with_strong_wolfe
 			return ret;
 		}
 
-		if (CMath::abs(cur_lgrad) <= -wolfe_c2*initial_lgrad)
+		if (Math::abs(cur_lgrad) <= -wolfe_c2*initial_lgrad)
 		{
 			line_search_res ls_res;
 			ls_res.a = cur_a;
@@ -251,7 +251,7 @@ inline std::vector<line_search_res> line_search_with_strong_wolfe
 			return ret;
 		}
 		iter++;
-		if ((CMath::abs(cur_a - amax) <= 0.01*amax) || (iter >= max_iter))
+		if ((Math::abs(cur_a - amax) <= 0.01*amax) || (iter >= max_iter))
 		{
 			line_search_res ls_res;
 			ls_res.a = cur_a;
@@ -306,7 +306,7 @@ inline void update_H(BmrmStatistics& ncbm,
 
 
 BmrmStatistics svm_ncbm_solver(
-		CDualLibQPBMSOSVM *machine,
+		DualLibQPBMSOSVM *machine,
 		SGVector<float64_t>& w,
 		float64_t         TolRel,
 		float64_t         TolAbs,
@@ -322,7 +322,7 @@ BmrmStatistics svm_ncbm_solver(
 	BmrmStatistics ncbm;
 	libqp_state_T qp_exitflag={0, 0, 0, 0};
 
-	CStructuredModel* model = machine->get_model();
+	auto model = machine->get_model();
 	int32_t w_dim = model->get_dim();
 
 	maxCPs = _BufSize;
@@ -333,7 +333,7 @@ BmrmStatistics svm_ncbm_solver(
 	ncbm.exitflag=0;
 
 	/* variables for timing the algorithm*/
-	CTime ttime;
+	Time ttime;
 	float64_t tstart, tstop;
 	tstart=ttime.cur_time_diff(false);
 
@@ -392,8 +392,8 @@ BmrmStatistics svm_ncbm_solver(
 	}
 
 	/* best */
-	float64_t best_Fp = CMath::INFTY;
-	float64_t best_risk = CMath::INFTY;
+	float64_t best_Fp = Math::INFTY;
+	float64_t best_risk = Math::INFTY;
 	SGVector<float64_t> best_w(w_dim);
 	best_w.zero();
 	SGVector<float64_t> best_subgrad(w_dim);
@@ -510,7 +510,7 @@ BmrmStatistics svm_ncbm_solver(
 			scores.vec1_plus_scalar_times_vec2(scores.vector, -1.0, bias.vector, scores.vlen);
 
 			float64_t w_norm = linalg::dot(cur_w, cur_w);
-			float64_t PO = 0.5*_lambda*w_norm + CMath::max(scores.vector, scores.vlen);
+			float64_t PO = 0.5*_lambda*w_norm + Math::max(scores.vector, scores.vlen);
 			float64_t QP_gap = PO - ncbm.Fd;
 
 			io::print("{:4d}: primal:{} dual:{} QP_gap:{}\n", ncbm.nIter, PO, ncbm.Fd, QP_gap);
@@ -577,7 +577,7 @@ BmrmStatistics svm_ncbm_solver(
 			}
 			else
 			{
-				astart = CMath::min(astar/norm_dir,1.0);
+				astart = Math::min(astar/norm_dir,1.0);
 				if (astart == 0)
 					astart = 1.0;
 			}
@@ -760,8 +760,6 @@ BmrmStatistics svm_ncbm_solver(
                 LIBBMRM_FREE(cp_ptr_this);
                 cp_ptr_this=NULL;
         }
-
-	SG_UNREF(model);
 
 	return ncbm;
 }

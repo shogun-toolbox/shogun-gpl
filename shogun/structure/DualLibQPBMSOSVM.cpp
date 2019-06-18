@@ -17,18 +17,18 @@
 
 using namespace shogun;
 
-CDualLibQPBMSOSVM::CDualLibQPBMSOSVM()
-:CLinearStructuredOutputMachine()
+DualLibQPBMSOSVM::DualLibQPBMSOSVM()
+:LinearStructuredOutputMachine()
 {
 	init();
 }
 
-CDualLibQPBMSOSVM::CDualLibQPBMSOSVM(
-		CStructuredModel*	model,
-		CStructuredLabels*	labs,
+DualLibQPBMSOSVM::DualLibQPBMSOSVM(
+		std::shared_ptr<StructuredModel>	model,
+		std::shared_ptr<StructuredLabels>	labs,
 		float64_t	_lambda,
 		SGVector< float64_t >	W)
- : CLinearStructuredOutputMachine(model, labs)
+ : LinearStructuredOutputMachine(model, labs)
 {
 	init();
 	set_lambda(_lambda);
@@ -49,11 +49,11 @@ CDualLibQPBMSOSVM::CDualLibQPBMSOSVM(
 	}
 }
 
-CDualLibQPBMSOSVM::~CDualLibQPBMSOSVM()
+DualLibQPBMSOSVM::~DualLibQPBMSOSVM()
 {
 }
 
-void CDualLibQPBMSOSVM::init()
+void DualLibQPBMSOSVM::init()
 {
 	SG_ADD(&m_TolRel, "m_TolRel", "Relative tolerance", ParameterProperties::HYPER);
 	SG_ADD(&m_TolAbs, "m_TolAbs", "Absolute tolerance", ParameterProperties::HYPER);
@@ -80,18 +80,14 @@ void CDualLibQPBMSOSVM::init()
 	set_solver(BMRM);
 }
 
-bool CDualLibQPBMSOSVM::train_machine(CFeatures* data)
+bool DualLibQPBMSOSVM::train_machine(std::shared_ptr<Features> data)
 {
 	if (data)
 		set_features(data);
 
 	if (m_verbose||m_store_train_info)
 	{
-		if (m_helper != NULL)
-			SG_UNREF(m_helper);
-
-		m_helper = new CSOSVMHelper();
-		SG_REF(m_helper);
+		m_helper = std::shared_ptr<SOSVMHelper>();
 	}
 
 	// Initialize the model for training
@@ -120,7 +116,7 @@ bool CDualLibQPBMSOSVM::train_machine(CFeatures* data)
 					true /* use line search*/, m_verbose);
 			break;
 		default:
-			error("CDualLibQPBMSOSVM: m_solver={} is not supported", m_solver);
+			error("DualLibQPBMSOSVM: m_solver={} is not supported", m_solver);
 	}
 
 	if (m_result.exitflag>0)
@@ -129,7 +125,7 @@ bool CDualLibQPBMSOSVM::train_machine(CFeatures* data)
 		return false;
 }
 
-EMachineType CDualLibQPBMSOSVM::get_classifier_type()
+EMachineType DualLibQPBMSOSVM::get_classifier_type()
 {
 	return CT_LIBQPSOSVM;
 }

@@ -16,19 +16,19 @@
 
 using namespace shogun;
 
-CSparseInverseCovariance::CSparseInverseCovariance() :
-	CSGObject(), m_lasso_max_iter(1000),
+SparseInverseCovariance::SparseInverseCovariance() :
+	SGObject(), m_lasso_max_iter(1000),
 	m_max_iter(1000), m_f_gap(1e-6), m_x_gap(1e-4),
 	m_xtol(1e-4)
 {
 	register_parameters();
 }
 
-CSparseInverseCovariance::~CSparseInverseCovariance()
+SparseInverseCovariance::~SparseInverseCovariance()
 {
 }
 
-void CSparseInverseCovariance::register_parameters()
+void SparseInverseCovariance::register_parameters()
 {
 	SG_ADD(&m_lasso_max_iter,"lasso_max_iter",
 	       "maximum iteration of LASSO step");
@@ -38,7 +38,7 @@ void CSparseInverseCovariance::register_parameters()
 	SG_ADD(&m_xtol,"xtol","xtol");
 }
 
-SGMatrix<float64_t> CSparseInverseCovariance::estimate(SGMatrix<float64_t> S, float64_t lambda_c)
+SGMatrix<float64_t> SparseInverseCovariance::estimate(SGMatrix<float64_t> S, float64_t lambda_c)
 {
 	ASSERT(S.num_cols==S.num_rows)
 

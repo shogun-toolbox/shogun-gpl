@@ -18,14 +18,15 @@
 
 using namespace shogun;
 
-CSVMLin::CSVMLin()
-    : CLinearMachine(), C1(1), C2(1), epsilon(1e-5), use_bias(true)
+SVMLin::SVMLin()
+: LinearMachine(), C1(1), C2(1), epsilon(1e-5), use_bias(true)
 {
 	init();
 }
 
-CSVMLin::CSVMLin(float64_t C, CDotFeatures* traindat, CLabels* trainlab)
-    : CLinearMachine(), C1(C), C2(C), epsilon(1e-5), use_bias(true)
+SVMLin::SVMLin(
+	float64_t C, std::shared_ptr<DotFeatures> traindat, std::shared_ptr<Labels> trainlab)
+: LinearMachine(), C1(C), C2(C), epsilon(1e-5), use_bias(true)
 {
 	set_features(traindat);
 	set_labels(trainlab);
@@ -33,11 +34,11 @@ CSVMLin::CSVMLin(float64_t C, CDotFeatures* traindat, CLabels* trainlab)
 	init();
 }
 
-CSVMLin::~CSVMLin()
+SVMLin::~SVMLin()
 {
 }
 
-void CSVMLin::init()
+void SVMLin::init()
 {
 	SG_ADD(
 	    &use_bias, "use_bias", "Indicates if bias is used.",
@@ -51,7 +52,7 @@ void CSVMLin::init()
 	SG_ADD(&epsilon, "epsilon", "Convergence precision.");
 }
 
-bool CSVMLin::train_machine(CFeatures* data)
+bool SVMLin::train_machine(std::shared_ptr<Features> data)
 {
 	ASSERT(m_labels)
 
@@ -59,12 +60,12 @@ bool CSVMLin::train_machine(CFeatures* data)
 	{
 		if (!data->has_property(FP_DOT))
 			error("Specified features are not of type CDotFeatures");
-		set_features((CDotFeatures*) data);
+		set_features(data->as<DotFeatures>());
 	}
 
 	ASSERT(features)
 
-	SGVector<float64_t> train_labels=((CBinaryLabels*) m_labels)->get_labels();
+	SGVector<float64_t> train_labels=m_labels->as<BinaryLabels>()->get_labels();
 	int32_t num_feat=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
 
@@ -81,7 +82,7 @@ bool CSVMLin::train_machine(CFeatures* data)
 	Data.n=num_feat+1;
 	Data.nz=num_feat+1;
 	Data.Y=train_labels.vector;
-	Data.features=features;
+	Data.features=features.get();
 	Data.C = SG_MALLOC(float64_t, Data.l);
 
 	Options.algo = SVM;

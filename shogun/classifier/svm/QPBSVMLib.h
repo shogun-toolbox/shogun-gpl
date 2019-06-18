@@ -42,11 +42,11 @@ enum E_QPB_SOLVER
 #endif
 
 /** @brief class QPBSVMLib */
-class CQPBSVMLib: public RandomMixin<CSGObject>
+class QPBSVMLib: public RandomMixin<SGObject>
 {
 	public:
 		/** default constructor  */
-		CQPBSVMLib();
+		QPBSVMLib();
 
 		/** constructor
 		 *
@@ -56,7 +56,7 @@ class CQPBSVMLib: public RandomMixin<CSGObject>
 		 * @param m size of vector f
 		 * @param UB UB
 		 */
-		CQPBSVMLib(
+		QPBSVMLib(
 			float64_t* H, int32_t n, float64_t* f, int32_t m, float64_t UB=1.0);
 
 		/// result has to be allocated & zeroed
@@ -71,7 +71,7 @@ class CQPBSVMLib: public RandomMixin<CSGObject>
 			m_solver=solver;
 		}
 
-		virtual ~CQPBSVMLib();
+		virtual ~QPBSVMLib();
 
 	protected:
 		/** get col

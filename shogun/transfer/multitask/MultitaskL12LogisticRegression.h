@@ -23,16 +23,16 @@ namespace shogun
 /** @brief class MultitaskL12LogisticRegression, a classifier for multitask problems.
  * Supports only task group relations. Based on solver ported from the MALSAR library.
  *
- * @see CTaskGroup
+ * @see TaskGroup
  * */
-class CMultitaskL12LogisticRegression : public CMultitaskLogisticRegression
+class MultitaskL12LogisticRegression : public MultitaskLogisticRegression
 {
 
 	public:
 		MACHINE_PROBLEM_TYPE(PT_BINARY)
 
 		/** default constructor */
-		CMultitaskL12LogisticRegression();
+		MultitaskL12LogisticRegression();
 
 		/** constructor
 		 *
@@ -42,12 +42,12 @@ class CMultitaskL12LogisticRegression : public CMultitaskLogisticRegression
 		 * @param training_labels training labelspython_legacy-structure_multiclass_bmrm
 		 * @param task_group task group
 		 */
-		CMultitaskL12LogisticRegression(
-		     float64_t rho1, float64_t rho2, CFeatures* training_data,
-		     CBinaryLabels* training_labels, CTaskGroup* task_group);
+		MultitaskL12LogisticRegression(
+		     float64_t rho1, float64_t rho2, std::shared_ptr<Features> training_data,
+		     std::shared_ptr<BinaryLabels> training_labels, std::shared_ptr<TaskGroup> task_group);
 
 		/** destructor */
-		virtual ~CMultitaskL12LogisticRegression();
+		virtual ~MultitaskL12LogisticRegression();
 
 		/** set rho1 regularization coefficient
 		 * @param rho1 value
@@ -89,7 +89,7 @@ class CMultitaskL12LogisticRegression : public CMultitaskLogisticRegression
 		 *
 		 * @param data features to use for training
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
 
 		/** train locked implementation
 		 *

@@ -33,11 +33,11 @@ namespace shogun
  * multiple alignments: an application of string kernels.
  * Retrovirology, 5(1):110, Dec 2008.
  */
-class CDistantSegmentsKernel: public CStringKernel<char>
+class DistantSegmentsKernel: public StringKernel<char>
 {
 public:
 	/** default constructor */
-	CDistantSegmentsKernel();
+	DistantSegmentsKernel();
 
 	/** constructor
 	 *
@@ -45,7 +45,7 @@ public:
 	 * @param delta \f[\delta\f]-parameter of the DS-kernel
 	 * @param theta \f[\theta\f]-parameter of the DS-kernel
 	 */
-	CDistantSegmentsKernel(int32_t size, int32_t delta, int32_t theta);
+	DistantSegmentsKernel(int32_t size, int32_t delta, int32_t theta);
 
 	/** constructor
 	 *
@@ -55,7 +55,7 @@ public:
 	 * @param delta \f[\delta\f]-parameter of the DS-kernel
 	 * @param theta \f[\theta\f]-parameter of the DS-kernel
 	 */
-	CDistantSegmentsKernel(CStringFeatures<char>* l, CStringFeatures<char>* r,
+	DistantSegmentsKernel(std::shared_ptr<StringFeatures<char>> l, std::shared_ptr<StringFeatures<char>> r,
 			int32_t size, int32_t delta, int32_t theta);
 
 	/** initialize kernel with features
@@ -64,7 +64,7 @@ public:
 	 * @param r features of right-side
 	 * @return true if successful
 	 */
-	virtual bool init(CFeatures* l, CFeatures* r);
+	virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
 
 	/**
 	 * @return kernel type

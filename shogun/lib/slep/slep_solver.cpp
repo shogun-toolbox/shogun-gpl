@@ -35,8 +35,8 @@ double compute_regularizer(double* w, double lambda, double lambda2, int n_vecs,
 			{
 				double w_row_norm = 0.0;
 				for (int t=0; t<n_blocks; t++)
-					w_row_norm += CMath::pow(w[i+t*n_feats],options.q);
-				regularizer += CMath::pow(w_row_norm,1.0/options.q);
+					w_row_norm += Math::pow(w[i+t*n_feats],options.q);
+				regularizer += Math::pow(w_row_norm,1.0/options.q);
 			}
 			regularizer *= lambda;
 		}
@@ -65,9 +65,9 @@ double compute_regularizer(double* w, double lambda, double lambda2, int n_vecs,
 				int group_ind_start = options.ind[t];
 				int group_ind_end = options.ind[t+1];
 				for (int i=group_ind_start; i<group_ind_end; i++)
-					group_qpow_sum += CMath::pow(w[i], options.q);
+					group_qpow_sum += Math::pow(w[i], options.q);
 
-				regularizer += options.gWeight[t]*CMath::pow(group_qpow_sum, 1.0/options.q);
+				regularizer += options.gWeight[t]*Math::pow(group_qpow_sum, 1.0/options.q);
 			}
 			regularizer *= lambda;
 		}
@@ -85,7 +85,7 @@ double compute_regularizer(double* w, double lambda, double lambda2, int n_vecs,
 		case PLAIN:
 		{
 			for (int i=0; i<n_feats; i++)
-				regularizer += CMath::abs(w[i]);
+				regularizer += Math::abs(w[i]);
 
 			regularizer *= lambda;
 		}
@@ -94,11 +94,11 @@ double compute_regularizer(double* w, double lambda, double lambda2, int n_vecs,
 		{
 			double l1 = 0.0;
 			for (int i=0; i<n_feats; i++)
-				l1 += CMath::abs(w[i]);
+				l1 += Math::abs(w[i]);
 			regularizer += lambda*l1;
 			double fuse = 0.0;
 			for (int i=1; i<n_feats; i++)
-				fuse += CMath::abs(w[i]-w[i-1]);
+				fuse += Math::abs(w[i]-w[i-1]);
 			regularizer += lambda2*fuse;
 		}
 		break;
@@ -109,7 +109,7 @@ double compute_regularizer(double* w, double lambda, double lambda2, int n_vecs,
 double compute_lambda(
 		double* ATx,
 		double z,
-		CDotFeatures* features,
+		std::shared_ptr<DotFeatures> features,
 		double* y,
 		int n_vecs, int n_feats,
 		int n_blocks,
@@ -121,7 +121,7 @@ double compute_lambda(
 
 	double q_bar = 0.0;
 	if (options.q==1)
-		q_bar = CMath::ALMOST_INFTY;
+		q_bar = Math::ALMOST_INFTY;
 	else if (options.q>1e6)
 		q_bar = 1;
 	else
@@ -190,7 +190,7 @@ double compute_lambda(
 
 					for (int i=0; i<n_vecs; i++)
 					{
-						y[i]>0 ? b=double(m2) / CMath::sq(n_vecs) : b=-double(m1) / CMath::sq(n_vecs);
+						y[i]>0 ? b=double(m2) / Math::sq(n_vecs) : b=-double(m1) / Math::sq(n_vecs);
 						features->add_to_dense_vec(b,i,ATx,n_feats);
 					}
 				}
@@ -214,9 +214,9 @@ double compute_lambda(
 			{
 				double sum = 0.0;
 				for (int t=0; t<n_blocks; t++)
-					sum += CMath::pow(fabs(ATx[t*n_feats+i]),q_bar);
+					sum += Math::pow(fabs(ATx[t*n_feats+i]),q_bar);
 				lambda_max =
-					CMath::max(lambda_max, CMath::pow(sum,1.0/q_bar));
+					Math::max(lambda_max, Math::pow(sum,1.0/q_bar));
 			}
 
 			if (options.loss==LOGISTIC)
@@ -241,9 +241,9 @@ double compute_lambda(
 				int group_ind_end = options.ind[t+1];
 				double sum = 0.0;
 				for (int i=group_ind_start; i<group_ind_end; i++)
-					sum += CMath::pow(fabs(ATx[i]),q_bar);
+					sum += Math::pow(fabs(ATx[i]),q_bar);
 
-				sum = CMath::pow(sum, 1.0/q_bar);
+				sum = Math::pow(sum, 1.0/q_bar);
 				sum /= options.gWeight[t];
 				io::info("sum = {}",sum);
 				if (sum>lambda_max)
@@ -265,8 +265,8 @@ double compute_lambda(
 			double max = 0.0;
 			for (int i=0; i<n_feats; i++)
 			{
-				if (CMath::abs(ATx[i]) > max)
-					max = CMath::abs(ATx[i]);
+				if (Math::abs(ATx[i]) > max)
+					max = Math::abs(ATx[i]);
 			}
 			lambda_max = max;
 		}
@@ -302,7 +302,7 @@ void projection(double* w, double* v, int n_feats, int n_blocks, double lambda, 
 		break;
 		case PLAIN:
 			for (int i=0; i<n_feats; i++)
-				w[i] = CMath::sign(v[i])*CMath::max(0.0,CMath::abs(v[i])-lambda/L);
+				w[i] = Math::sign(v[i])*Math::max(0.0,Math::abs(v[i])-lambda/L);
 		break;
 		case FUSED:
 			flsa(w,z,NULL,v,z0,lambda/L,lambda2/L,n_feats,1000,1e-8,1,6);
@@ -313,7 +313,7 @@ void projection(double* w, double* v, int n_feats, int n_blocks, double lambda, 
 
 }
 
-double search_point_gradient_and_objective(CDotFeatures* features, double* ATx, double* As,
+double search_point_gradient_and_objective(std::shared_ptr<DotFeatures> features, double* ATx, double* As,
                                            double* sc, double* y, int n_vecs,
                                            int n_feats, int n_tasks,
                                            double* g, double* gc,
@@ -335,7 +335,7 @@ double search_point_gradient_and_objective(CDotFeatures* features, double* ATx, 
 						for (int i=0; i<n_vecs_task; i++)
 						{
 							double aa = -y[task_idx[i]]*(As[task_idx[i]]+sc[t]);
-							double bb = CMath::max(aa,0.0);
+							double bb = Math::max(aa,0.0);
 							fun_s += (std::log(std::exp(-bb) + std::exp(aa-bb)) + bb)/ n_vecs;
 							double prob = 1.0/(1.0+std::exp(aa));
 							double b = -y[task_idx[i]]*(1.0-prob) / n_vecs;
@@ -364,7 +364,7 @@ double search_point_gradient_and_objective(CDotFeatures* features, double* ATx, 
 					for (int i=0; i<n_vecs; i++)
 					{
 						double aa = -y[i]*(As[i]+sc[0]);
-						double bb = CMath::max(aa,0.0);
+						double bb = Math::max(aa,0.0);
 						fun_s += (std::log(std::exp(-bb) + std::exp(aa-bb)) + bb);
 						/*
 						if (y[i]>0)
@@ -400,7 +400,7 @@ double search_point_gradient_and_objective(CDotFeatures* features, double* ATx, 
 }
 
 slep_result_t slep_solver(
-		CDotFeatures* features,
+		std::shared_ptr<DotFeatures> features,
 		double* y,
 		double z,
 		const slep_options& options)
@@ -582,7 +582,7 @@ slep_result_t slep_solver(
 							if (options.loss==LOGISTIC)
 							{
 								double aa = -y[task_idx[i]]*(Aw[task_idx[i]]+c[t]);
-								double bb = CMath::max(aa,0.0);
+								double bb = Math::max(aa,0.0);
 								fun_x += (std::log(std::exp(-bb) + std::exp(aa-bb)) + bb);
 							}
 						}
@@ -598,7 +598,7 @@ slep_result_t slep_solver(
 						if (options.loss==LOGISTIC)
 						{
 							double aa = -y[i]*(Aw[i]+c[0]);
-							double bb = CMath::max(aa,0.0);
+							double bb = Math::max(aa,0.0);
 							if (y[i]>0)
 								fun_x += (std::log(std::exp(-bb) + std::exp(aa-bb)) + bb);//*pos_weight;
 							else
@@ -623,7 +623,7 @@ slep_result_t slep_solver(
 					l_sum = fun_x - fun_s - linalg::dot(v,g);
 					for (t=0; t<n_tasks; t++)
 					{
-						r_sum += CMath::sq(c[t] - sc[t]);
+						r_sum += Math::sq(c[t] - sc[t]);
 						l_sum -= (c[t] - sc[t])*gc[t];
 					}
 					r_sum /= 2.0;
@@ -631,7 +631,7 @@ slep_result_t slep_solver(
 				case LEAST_SQUARES:
 					r_sum = linalg::dot(v,v);
 					for (i=0; i<n_vecs; i++)
-						l_sum += CMath::sq(Aw[i]-As[i]);
+						l_sum += Math::sq(Aw[i]-As[i]);
 				break;
 			}
 
@@ -644,12 +644,12 @@ slep_result_t slep_solver(
 			if (l_sum <= r_sum*L)
 				break;
 			else
-				L = CMath::max(2*L, l_sum/r_sum);
+				L = Math::max(2*L, l_sum/r_sum);
 			inner_iter++;
 		}
 
 		alphap = alpha;
-		alpha = 0.5*(1+CMath::sqrt(4*alpha*alpha+1));
+		alpha = 0.5*(1+Math::sqrt(4*alpha*alpha+1));
 		for (i=0; i<n_feats*n_tasks; i++)
 			wwp[i] = w[i] - wp[i];
 		for (t=0; t<n_tasks; t++)
@@ -665,7 +665,7 @@ slep_result_t slep_solver(
 		{
 			func = regularizer;
 			for (i=0; i<n_vecs; i++)
-				func += CMath::sq(Aw[i] - y[i]);
+				func += Math::sq(Aw[i] - y[i]);
 		}
 		SG_DEBUG("Obj = {} + {} = {} ",fun_x, regularizer, func)
 
@@ -682,7 +682,7 @@ slep_result_t slep_solver(
 			case 0:
 				if (iter>=2)
 				{
-					step = CMath::abs(func-funcp);
+					step = Math::abs(func-funcp);
 					if (step <= options.tolerance)
 					{
 						io::info("Objective changes less than tolerance");
@@ -693,7 +693,7 @@ slep_result_t slep_solver(
 			case 1:
 				if (iter>=2)
 				{
-					step = CMath::abs(func-funcp);
+					step = Math::abs(func-funcp);
 					if (step <= step*options.tolerance)
 					{
 						io::info("Objective changes relatively less than tolerance");
@@ -709,14 +709,14 @@ slep_result_t slep_solver(
 				}
 			break;
 			case 3:
-				norm_wwp = CMath::sqrt(linalg::dot(wwp,wwp));
+				norm_wwp = Math::sqrt(linalg::dot(wwp,wwp));
 				if (norm_wwp <= options.tolerance)
 					done = true;
 			break;
 			case 4:
-				norm_wp = CMath::sqrt(linalg::dot(wp,wp));
-				norm_wwp = CMath::sqrt(linalg::dot(wwp,wwp));
-				if (norm_wwp <= options.tolerance*CMath::max(norm_wp,1.0))
+				norm_wp = Math::sqrt(linalg::dot(wp,wp));
+				norm_wwp = Math::sqrt(linalg::dot(wwp,wwp));
+				if (norm_wwp <= options.tolerance*Math::max(norm_wp,1.0))
 					done = true;
 			break;
 			default:

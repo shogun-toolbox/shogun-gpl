@@ -8,12 +8,12 @@
 
 using namespace shogun;
 
-CCoverTreeKNNSolver::CCoverTreeKNNSolver(const int32_t k, const float64_t q, const int32_t num_classes, const int32_t min_label, const SGVector<int32_t> train_labels):
-CKNNSolver(k, q, num_classes, min_label, train_labels) { /* nothing to do */ }
+CoverTreeKNNSolver::CoverTreeKNNSolver(const int32_t k, const float64_t q, const int32_t num_classes, const int32_t min_label, const SGVector<int32_t> train_labels):
+KNNSolver(k, q, num_classes, min_label, train_labels) { /* nothing to do */ }
 
-CMulticlassLabels* CCoverTreeKNNSolver::classify_objects(CDistance* knn_distance, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<float64_t>& classes) const
+std::shared_ptr<MulticlassLabels> CoverTreeKNNSolver::classify_objects(std::shared_ptr<Distance> knn_distance, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<float64_t>& classes) const
 {
-	CMulticlassLabels* output=new CMulticlassLabels(num_lab);
+	auto output= std::make_shared<MulticlassLabels>(num_lab);
 
 	// m_q != 1.0 not supported with cover tree because the neighbors
 	// are not retrieved in increasing order of distance to the query
@@ -22,22 +22,22 @@ CMulticlassLabels* CCoverTreeKNNSolver::classify_objects(CDistance* knn_distance
 
 	// From the sets of features (lhs and rhs) stored in distance,
 	// build arrays of cover tree points
-	v_array< CJLCoverTreePoint > set_of_points  =
+	v_array< JLCoverTreePoint > set_of_points  =
 		parse_points(knn_distance, FC_LHS);
-	v_array< CJLCoverTreePoint > set_of_queries =
+	v_array< JLCoverTreePoint > set_of_queries =
 		parse_points(knn_distance, FC_RHS);
 
 	// Build the cover trees, one for the test vectors (rhs features)
 	// and another for the training vectors (lhs features)
-	CFeatures* r = knn_distance->replace_rhs( knn_distance->get_lhs() );
-	node< CJLCoverTreePoint > top = batch_create(set_of_points);
-	CFeatures* l = knn_distance->replace_lhs(r);
+	auto r = knn_distance->replace_rhs( knn_distance->get_lhs() );
+	node<JLCoverTreePoint> top = batch_create(set_of_points);
+	auto l = knn_distance->replace_lhs(r);
 	knn_distance->replace_rhs(r);
-	node< CJLCoverTreePoint > top_query = batch_create(set_of_queries);
+	node<JLCoverTreePoint> top_query = batch_create(set_of_queries);
 
 	// Get the k nearest neighbors to all the test vectors (batch method)
 	knn_distance->replace_lhs(l);
-	v_array< v_array< CJLCoverTreePoint > > res;
+	v_array< v_array< JLCoverTreePoint > > res;
 	k_nearest_neighbor(top, top_query, res, m_k);
 
 if (env()->io()->get_loglevel()<= io::MSG_DEBUG)
@@ -70,7 +70,7 @@ if (env()->io()->get_loglevel()<= io::MSG_DEBUG)
 	return output;
 }
 
-SGVector<int32_t> CCoverTreeKNNSolver::classify_objects_k(CDistance* knn_distance, int32_t num_lab, SGVector<int32_t>& train_lab,  SGVector<int32_t>& classes) const
+SGVector<int32_t> CoverTreeKNNSolver::classify_objects_k(std::shared_ptr<Distance> knn_distance, int32_t num_lab, SGVector<int32_t>& train_lab,  SGVector<int32_t>& classes) const
 {
 	SGVector<int32_t> output(m_k*num_lab);
 
@@ -79,22 +79,22 @@ SGVector<int32_t> CCoverTreeKNNSolver::classify_objects_k(CDistance* knn_distanc
 
 	// From the sets of features (lhs and rhs) stored in distance,
 	// build arrays of cover tree points
-	v_array< CJLCoverTreePoint > set_of_points  =
+	v_array< JLCoverTreePoint > set_of_points  =
 		parse_points(knn_distance, FC_LHS);
-	v_array< CJLCoverTreePoint > set_of_queries =
+	v_array< JLCoverTreePoint > set_of_queries =
 		parse_points(knn_distance, FC_RHS);
 
 	// Build the cover trees, one for the test vectors (rhs features)
 	// and another for the training vectors (lhs features)
-	CFeatures* r = knn_distance->replace_rhs( knn_distance->get_lhs() );
-	node< CJLCoverTreePoint > top = batch_create(set_of_points);
-	CFeatures* l = knn_distance->replace_lhs(r);
+	auto r = knn_distance->replace_rhs( knn_distance->get_lhs() );
+	node< JLCoverTreePoint > top = batch_create(set_of_points);
+	auto l = knn_distance->replace_lhs(r);
 	knn_distance->replace_rhs(r);
-	node< CJLCoverTreePoint > top_query = batch_create(set_of_queries);
+	node< JLCoverTreePoint > top_query = batch_create(set_of_queries);
 
 	// Get the k nearest neighbors to all the test vectors (batch method)
 	knn_distance->replace_lhs(l);
-	v_array< v_array< CJLCoverTreePoint > > res;
+	v_array< v_array< JLCoverTreePoint > > res;
 	k_nearest_neighbor(top, top_query, res, m_k);
 
 	for ( index_t i = 0 ; i < res.index ; ++i )
@@ -112,7 +112,7 @@ SGVector<int32_t> CCoverTreeKNNSolver::classify_objects_k(CDistance* knn_distanc
 		}
 
 		// Now we get the indices to the neighbors sorted by distance
-		CMath::qsort_index(dists.vector, train_lab.vector, m_k);
+		Math::qsort_index(dists.vector, train_lab.vector, m_k);
 
 		choose_class_for_multiple_k(output.vector+res[i][0].m_index, classes.vector,
 				train_lab.vector, num_lab);
