@@ -18,43 +18,43 @@
 
 using namespace shogun;
 
-CMulticlassLogisticRegression::CMulticlassLogisticRegression() :
-	CLinearMulticlassMachine()
+MulticlassLogisticRegression::MulticlassLogisticRegression() :
+	LinearMulticlassMachine()
 {
 	init_defaults();
 	register_parameters();
 }
 
-CMulticlassLogisticRegression::CMulticlassLogisticRegression(float64_t z, CDotFeatures* feats, CLabels* labs) :
-	CLinearMulticlassMachine(new CMulticlassOneVsRestStrategy(),feats,NULL,labs)
+MulticlassLogisticRegression::MulticlassLogisticRegression(float64_t z, std::shared_ptr<DotFeatures> feats, std::shared_ptr<Labels> labs) :
+	LinearMulticlassMachine(std::make_shared<MulticlassOneVsRestStrategy>(),feats,NULL,labs)
 {
 	init_defaults();
 	register_parameters();
 	set_z(z);
 }
 
-void CMulticlassLogisticRegression::init_defaults()
+void MulticlassLogisticRegression::init_defaults()
 {
 	set_z(0.1);
 	set_epsilon(1e-2);
 	set_max_iter(10000);
 }
 
-void CMulticlassLogisticRegression::register_parameters()
+void MulticlassLogisticRegression::register_parameters()
 {
 	SG_ADD(&m_z, "m_z", "regularization constant", ParameterProperties::HYPER);
 	SG_ADD(&m_epsilon, "m_epsilon", "tolerance epsilon");
 	SG_ADD(&m_max_iter, "m_max_iter", "max number of iterations");
 }
 
-CMulticlassLogisticRegression::~CMulticlassLogisticRegression()
+MulticlassLogisticRegression::~MulticlassLogisticRegression()
 {
 }
 
-bool CMulticlassLogisticRegression::train_machine(CFeatures* data)
+bool MulticlassLogisticRegression::train_machine(std::shared_ptr<Features> data)
 {
 	if (data)
-		set_features((CDotFeatures*)data);
+		set_features(data->as<DotFeatures>());
 
 	REQUIRE(m_features, "No features attached!\n");
 	REQUIRE(m_labels, "No labels attached!\n");
@@ -66,21 +66,20 @@ bool CMulticlassLogisticRegression::train_machine(CFeatures* data)
 	int32_t n_feats = m_features->get_dim_feature_space();
 
 	slep_options options = slep_options::default_options();
-	if (m_machines->get_num_elements()!=0)
+	if (!m_machines.empty())
 	{
 		SGMatrix<float64_t> all_w_old(n_feats, n_classes);
 		SGVector<float64_t> all_c_old(n_classes);
 		for (int32_t i=0; i<n_classes; i++)
 		{
-			CLinearMachine* machine = (CLinearMachine*)m_machines->get_element(i);
+			auto machine = m_machines.at(i)->as<LinearMachine>();
 			SGVector<float64_t> w = machine->get_w();
 			for (int32_t j=0; j<n_feats; j++)
 				all_w_old(j,i) = w[j];
 			all_c_old[i] = machine->get_bias();
-			SG_UNREF(machine);
 		}
 		options.last_result = new slep_result_t(all_w_old,all_c_old);
-		m_machines->reset_array();
+		m_machines.clear();
 	}
 	options.tolerance = m_epsilon;
 	options.max_iter = m_max_iter;
@@ -94,10 +93,10 @@ bool CMulticlassLogisticRegression::train_machine(CFeatures* data)
 		for (int32_t j=0; j<n_feats; j++)
 			w[j] = all_w(j,i);
 		float64_t c = all_c[i];
-		CLinearMachine* machine = new CLinearMachine();
+		auto machine = std::make_shared<LinearMachine>();
 		machine->set_w(w);
 		machine->set_bias(c);
-		m_machines->push_back(machine);
+		m_machines.push_back(machine);
 	}
 	return true;
 }

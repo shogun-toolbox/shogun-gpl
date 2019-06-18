@@ -1,4 +1,4 @@
-/*
+/*(
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3 of the License, or
@@ -185,7 +185,7 @@ static const float64_t *get_col( uint32_t i)
 }
 
 BmrmStatistics svm_bmrm_solver(
-		CDualLibQPBMSOSVM  *machine,
+		DualLibQPBMSOSVM  *machine,
 		SGVector<float64_t>& W,
 		float64_t        TolRel,
 		float64_t        TolAbs,
@@ -204,11 +204,11 @@ BmrmStatistics svm_bmrm_solver(
 	floatmax_t rsum, sq_norm_W, sq_norm_Wdiff=0.0;
 	uint32_t *Ivector;
 	uint8_t S=1;
-	CStructuredModel* model=machine->get_model();
+	std::shared_ptr<StructuredModel> model=machine->get_model();
 	uint32_t nDim=model->get_dim();
-	CSOSVMHelper* helper = NULL;
+	std::shared_ptr<SOSVMHelper> helper = NULL;
 
-	CTime ttime;
+	Time ttime;
 	float64_t tstart, tstop;
 
 	bmrm_ll *CPList_head, *CPList_tail, *cp_ptr, *cp_ptr2, *cp_list=NULL;
@@ -420,7 +420,7 @@ BmrmStatistics svm_bmrm_solver(
 
 #if 0
 		/* TODO: scaling...*/
-		float64_t scale = CMath::max(diag_H, BufSize)/(1000.0*_lambda);
+		float64_t scale = Math::max(diag_H, BufSize)/(1000.0*_lambda);
 		SGVector<float64_t> sb(bmrm.nCP);
 		sb.zero();
 		sb.vec1_plus_scalar_times_vec2(sb.vector, 1/scale, b, bmrm.nCP);
@@ -483,7 +483,7 @@ BmrmStatistics svm_bmrm_solver(
 
 		bmrm.Fp=R+0.5*_lambda*sq_norm_W;
 		bmrm.Fd=-qp_exitflag.QP;
-		wdist=CMath::sqrt(sq_norm_Wdiff);
+		wdist=Math::sqrt(sq_norm_Wdiff);
 
 		/* Stopping conditions */
 		if (bmrm.Fp - bmrm.Fd <= TolRel*LIBBMRM_ABS(bmrm.Fp))
@@ -534,8 +534,8 @@ BmrmStatistics svm_bmrm_solver(
 			float64_t info_tstart=ttime.cur_time_diff(false);
 
 			SGVector<float64_t> w_info(W, nDim, false);
-			float64_t primal = CSOSVMHelper::primal_objective(w_info, model, _lambda);
-			float64_t train_error = CSOSVMHelper::average_loss(w_info, model);
+			float64_t primal = SOSVMHelper::primal_objective(w_info, model, _lambda);
+			float64_t train_error = SOSVMHelper::average_loss(w_info, model);
 			helper->add_debug_info(primal, bmrm.nIter, train_error);
 
 			float64_t info_tstop=ttime.cur_time_diff(false);
@@ -548,7 +548,6 @@ BmrmStatistics svm_bmrm_solver(
 	if (store_train_info)
 	{
 		helper->terminate();
-		SG_UNREF(helper);
 	}
 
 	ASSERT(bmrm.nIter+1 <= histSize);
@@ -584,8 +583,6 @@ cleanup:
 
 	if (cp_list)
 		LIBBMRM_FREE(cp_list);
-
-	SG_UNREF(model);
 
 	return(bmrm);
 }

@@ -19,51 +19,52 @@
 namespace shogun
 {
 
-CMultitaskTraceLogisticRegression::CMultitaskTraceLogisticRegression() :
-	CMultitaskLogisticRegression(), m_rho(0.0)
+MultitaskTraceLogisticRegression::MultitaskTraceLogisticRegression() :
+	MultitaskLogisticRegression(), m_rho(0.0)
 {
 	init();
 }
 
-CMultitaskTraceLogisticRegression::CMultitaskTraceLogisticRegression(
-     float64_t rho, CFeatures* train_features,
-     CBinaryLabels* train_labels, CTaskGroup* task_group) :
-	CMultitaskLogisticRegression(0.0,train_features,train_labels,(CTaskRelation*)task_group)
+MultitaskTraceLogisticRegression::MultitaskTraceLogisticRegression(
+     float64_t rho, std::shared_ptr<Features> train_features,
+     std::shared_ptr<BinaryLabels> train_labels, std::shared_ptr<TaskGroup> task_group) :
+	MultitaskLogisticRegression(0.0,train_features,train_labels,task_group->as<TaskRelation>())
 {
 	set_rho(rho);
 	init();
 }
 
-void CMultitaskTraceLogisticRegression::init()
+void MultitaskTraceLogisticRegression::init()
 {
 	SG_ADD(&m_rho,"rho","rho", ParameterProperties::HYPER);
 }
 
-void CMultitaskTraceLogisticRegression::set_rho(float64_t rho)
+void MultitaskTraceLogisticRegression::set_rho(float64_t rho)
 {
 	m_rho = rho;
 }
 
-float64_t CMultitaskTraceLogisticRegression::get_rho() const
+float64_t MultitaskTraceLogisticRegression::get_rho() const
 {
 	return m_rho;
 }
 
-CMultitaskTraceLogisticRegression::~CMultitaskTraceLogisticRegression()
+MultitaskTraceLogisticRegression::~MultitaskTraceLogisticRegression()
 {
 }
 
-bool CMultitaskTraceLogisticRegression::train_locked_implementation(SGVector<index_t>* tasks)
+bool MultitaskTraceLogisticRegression::train_locked_implementation(SGVector<index_t>* tasks)
 {
 	SGVector<float64_t> y(m_labels->get_num_labels());
+	auto bl = binary_labels(m_labels);
 	for (int32_t i=0; i<y.vlen; i++)
-		y[i] = ((CBinaryLabels*)m_labels)->get_label(i);
+		y[i] = bl->get_label(i);
 
 	malsar_options options = malsar_options::default_options();
 	options.termination = m_termination;
 	options.tolerance = m_tolerance;
 	options.max_iter = m_max_iter;
-	options.n_tasks = ((CTaskGroup*)m_task_relation)->get_num_tasks();
+	options.n_tasks = m_task_relation->as<TaskGroup>()->get_num_tasks();
 	options.tasks_indices = tasks;
 
 	malsar_result_t model = malsar_low_rank(
@@ -74,25 +75,26 @@ bool CMultitaskTraceLogisticRegression::train_locked_implementation(SGVector<ind
 	return true;
 }
 
-bool CMultitaskTraceLogisticRegression::train_machine(CFeatures* data)
+bool MultitaskTraceLogisticRegression::train_machine(std::shared_ptr<Features> data)
 {
-	if (data && (CDotFeatures*)data)
-		set_features((CDotFeatures*)data);
+	if (data)
+		set_features(data->as<DotFeatures>());
 
 	ASSERT(features)
 	ASSERT(m_labels)
 	ASSERT(m_task_relation)
 
 	SGVector<float64_t> y(m_labels->get_num_labels());
+	auto bl = binary_labels(m_labels);
 	for (int32_t i=0; i<y.vlen; i++)
-		y[i] = ((CBinaryLabels*)m_labels)->get_label(i);
+		y[i] = bl->get_label(i);
 
 	malsar_options options = malsar_options::default_options();
 	options.termination = m_termination;
 	options.tolerance = m_tolerance;
 	options.max_iter = m_max_iter;
-	options.n_tasks = ((CTaskGroup*)m_task_relation)->get_num_tasks();
-	options.tasks_indices = ((CTaskGroup*)m_task_relation)->get_tasks_indices();
+	options.n_tasks = m_task_relation->as<TaskGroup>()->get_num_tasks();
+	options.tasks_indices = m_task_relation->as<TaskGroup>()->get_tasks_indices();
 
 	malsar_result_t model = malsar_low_rank(
 		features, y.vector, m_rho, options);

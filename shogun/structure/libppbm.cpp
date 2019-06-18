@@ -34,7 +34,7 @@ static const float64_t *get_col( uint32_t i)
 }
 
 BmrmStatistics svm_ppbm_solver(
-		CDualLibQPBMSOSVM *machine,
+		DualLibQPBMSOSVM *machine,
 		SGVector<float64_t>& W,
 		float64_t       TolRel,
 		float64_t       TolAbs,
@@ -55,14 +55,14 @@ BmrmStatistics svm_ppbm_solver(
 	floatmax_t rsum, sq_norm_W, sq_norm_Wdiff, sq_norm_prevW, eps;
 	uint32_t *Ivector, *I2, *I_start, *I_good;
 	uint8_t S=1;
-	CStructuredModel* model=machine->get_model();
+	auto model=machine->get_model();
 	uint32_t nDim=model->get_dim();
-	CSOSVMHelper* helper = NULL;
+	std::shared_ptr<SOSVMHelper> helper = NULL;
 	uint32_t qp_cnt=0;
 	bmrm_ll *CPList_head, *CPList_tail, *cp_ptr, *cp_ptr2, *cp_list=NULL;
 	bool *map=NULL, tuneAlpha=true, flag=true, alphaChanged=false, isThereGoodSolution=false;
 
-	CTime ttime;
+	Time ttime;
 	float64_t tstart, tstop;
 
 
@@ -212,9 +212,9 @@ BmrmStatistics svm_ppbm_solver(
 	ppbmrm.Fp=R+0.5*_lambda*sq_norm_W + alpha*sq_norm_Wdiff;
 	ppbmrm.Fd=-LIBBMRM_PLUS_INF;
 	lastFp=ppbmrm.Fp;
-	wdist=CMath::sqrt(sq_norm_Wdiff);
+	wdist=Math::sqrt(sq_norm_Wdiff);
 
-	K = (sq_norm_W == 0.0) ? 0.4 : 0.01*CMath::sqrt(sq_norm_W);
+	K = (sq_norm_W == 0.0) ? 0.4 : 0.01*Math::sqrt(sq_norm_W);
 
 	LIBBMRM_MEMCPY(prevW.vector, W.vector, nDim*sizeof(float64_t));
 
@@ -334,7 +334,7 @@ BmrmStatistics svm_ppbm_solver(
 			for (uint32_t i=0; i<nDim; ++i)
 				sq_norm_Wdiff+=(wt[i]-prevW[i])*(wt[i]-prevW[i]);
 
-			if (CMath::sqrt(sq_norm_Wdiff) <= K)
+			if (Math::sqrt(sq_norm_Wdiff) <= K)
 			{
 				flag=false;
 
@@ -396,7 +396,7 @@ BmrmStatistics svm_ppbm_solver(
 				for (uint32_t i=0; i<nDim; ++i)
 					sq_norm_Wdiff+=(wt[i]-prevW[i])*(wt[i]-prevW[i]);
 
-				if (CMath::sqrt(sq_norm_Wdiff) > K)
+				if (Math::sqrt(sq_norm_Wdiff) > K)
 				{
 					/* if there is a record of some good solution
 					 * (i.e. adjust alpha by division by 2) */
@@ -574,7 +574,7 @@ BmrmStatistics svm_ppbm_solver(
 			sq_norm_Wdiff+=(W[i]-prevW[i])*(W[i]-prevW[i]);
 		}
 
-		wdist=CMath::sqrt(sq_norm_Wdiff);
+		wdist=Math::sqrt(sq_norm_Wdiff);
 
 		/* Keep history of Fp, Fd, wdist */
 		ppbmrm.hist_Fp[ppbmrm.nIter]=ppbmrm.Fp;
@@ -613,8 +613,8 @@ BmrmStatistics svm_ppbm_solver(
 		if (verbose)
 		{
 			SGVector<float64_t> w_debug(W, nDim, false);
-			float64_t primal = CSOSVMHelper::primal_objective(w_debug, model, _lambda);
-			float64_t train_error = CSOSVMHelper::average_loss(w_debug, model);
+			float64_t primal = SOSVMHelper::primal_objective(w_debug, model, _lambda);
+			float64_t train_error = SOSVMHelper::average_loss(w_debug, model);
 			helper->add_debug_info(primal, ppbmrm.nIter, train_error);
 		}
 	} /* end of main loop */
@@ -622,7 +622,6 @@ BmrmStatistics svm_ppbm_solver(
 	if (verbose)
 	{
 		helper->terminate();
-		SG_UNREF(helper);
 	}
 
 	ppbmrm.hist_Fp.resize_vector(ppbmrm.nIter);
@@ -666,8 +665,6 @@ cleanup:
 
 	if (cp_list)
 		LIBBMRM_FREE(cp_list);
-
-	SG_UNREF(model);
 
 	return(ppbmrm);
 }

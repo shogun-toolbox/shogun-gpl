@@ -42,7 +42,7 @@
 namespace shogun
 {
 
-class CKernel;
+class Kernel;
 class CMMD;
 
 namespace internal
@@ -51,11 +51,11 @@ namespace internal
 class WeightedMaxMeasure : public MaxMeasure
 {
 public:
-	WeightedMaxMeasure(KernelManager&, CMMD*);
+	WeightedMaxMeasure(KernelManager&, std::shared_ptr<MMD>);
 	WeightedMaxMeasure(const WeightedMaxMeasure& other)=delete;
 	~WeightedMaxMeasure();
 	WeightedMaxMeasure& operator=(const WeightedMaxMeasure& other)=delete;
-	virtual CKernel* select_kernel();
+	virtual std::shared_ptr<Kernel> select_kernel();
 	virtual SGMatrix<float64_t> get_measure_matrix();
 protected:
 	virtual void compute_measures();

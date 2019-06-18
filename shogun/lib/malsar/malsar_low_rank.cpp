@@ -20,7 +20,7 @@ namespace shogun
 {
 
 malsar_result_t malsar_low_rank(
-		CDotFeatures* features,
+		std::shared_ptr<DotFeatures> features,
 		double* y,
 		double rho,
 		const malsar_options& options)
@@ -70,7 +70,7 @@ malsar_result_t malsar_low_rank(
 			for (int i=0; i<n_task_vecs; i++)
 			{
 				double aa = -y[task_idx[i]]*(features->dense_dot(task_idx[i], Ws.col(task).data(), n_feats)+Cs[task]);
-				double bb = CMath::max(aa,0.0);
+				double bb = Math::max(aa,0.0);
 
 				// avoid underflow when computing exponential loss
 				Fs += (std::log(std::exp(-bb) + std::exp(aa-bb)) + bb)/n_task_vecs;
@@ -116,7 +116,7 @@ malsar_result_t malsar_low_rank(
 				for (int i=0; i<n_task_vecs; i++)
 				{
 					double aa = -y[task_idx[i]]*(features->dense_dot(task_idx[i], Wzp.col(task).data(), n_feats)+Czp[task]);
-					double bb = CMath::max(aa,0.0);
+					double bb = Math::max(aa,0.0);
 
 					Fzp += (std::log(std::exp(-bb) + std::exp(aa-bb)) + bb)/n_task_vecs;
 				}
@@ -172,19 +172,19 @@ malsar_result_t malsar_low_rank(
 			case 0:
 				if (iter>=2)
 				{
-					if ( CMath::abs(obj-obj_old) <= options.tolerance )
+					if ( Math::abs(obj-obj_old) <= options.tolerance )
 						done = true;
 				}
 			break;
 			case 1:
 				if (iter>=2)
 				{
-					if ( CMath::abs(obj-obj_old) <= options.tolerance*CMath::abs(obj_old))
+					if ( Math::abs(obj-obj_old) <= options.tolerance*Math::abs(obj_old))
 						done = true;
 				}
 			break;
 			case 2:
-				if (CMath::abs(obj) <= options.tolerance)
+				if (Math::abs(obj) <= options.tolerance)
 					done = true;
 			break;
 			case 3:
@@ -195,7 +195,7 @@ malsar_result_t malsar_low_rank(
 
 		iter++;
 		t_old = t;
-		t = 0.5 * (1 + CMath::sqrt(1.0 + 4*t*t));
+		t = 0.5 * (1 + Math::sqrt(1.0 + 4*t*t));
 	}
 	//internal::set_is_malloc_allowed(true);
 	SG_SDEBUG("%d iteration passed, objective = %f\n",iter,obj)

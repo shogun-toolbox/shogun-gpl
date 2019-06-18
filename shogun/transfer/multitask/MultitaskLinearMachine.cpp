@@ -21,70 +21,66 @@ using namespace std;
 namespace shogun
 {
 
-CMultitaskLinearMachine::CMultitaskLinearMachine() :
-	CLinearMachine(), m_current_task(0),
+MultitaskLinearMachine::MultitaskLinearMachine() :
+	LinearMachine(), m_current_task(0),
 	m_task_relation(NULL)
 {
 	register_parameters();
 }
 
-CMultitaskLinearMachine::CMultitaskLinearMachine(
-     CFeatures* train_features,
-     CLabels* train_labels, CTaskRelation* task_relation) :
-	CLinearMachine(), m_current_task(0), m_task_relation(NULL)
+MultitaskLinearMachine::MultitaskLinearMachine(
+     std::shared_ptr<Features> train_features,
+     std::shared_ptr<Labels> train_labels, std::shared_ptr<TaskRelation> task_relation) :
+	LinearMachine(), m_current_task(0), m_task_relation(NULL)
 {
-	set_features(train_features->as<CDotFeatures>());
+	set_features(train_features->as<DotFeatures>());
 	set_labels(train_labels);
 	set_task_relation(task_relation);
 	register_parameters();
 }
 
-CMultitaskLinearMachine::~CMultitaskLinearMachine()
+MultitaskLinearMachine::~MultitaskLinearMachine()
 {
-	SG_UNREF(m_task_relation);
 }
 
-void CMultitaskLinearMachine::register_parameters()
+void MultitaskLinearMachine::register_parameters()
 {
-	SG_ADD((CSGObject**)&m_task_relation, "task_relation", "task relation");
+	SG_ADD(&m_task_relation, "task_relation", "task relation");
 }
 
-int32_t CMultitaskLinearMachine::get_current_task() const
+int32_t MultitaskLinearMachine::get_current_task() const
 {
 	return m_current_task;
 }
 
-void CMultitaskLinearMachine::set_current_task(int32_t task)
+void MultitaskLinearMachine::set_current_task(int32_t task)
 {
 	ASSERT(task>=0)
 	ASSERT(task<m_tasks_w.num_cols)
 	m_current_task = task;
 }
 
-CTaskRelation* CMultitaskLinearMachine::get_task_relation() const
+std::shared_ptr<TaskRelation> MultitaskLinearMachine::get_task_relation() const
 {
-	SG_REF(m_task_relation);
 	return m_task_relation;
 }
 
-void CMultitaskLinearMachine::set_task_relation(CTaskRelation* task_relation)
+void MultitaskLinearMachine::set_task_relation(std::shared_ptr<TaskRelation> task_relation)
 {
-	SG_REF(task_relation);
-	SG_UNREF(m_task_relation);
 	m_task_relation = task_relation;
 }
 
-bool CMultitaskLinearMachine::train_machine(CFeatures* data)
+bool MultitaskLinearMachine::train_machine(std::shared_ptr<Features> data)
 {
 	SG_NOTIMPLEMENTED
 	return false;
 }
 
-void CMultitaskLinearMachine::post_lock(CLabels* labels, CFeatures* features_)
+void MultitaskLinearMachine::post_lock(std::shared_ptr<Labels> labels, std::shared_ptr<Features> features_)
 {
-	set_features((CDotFeatures*)features_);
-	int n_tasks = ((CTaskGroup*)m_task_relation)->get_num_tasks();
-	SGVector<index_t>* tasks_indices = ((CTaskGroup*)m_task_relation)->get_tasks_indices();
+	set_features(features_->as<DotFeatures>());
+	int n_tasks = m_task_relation->as<TaskGroup>()->get_num_tasks();
+	SGVector<index_t>* tasks_indices = m_task_relation->as<TaskGroup>()->get_tasks_indices();
 
 	m_tasks_indices.clear();
 	for (int32_t i=0; i<n_tasks; i++)
@@ -100,9 +96,9 @@ void CMultitaskLinearMachine::post_lock(CLabels* labels, CFeatures* features_)
 	SG_FREE(tasks_indices);
 }
 
-bool CMultitaskLinearMachine::train_locked(SGVector<index_t> indices)
+bool MultitaskLinearMachine::train_locked(SGVector<index_t> indices)
 {
-	int n_tasks = ((CTaskGroup*)m_task_relation)->get_num_tasks();
+	int n_tasks = m_task_relation->as<TaskGroup>()->get_num_tasks();
 	ASSERT((int)m_tasks_indices.size()==n_tasks)
 	vector< vector<index_t> > cutted_task_indices;
 	for (int32_t i=0; i<n_tasks; i++)
@@ -131,15 +127,15 @@ bool CMultitaskLinearMachine::train_locked(SGVector<index_t> indices)
 	return res;
 }
 
-bool CMultitaskLinearMachine::train_locked_implementation(SGVector<index_t>* tasks)
+bool MultitaskLinearMachine::train_locked_implementation(SGVector<index_t>* tasks)
 {
 	SG_NOTIMPLEMENTED
 	return false;
 }
 
-CBinaryLabels* CMultitaskLinearMachine::apply_locked_binary(SGVector<index_t> indices)
+std::shared_ptr<BinaryLabels> MultitaskLinearMachine::apply_locked_binary(SGVector<index_t> indices)
 {
-	int n_tasks = ((CTaskGroup*)m_task_relation)->get_num_tasks();
+	int n_tasks = m_task_relation->as<TaskGroup>()->get_num_tasks();
 	SGVector<float64_t> result(indices.vlen);
 	result.zero();
 	for (int32_t i=0; i<indices.vlen; i++)
@@ -154,23 +150,23 @@ CBinaryLabels* CMultitaskLinearMachine::apply_locked_binary(SGVector<index_t> in
 			}
 		}
 	}
-	return new CBinaryLabels(result);
+	return std::make_shared<BinaryLabels>(result);
 }
 
-float64_t CMultitaskLinearMachine::apply_one(int32_t i)
+float64_t MultitaskLinearMachine::apply_one(int32_t i)
 {
 	SG_NOTIMPLEMENTED
 	return 0.0;
 }
 
-SGVector<float64_t> CMultitaskLinearMachine::apply_get_outputs(CFeatures* data)
+SGVector<float64_t> MultitaskLinearMachine::apply_get_outputs(std::shared_ptr<Features> data)
 {
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CDotFeatures\n")
+			SG_ERROR("Specified features are not of type DotFeatures\n")
 
-		set_features((CDotFeatures*) data);
+		set_features(data->as<DotFeatures>());
 	}
 
 	if (!features)
@@ -185,7 +181,7 @@ SGVector<float64_t> CMultitaskLinearMachine::apply_get_outputs(CFeatures* data)
 	return SGVector<float64_t>(out,num);
 }
 
-SGVector<float64_t> CMultitaskLinearMachine::get_w() const
+SGVector<float64_t> MultitaskLinearMachine::get_w() const
 {
 	SGVector<float64_t> w_(m_tasks_w.num_rows);
 	for (int32_t i=0; i<w_.vlen; i++)
@@ -193,33 +189,31 @@ SGVector<float64_t> CMultitaskLinearMachine::get_w() const
 	return w_;
 }
 
-void CMultitaskLinearMachine::set_w(const SGVector<float64_t> src_w)
+void MultitaskLinearMachine::set_w(const SGVector<float64_t> src_w)
 {
 	for (int32_t i=0; i<m_tasks_w.num_rows; i++)
 		m_tasks_w(i,m_current_task) = src_w[i];
 }
 
-void CMultitaskLinearMachine::set_bias(float64_t b)
+void MultitaskLinearMachine::set_bias(float64_t b)
 {
 	m_tasks_c[m_current_task] = b;
 }
 
-float64_t CMultitaskLinearMachine::get_bias()
+float64_t MultitaskLinearMachine::get_bias()
 {
 	return m_tasks_c[m_current_task];
 }
 
-SGVector<index_t>* CMultitaskLinearMachine::get_subset_tasks_indices()
+SGVector<index_t>* MultitaskLinearMachine::get_subset_tasks_indices()
 {
-	int n_tasks = ((CTaskGroup*)m_task_relation)->get_num_tasks();
-	SGVector<index_t>* tasks_indices = ((CTaskGroup*)m_task_relation)->get_tasks_indices();
+	int n_tasks = m_task_relation->as<TaskGroup>()->get_num_tasks();
+	SGVector<index_t>* tasks_indices = m_task_relation->as<TaskGroup>()->get_tasks_indices();
 
-	CSubsetStack* sstack = features->get_subset_stack();
+	auto sstack = features->get_subset_stack();
 	map<index_t,index_t> subset_inv_map = map<index_t,index_t>();
 	for (int32_t i=0; i<sstack->get_size(); i++)
 		subset_inv_map[sstack->subset_idx_conversion(i)] = i;
-
-	SG_UNREF(sstack);
 	sstack=NULL;
 
 	SGVector<index_t>* subset_tasks_indices = SG_MALLOC(SGVector<index_t>, n_tasks);

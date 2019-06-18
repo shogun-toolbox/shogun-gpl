@@ -149,7 +149,7 @@ inline uint32_t find_free_idx(bool *map, uint32_t size)
  * @return Structure with BMRM algorithm result
  */
 BmrmStatistics svm_bmrm_solver(
-		CDualLibQPBMSOSVM  *machine,
+		DualLibQPBMSOSVM  *machine,
 		SGVector<float64_t>& W,
 		float64_t          TolRel,
 		float64_t          TolAbs,

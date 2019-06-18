@@ -25,7 +25,7 @@ namespace shogun
  *
  */
 malsar_result_t malsar_low_rank(
-		CDotFeatures* features,
+		std::shared_ptr<DotFeatures> features,
 		double* y,
 		double rho,
 		const malsar_options& options);

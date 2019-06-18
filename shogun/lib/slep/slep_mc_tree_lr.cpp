@@ -28,8 +28,8 @@ namespace shogun
 {
 
 slep_result_t slep_mc_tree_lr(
-		CDotFeatures* features,
-		CMulticlassLabels* labels,
+		std::shared_ptr<DotFeatures> features,
+		std::shared_ptr<MulticlassLabels> labels,
 		float64_t z,
 		const slep_options& options)
 {
@@ -91,7 +91,7 @@ slep_result_t slep_mc_tree_lr(
 
 	int iter = 0;
 	bool done = false;
-	CTime time;
+	Time time;
 	//internal::set_is_malloc_allowed(false);
 	// while ((!done) && (iter<options.max_iter) && (!cancel_computation()))
 	while ((!done) && (iter < options.max_iter))
@@ -185,14 +185,14 @@ slep_result_t slep_mc_tree_lr(
 			if (l_sum <= r_sum*L)
 				break;
 			else
-				L = CMath::max(2*L, l_sum/r_sum);
+				L = Math::max(2*L, l_sum/r_sum);
 
 			inner_iter++;
 		}
 
 		// update alpha coefficients
 		alphap = alpha;
-		alpha = (1+CMath::sqrt(4*alpha*alpha+1))/2;
+		alpha = (1+Math::sqrt(4*alpha*alpha+1))/2;
 
 		// update wwp and ccp
 		wwp = w - wp;
@@ -221,7 +221,7 @@ slep_result_t slep_mc_tree_lr(
 		//cout << "Objective = " << objective << endl;
 
 		// check for termination of whole process
-		if ((CMath::abs(objective - objective_p) < options.tolerance*CMath::abs(objective_p)) && (iter>2))
+		if ((Math::abs(objective - objective_p) < options.tolerance*Math::abs(objective_p)) && (iter>2))
 		{
 			SG_SINFO("Objective changes less than tolerance\n")
 			done = true;

@@ -72,7 +72,7 @@ using namespace shogun;
 
 namespace shogun
 {
-	static larank_kcache_t* larank_kcache_create (CKernel* kernelfunc)
+	static larank_kcache_t* larank_kcache_create (std::shared_ptr<Kernel> kernelfunc)
 	{
 		larank_kcache_t *self;
 		self = SG_CALLOC (larank_kcache_t, 1);
@@ -179,7 +179,7 @@ namespace shogun
 		if (n > ol)
 		{
 			int32_t i;
-			int32_t nl = CMath::max (256, ol);
+			int32_t nl = Math::max (256, ol);
 			while (nl < n)
 				nl = nl + nl;
 			self->i2r = SG_REALLOC (int32_t, self->i2r, self->l, nl);
@@ -225,7 +225,7 @@ namespace shogun
 			self->rdata[k] = ndata;
 			self->rsize[k] = nlen;
 			self->cursize += (int64_t) (nlen - olen) * sizeof (float32_t);
-			self->maxrowlen = CMath::max (self->maxrowlen, nlen);
+			self->maxrowlen = Math::max (self->maxrowlen, nlen);
 		}
 	}
 
@@ -279,7 +279,7 @@ namespace shogun
 							xtruncate (self, k, r2);
 					}
 				}
-				mrl = CMath::max (mrl, self->rsize[k]);
+				mrl = Math::max (mrl, self->rsize[k]);
 				k = nk;
 			}
 			self->maxrowlen = mrl;
@@ -293,13 +293,13 @@ namespace shogun
 
 	static void larank_kcache_swap_rr (larank_kcache_t * self, int32_t r1, int32_t r2)
 	{
-		xminsize (self, 1 + CMath::max(r1, r2));
+		xminsize (self, 1 + Math::max(r1, r2));
 		xswap (self, self->r2i[r1], self->r2i[r2], r1, r2);
 	}
 
 	static void larank_kcache_swap_ri (larank_kcache_t * self, int32_t r1, int32_t i2)
 	{
-		xminsize (self, 1 + CMath::max (r1, i2));
+		xminsize (self, 1 + Math::max (r1, i2));
 		xswap (self, self->r2i[r1], i2, r1, self->i2r[i2]);
 	}
 
@@ -376,7 +376,7 @@ namespace shogun
 			int32_t olen, p;
 			float32_t *d;
 			if (i >= self->l || len >= self->l)
-				xminsize (self, CMath::max (1 + i, len));
+				xminsize (self, Math::max (1 + i, len));
 			olen = self->rsize[i];
 			if (olen < len)
 			{
@@ -407,7 +407,7 @@ namespace shogun
 
 
 // Initializing an output class (basically creating a kernel cache for it)
-void LaRankOutput::initialize (CKernel* kfunc, int64_t cache)
+void LaRankOutput::initialize (std::shared_ptr<Kernel> kfunc, int64_t cache)
 {
 	kernel = larank_kcache_create (kfunc);
 	larank_kcache_set_maximum_size (kernel, cache * 1024 * 1024);
@@ -588,7 +588,7 @@ int32_t LaRankOutput::getSV (float32_t* &sv) const
 	return l;
 }
 
-CLaRank::CLaRank (): RandomMixin<CMulticlassSVM>(new CMulticlassOneVsRestStrategy()),
+LaRank::LaRank (): RandomMixin<MulticlassSVM>(std::make_shared<MulticlassOneVsRestStrategy>()),
 	nb_seen_examples (0), nb_removed (0),
 	n_pro (0), n_rep (0), n_opt (0),
 	w_pro (1), w_rep (1), w_opt (1), y0 (0), m_dual (0),
@@ -596,8 +596,8 @@ CLaRank::CLaRank (): RandomMixin<CMulticlassSVM>(new CMulticlassOneVsRestStrateg
 {
 }
 
-CLaRank::CLaRank (float64_t C, CKernel* k, CLabels* lab):
-	RandomMixin<CMulticlassSVM>(new CMulticlassOneVsRestStrategy(), C, k, lab),
+LaRank::LaRank (float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab):
+	RandomMixin<MulticlassSVM>(std::make_shared<MulticlassOneVsRestStrategy>(), C, k, lab),
 	nb_seen_examples (0), nb_removed (0),
 	n_pro (0), n_rep (0), n_opt (0),
 	w_pro (1), w_rep (1), w_opt (1), y0 (0), m_dual (0),
@@ -605,12 +605,12 @@ CLaRank::CLaRank (float64_t C, CKernel* k, CLabels* lab):
 {
 }
 
-CLaRank::~CLaRank ()
+LaRank::~LaRank ()
 {
 	destroy();
 }
 
-bool CLaRank::train_machine(CFeatures* data)
+bool LaRank::train_machine(std::shared_ptr<Features> data)
 {
 	tau = 0.0001;
 
@@ -639,6 +639,7 @@ bool CLaRank::train_machine(CFeatures* data)
 
 	auto pb = SG_PROGRESS(range(0, 10));
 	SG_INFO("Training on %d examples\n", nb_train)
+	auto mc = multiclass_labels(m_labels);
 	while (gap > get_C() && (!cancel_computation()) &&
 	       n_it < max_iteration) // stopping criteria
 	{
@@ -646,7 +647,7 @@ bool CLaRank::train_machine(CFeatures* data)
 		int32_t ind = step;
 		for (int32_t i = 0; i < nb_train; i++)
 		{
-			int32_t y=((CMulticlassLabels*) m_labels)->get_label(i);
+			int32_t y=mc->get_label(i);
 			if (add (i, y) != y)   // call the add function
 				tr_err++;
 
@@ -662,8 +663,8 @@ bool CLaRank::train_machine(CFeatures* data)
 		SG_DEBUG("Train error (online): %f%%\n", (tr_err / nb_train) * 100)
 		gap = computeGap ();
 		pb.print_absolute(
-		    gap, -CMath::log10(gap), -CMath::log10(DBL_MAX),
-		    -CMath::log10(get_C()));
+		    gap, -Math::log10(gap), -Math::log10(DBL_MAX),
+		    -Math::log10(get_C()));
 
 		if (!batch_mode)        // skip stopping criteria if online mode
 			gap = 0;
@@ -695,7 +696,7 @@ bool CLaRank::train_machine(CFeatures* data)
 		ASSERT(l>0)
 		SG_DEBUG("svm[%d] has %d sv, b=%f\n", i, l, 0.0)
 
-		CSVM* svm=new CSVM(l);
+		auto svm=std::make_shared<SVM>(l);
 
 		for (int32_t j=0; j<l; j++)
 		{
@@ -713,7 +714,7 @@ bool CLaRank::train_machine(CFeatures* data)
 }
 
 // LEARNING FUNCTION: add new patterns and run optimization steps selected with adaptative schedule
-int32_t CLaRank::add (int32_t x_id, int32_t yi)
+int32_t LaRank::add (int32_t x_id, int32_t yi)
 {
 	++nb_seen_examples;
 	// create a new output object if this one has never been seen before
@@ -736,10 +737,10 @@ int32_t CLaRank::add (int32_t x_id, int32_t yi)
 	LaRankPattern & pattern = (patterns.isPattern (x_id)) ? patterns.getPattern (x_id) : tpattern;
 
 	// ProcessNew with the "fresh" pattern
-	float64_t time1 = CTime::get_curtime();
+	float64_t time1 = Time::get_curtime();
 	process_return_t pro_ret = process (pattern, processNew);
 	float64_t dual_increase = pro_ret.dual_increase;
-	float64_t duration = (CTime::get_curtime() - time1);
+	float64_t duration = (Time::get_curtime() - time1);
 	float64_t coeff = dual_increase / (0.00001 + duration);
 	m_dual += dual_increase;
 	n_pro++;
@@ -766,9 +767,9 @@ int32_t CLaRank::add (int32_t x_id, int32_t yi)
 		}
 		else if ((r > w_pro) && (r <= w_pro + w_rep))	// ProcessOld here
 		{
-			float64_t ltime1 = CTime::get_curtime ();
+			float64_t ltime1 = Time::get_curtime ();
 			float64_t ldual_increase = reprocess ();
-			float64_t lduration = (CTime::get_curtime () - ltime1);
+			float64_t lduration = (Time::get_curtime () - ltime1);
 			float64_t lcoeff = ldual_increase / (0.00001 + lduration);
 			m_dual += ldual_increase;
 			n_rep++;
@@ -776,9 +777,9 @@ int32_t CLaRank::add (int32_t x_id, int32_t yi)
 		}
 		else			// Optimize here
 		{
-			float64_t ltime1 = CTime::get_curtime ();
+			float64_t ltime1 = Time::get_curtime ();
 			float64_t ldual_increase = optimize ();
-			float64_t lduration = (CTime::get_curtime () - ltime1);
+			float64_t lduration = (Time::get_curtime () - ltime1);
 			float64_t lcoeff = ldual_increase / (0.00001 + lduration);
 			m_dual += ldual_increase;
 			n_opt++;
@@ -791,7 +792,7 @@ int32_t CLaRank::add (int32_t x_id, int32_t yi)
 }
 
 // PREDICTION FUNCTION: main function in la_rank_classify
-int32_t CLaRank::predict (int32_t x_id)
+int32_t LaRank::predict (int32_t x_id)
 {
 	int32_t res = -1;
 	float64_t score_max = -DBL_MAX;
@@ -807,7 +808,7 @@ int32_t CLaRank::predict (int32_t x_id)
 	return res;
 }
 
-void CLaRank::destroy ()
+void LaRank::destroy ()
 {
 	for (outputhash_t::iterator it = outputs.begin (); it != outputs.end ();++it)
 		it->second.destroy ();
@@ -816,7 +817,7 @@ void CLaRank::destroy ()
 
 
 // Compute Duality gap (costly but used in stopping criteria in batch mode)
-float64_t CLaRank::computeGap ()
+float64_t LaRank::computeGap ()
 {
 	float64_t sum_sl = 0;
 	float64_t sum_bi = 0;
@@ -841,19 +842,19 @@ float64_t CLaRank::computeGap ()
 					gmin = g;
 			}
 		}
-		sum_sl += CMath::max (0.0, gi - gmin);
+		sum_sl += Math::max (0.0, gi - gmin);
 	}
-	return CMath::max (0.0, computeW2 () + get_C() * sum_sl - sum_bi);
+	return Math::max (0.0, computeW2 () + get_C() * sum_sl - sum_bi);
 }
 
 // Nuber of classes so far
-uint32_t CLaRank::getNumOutputs () const
+uint32_t LaRank::getNumOutputs () const
 {
 	return outputs.size ();
 }
 
 // Set max number of iterations before training is stopped
-void CLaRank::set_max_iteration(int32_t max_iter)
+void LaRank::set_max_iteration(int32_t max_iter)
 {
     REQUIRE(max_iter > 0,
             "Max iteration (given: %d) must be positive.\n",
@@ -862,7 +863,7 @@ void CLaRank::set_max_iteration(int32_t max_iter)
 }
 
 // Number of Support Vectors
-int32_t CLaRank::getNSV ()
+int32_t LaRank::getNSV ()
 {
 	int32_t res = 0;
 	for (outputhash_t::const_iterator it = outputs.begin (); it != outputs.end (); ++it)
@@ -875,7 +876,7 @@ int32_t CLaRank::getNSV ()
 }
 
 // Norm of the parameters vector
-float64_t CLaRank::computeW2 ()
+float64_t LaRank::computeW2 ()
 {
 	float64_t res = 0;
 	for (uint32_t i = 0; i < patterns.maxcount (); ++i)
@@ -891,7 +892,7 @@ float64_t CLaRank::computeW2 ()
 }
 
 // Compute Dual objective value
-float64_t CLaRank::getDual ()
+float64_t LaRank::getDual ()
 {
 	float64_t res = 0;
 	for (uint32_t i = 0; i < patterns.maxcount (); ++i)
@@ -907,14 +908,14 @@ float64_t CLaRank::getDual ()
 	return res - computeW2 () / 2;
 }
 
-LaRankOutput *CLaRank::getOutput (int32_t index)
+LaRankOutput *LaRank::getOutput (int32_t index)
 {
 	outputhash_t::iterator it = outputs.find (index);
 	return it == outputs.end ()? NULL : &it->second;
 }
 
 // IMPORTANT Main SMO optimization step
-CLaRank::process_return_t CLaRank::process (const LaRankPattern & pattern, process_type ptype)
+LaRank::process_return_t LaRank::process (const LaRankPattern & pattern, process_type ptype)
 {
 	process_return_t pro_ret = process_return_t (0, 0);
 
@@ -1009,12 +1010,12 @@ CLaRank::process_return_t CLaRank::process (const LaRankPattern & pattern, proce
 	{
 		float64_t beta = outp->getBeta (pattern.x_id);
 		if (ygp.output == pattern.y)
-			lambda = CMath::min (lambda, get_C() - beta);
+			lambda = Math::min (lambda, get_C() - beta);
 		else
-			lambda = CMath::min (lambda, fabs (beta));
+			lambda = Math::min (lambda, fabs (beta));
 	}
 	else
-		lambda = CMath::min (lambda, get_C());
+		lambda = Math::min (lambda, get_C());
 
 	/*
 	 ** update the solution
@@ -1027,7 +1028,7 @@ CLaRank::process_return_t CLaRank::process (const LaRankPattern & pattern, proce
 }
 
 // ProcessOld
-float64_t CLaRank::reprocess ()
+float64_t LaRank::reprocess ()
 {
 	if (patterns.size ())
 	{
@@ -1042,7 +1043,7 @@ float64_t CLaRank::reprocess ()
 }
 
 // Optimize
-float64_t CLaRank::optimize ()
+float64_t LaRank::optimize ()
 {
 	float64_t dual_increase = 0;
 	if (patterns.size ())
@@ -1058,7 +1059,7 @@ float64_t CLaRank::optimize ()
 }
 
 // remove patterns and return the number of patterns that were removed
-uint32_t CLaRank::cleanup ()
+uint32_t LaRank::cleanup ()
 {
 	/*
 	for (outputhash_t::iterator it = outputs.begin (); it != outputs.end (); ++it)

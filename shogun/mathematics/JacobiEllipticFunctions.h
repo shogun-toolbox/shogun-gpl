@@ -52,7 +52,7 @@ namespace shogun
  * \f$sn,cn,dn\f$. Useful for computing rational approximation of matrix
  * functions given by Cauchy's integral formula, etc.
  */
-class CJacobiEllipticFunctions: public CSGObject
+class JacobiEllipticFunctions: public SGObject
 {
 #if defined HAVE_ARPREC
 	typedef mp_real Real;

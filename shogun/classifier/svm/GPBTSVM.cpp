@@ -18,22 +18,22 @@
 
 using namespace shogun;
 
-CGPBTSVM::CGPBTSVM()
-: CSVM(), model(NULL)
+GPBTSVM::GPBTSVM()
+: SVM(), model(NULL)
 {
 }
 
-CGPBTSVM::CGPBTSVM(float64_t C, CKernel* k, CLabels* lab)
-: CSVM(C, k, lab), model(NULL)
+GPBTSVM::GPBTSVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab)
+: SVM(C, k, lab), model(NULL)
 {
 }
 
-CGPBTSVM::~CGPBTSVM()
+GPBTSVM::~GPBTSVM()
 {
 	SG_FREE(model);
 }
 
-bool CGPBTSVM::train_machine(CFeatures* data)
+bool GPBTSVM::train_machine(std::shared_ptr<Features> data)
 {
 	float64_t* solution;                     /* store the solution found       */
 	QPproblem prob;                          /* object containing the solvers  */
@@ -48,8 +48,8 @@ bool CGPBTSVM::train_machine(CFeatures* data)
 		kernel->init(data, data);
 	}
 
-	SGVector<int32_t> lab=((CBinaryLabels*) m_labels)->get_int_labels();
-	prob.KER=new sKernel(kernel, lab.vlen);
+	SGVector<int32_t> lab=m_labels->as<BinaryLabels>()->get_int_labels();
+	prob.KER=new sKernel(kernel.get(), lab.vlen);
 	prob.y=lab.vector;
 	prob.ell=lab.vlen;
 	SG_INFO("%d trainlabels\n", prob.ell)
@@ -97,7 +97,7 @@ bool CGPBTSVM::train_machine(CFeatures* data)
 	prob.gpdtsolve(solution);
 	/****************************************************************************/
 
-	CSVM::set_objective(prob.objective_value);
+	SVM::set_objective(prob.objective_value);
 
 	int32_t num_sv=0;
 	int32_t bsv=0;
@@ -123,7 +123,7 @@ bool CGPBTSVM::train_machine(CFeatures* data)
 		if (solution[i] > prob.DELTAsv)
 		{
 			set_support_vector(k, i);
-			set_alpha(k++, solution[i]*((CBinaryLabels*) m_labels)->get_label(i));
+			set_alpha(k++, solution[i]*(m_labels->as<BinaryLabels>()->get_label(i)));
 		}
 	}
 

@@ -101,7 +101,7 @@ v_array<T> pop(v_array<v_array<T> > &stack)
 
 /**
  * Type used to indicate where to find (either lhs or rhs) the
- * coordinate information  of this point in the CDistance object
+ * coordinate information  of this point in the Distance object
  * associated
  */
 enum EFeaturesContainer
@@ -115,14 +115,14 @@ enum EFeaturesContainer
  * parse_points and print, see below) so it can be used with the
  * CoverTree implementation.
  */
-class CJLCoverTreePoint
+class JLCoverTreePoint
 {
 
 	public:
 
 		/** Distance object where to find the coordinate information of
 		 * this point */
-		CDistance* m_distance;
+		std::shared_ptr<Distance> m_distance;
 
 		/** Index of this point in m_distance */
 		int32_t m_index;
@@ -135,7 +135,7 @@ class CJLCoverTreePoint
 /** Functions declared out of the class definition to respect JLCoverTree
  *  structure */
 
-float distance(CJLCoverTreePoint p1, CJLCoverTreePoint p2, float64_t upper_bound)
+float distance(JLCoverTreePoint p1, JLCoverTreePoint p2, float64_t upper_bound)
 {
 	/** Call m_distance->distance() with the proper index order depending on
 	 *  the feature containers in m_distance for each of the points*/
@@ -179,19 +179,19 @@ float distance(CJLCoverTreePoint p1, CJLCoverTreePoint p2, float64_t upper_bound
 	return -1;
 }
 
-/** Fills up a v_array of CJLCoverTreePoint objects */
-v_array< CJLCoverTreePoint > parse_points(CDistance* distance, EFeaturesContainer fc)
+/** Fills up a v_array of JLCoverTreePoint objects */
+v_array< JLCoverTreePoint > parse_points(std::shared_ptr<Distance> distance, EFeaturesContainer fc)
 {
-	CFeatures* features;
+	std::shared_ptr<Features> features;
 	if ( fc == FC_LHS )
 		features = distance->get_lhs();
 	else
 		features = distance->get_rhs();
 
-	v_array< CJLCoverTreePoint > parsed;
+	v_array< JLCoverTreePoint > parsed;
 	for ( int32_t i = 0 ; i < features->get_num_vectors() ; ++i )
 	{
-		CJLCoverTreePoint new_point;
+		JLCoverTreePoint new_point;
 
 		new_point.m_distance = distance;
 		new_point.m_index = i;
@@ -204,7 +204,7 @@ v_array< CJLCoverTreePoint > parse_points(CDistance* distance, EFeaturesContaine
 }
 
 /** Print the information of the CoverTree point */
-void print(CJLCoverTreePoint &p)
+void print(JLCoverTreePoint &p)
 {
 	SG_SERROR("Print JLCoverTreePoint not implemented\n")
 }

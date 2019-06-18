@@ -93,7 +93,7 @@ static float il2 = 1. / log(base);
 
 inline float dist_of_scale (int s)
 {
-  return CMath::pow(base, s);
+  return Math::pow(base, s);
 }
 
 inline int get_scale(float d)
@@ -210,7 +210,7 @@ node<P> batch_insert(const P& p,
     return new_leaf(p);
   else {
     float max_dist = max_set(point_set); //O(|point_set|)
-    int next_scale = CMath::min(max_scale - 1, get_scale(max_dist));
+    int next_scale = Math::min(max_scale - 1, get_scale(max_dist));
     if (next_scale == -2147483647-1) // We have points with distance 0.
       {
 	v_array<node<P> > children;
@@ -419,13 +419,13 @@ void halfsort (v_array<d_node<P> > cover_set)
       d_node<P> *mid = base_ptr + ((hi - base_ptr) >> 1);
 
       if (compare ( mid,  base_ptr) < 0.)
-	CMath::swap(*mid, *base_ptr);
+	Math::swap(*mid, *base_ptr);
       if (compare ( hi,  mid) < 0.)
-	CMath::swap(*mid, *hi);
+	Math::swap(*mid, *hi);
       else
 	goto jump_over;
       if (compare ( mid,  base_ptr) < 0.)
-	CMath::swap(*mid, *base_ptr);
+	Math::swap(*mid, *base_ptr);
     jump_over:;
 
       left_ptr  = base_ptr + 1;
@@ -441,7 +441,7 @@ void halfsort (v_array<d_node<P> > cover_set)
 
 	  if (left_ptr < right_ptr)
 	    {
-	      CMath::swap(*left_ptr, *right_ptr);
+	      Math::swap(*left_ptr, *right_ptr);
 	      if (mid == left_ptr)
 		mid = right_ptr;
 	      else if (mid == right_ptr)

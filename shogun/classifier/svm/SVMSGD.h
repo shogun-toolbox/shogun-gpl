@@ -33,7 +33,7 @@
 namespace shogun
 {
 /** @brief class SVMSGD */
-class CSVMSGD : public CLinearMachine
+class SVMSGD : public LinearMachine
 {
 	public:
 
@@ -41,13 +41,13 @@ class CSVMSGD : public CLinearMachine
 		MACHINE_PROBLEM_TYPE(PT_BINARY);
 
 		/** default constructor  */
-		CSVMSGD();
+		SVMSGD();
 
 		/** constructor
 		 *
 		 * @param C constant C
 		 */
-		CSVMSGD(float64_t C);
+		SVMSGD(float64_t C);
 
 		/** constructor
 		 *
@@ -55,11 +55,11 @@ class CSVMSGD : public CLinearMachine
 		 * @param traindat training features
 		 * @param trainlab labels for training features
 		 */
-		CSVMSGD(
-			float64_t C, CDotFeatures* traindat,
-			CLabels* trainlab);
+		SVMSGD(
+			float64_t C, std::shared_ptr<DotFeatures> traindat,
+			std::shared_ptr<Labels> trainlab);
 
-		virtual ~CSVMSGD();
+		virtual ~SVMSGD();
 
 		/** set C
 		 *
@@ -121,13 +121,13 @@ class CSVMSGD : public CLinearMachine
 		 *
 		 * @param loss_func object derived from CLossFunction
 		 */
-		void set_loss_function(CLossFunction* loss_func);
+		void set_loss_function(std::shared_ptr<LossFunction> loss_func);
 
 		/** Return the loss function
 		 *
 		 * @return loss function as CLossFunction*
 		 */
-		inline CLossFunction* get_loss_function() { SG_REF(loss); return loss; }
+		inline std::shared_ptr<LossFunction> get_loss_function() { return loss; }
 
 		/** @return object name */
 		virtual const char* get_name() const { return "SVMSGD"; }
@@ -144,7 +144,7 @@ class CSVMSGD : public CLinearMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
 
 	private:
 		void init();
@@ -162,7 +162,7 @@ class CSVMSGD : public CLinearMachine
 		bool use_bias;
 		bool use_regularized_bias;
 
-		CLossFunction* loss;
+		std::shared_ptr<LossFunction> loss;
 };
 }
 #endif

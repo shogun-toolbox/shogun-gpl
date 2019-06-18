@@ -122,7 +122,7 @@ public:
    * @param k kernel
    * @param ell ell
    */
-  sKernel (shogun::CKernel* k, int32_t ell);
+  sKernel (shogun::Kernel* k, int32_t ell);
   ~sKernel();
 
   /** set data
@@ -176,13 +176,13 @@ public:
    *
    * @return kernel
    */
-  inline CKernel* get_kernel()
+  inline Kernel* get_kernel()
   {
     return kernel;
   }
 
 private:
-  CKernel* kernel;
+  Kernel* kernel;
   int32_t    vauxRow;
   int32_t    IsSubproblem;
   int32_t    ell, dim;

@@ -47,11 +47,11 @@ enum ESolver
  *     Bundle Methods for Regularized Risk Minimization
  *     http://users.cecs.anu.edu.au/~chteo/pub/TeoVisSmoLe10.pdf
  */
-class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
+class DualLibQPBMSOSVM : public LinearStructuredOutputMachine
 {
 	public:
 		/** default constructor */
-		CDualLibQPBMSOSVM();
+		DualLibQPBMSOSVM();
 
 		/** constructor
 		 *
@@ -60,14 +60,14 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 		 * @param _lambda		Regularization constant
 		 * @param W				initial solution of weight vector
 		 */
-		CDualLibQPBMSOSVM(
-				CStructuredModel*		model,
-				CStructuredLabels*		labs,
+		DualLibQPBMSOSVM(
+				std::shared_ptr<StructuredModel>		model,
+				std::shared_ptr<StructuredLabels>		labs,
 				float64_t				_lambda,
 				SGVector< float64_t >	W=0);
 
 		/** destructor */
-		virtual ~CDualLibQPBMSOSVM();
+		virtual ~DualLibQPBMSOSVM();
 
 		/** @return name of SGSerializable */
 		virtual const char* get_name() const { return "DualLibQPBMSOSVM"; }
@@ -233,7 +233,7 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 		/** train dual SO-SVM
 		 *
 		 */
-		bool train_machine(CFeatures* data=NULL);
+		bool train_machine(std::shared_ptr<Features> data=NULL);
 
 	private:
 		/** init parameters
@@ -279,7 +279,7 @@ class CDualLibQPBMSOSVM : public CLinearStructuredOutputMachine
 		/** store training information*/
 		bool m_store_train_info;
 
-}; /* class CDualLibQPBMSOSVM */
+}; /* class DualLibQPBMSOSVM */
 
 } /* namespace shogun */
 

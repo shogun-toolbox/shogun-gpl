@@ -19,27 +19,27 @@
 namespace shogun
 {
 
-CFeatureBlockLogisticRegression::CFeatureBlockLogisticRegression() :
-	CLinearMachine()
+FeatureBlockLogisticRegression::FeatureBlockLogisticRegression() :
+	LinearMachine()
 {
 	init();
 	register_parameters();
 }
 
-CFeatureBlockLogisticRegression::CFeatureBlockLogisticRegression(
-     float64_t z, CFeatures* train_features,
-     CLabels* train_labels, CIndexBlockRelation* feature_relation) :
-	CLinearMachine()
+FeatureBlockLogisticRegression::FeatureBlockLogisticRegression(
+     float64_t z, std::shared_ptr<Features> train_features,
+     std::shared_ptr<Labels> train_labels, std::shared_ptr<IndexBlockRelation> feature_relation) :
+	LinearMachine()
 {
 	init();
 	set_feature_relation(feature_relation);
 	set_z(z);
-	set_features(train_features->as<CDotFeatures>());
-	set_labels(train_labels->as<CBinaryLabels>());
+	set_features(train_features->as<DotFeatures>());
+	set_labels(train_labels->as<BinaryLabels>());
 	register_parameters();
 }
 
-void CFeatureBlockLogisticRegression::init()
+void FeatureBlockLogisticRegression::init()
 {
 	m_feature_relation=NULL;
 	m_z=0.0;
@@ -50,14 +50,13 @@ void CFeatureBlockLogisticRegression::init()
 	m_max_iter=1000;
 }
 
-CFeatureBlockLogisticRegression::~CFeatureBlockLogisticRegression()
+FeatureBlockLogisticRegression::~FeatureBlockLogisticRegression()
 {
-	SG_UNREF(m_feature_relation);
 }
 
-void CFeatureBlockLogisticRegression::register_parameters()
+void FeatureBlockLogisticRegression::register_parameters()
 {
-	SG_ADD((CSGObject**)&m_feature_relation, "feature_relation", "feature relation");
+	SG_ADD(&m_feature_relation, "feature_relation", "feature relation");
 	SG_ADD(&m_z, "z", "regularization coefficient", ParameterProperties::HYPER);
 	SG_ADD(&m_q, "q", "q of L1/Lq", ParameterProperties::HYPER);
 	SG_ADD(&m_termination, "termination", "termination");
@@ -66,87 +65,84 @@ void CFeatureBlockLogisticRegression::register_parameters()
 	SG_ADD(&m_max_iter, "max_iter", "maximum number of iterations");
 }
 
-CIndexBlockRelation* CFeatureBlockLogisticRegression::get_feature_relation() const
+std::shared_ptr<IndexBlockRelation> FeatureBlockLogisticRegression::get_feature_relation() const
 {
-	SG_REF(m_feature_relation);
 	return m_feature_relation;
 }
 
-void CFeatureBlockLogisticRegression::set_feature_relation(CIndexBlockRelation* feature_relation)
+void FeatureBlockLogisticRegression::set_feature_relation(std::shared_ptr<IndexBlockRelation> feature_relation)
 {
-	SG_REF(feature_relation);
-	SG_UNREF(m_feature_relation);
 	m_feature_relation = feature_relation;
 }
 
-int32_t CFeatureBlockLogisticRegression::get_max_iter() const
+int32_t FeatureBlockLogisticRegression::get_max_iter() const
 {
 	return m_max_iter;
 }
 
-int32_t CFeatureBlockLogisticRegression::get_regularization() const
+int32_t FeatureBlockLogisticRegression::get_regularization() const
 {
 	return m_regularization;
 }
 
-int32_t CFeatureBlockLogisticRegression::get_termination() const
+int32_t FeatureBlockLogisticRegression::get_termination() const
 {
 	return m_termination;
 }
 
-float64_t CFeatureBlockLogisticRegression::get_tolerance() const
+float64_t FeatureBlockLogisticRegression::get_tolerance() const
 {
 	return m_tolerance;
 }
 
-float64_t CFeatureBlockLogisticRegression::get_z() const
+float64_t FeatureBlockLogisticRegression::get_z() const
 {
 	return m_z;
 }
 
-float64_t CFeatureBlockLogisticRegression::get_q() const
+float64_t FeatureBlockLogisticRegression::get_q() const
 {
 	return m_q;
 }
 
-void CFeatureBlockLogisticRegression::set_max_iter(int32_t max_iter)
+void FeatureBlockLogisticRegression::set_max_iter(int32_t max_iter)
 {
 	ASSERT(max_iter>=0)
 	m_max_iter = max_iter;
 }
 
-void CFeatureBlockLogisticRegression::set_regularization(int32_t regularization)
+void FeatureBlockLogisticRegression::set_regularization(int32_t regularization)
 {
 	ASSERT(regularization==0 || regularization==1)
 	m_regularization = regularization;
 }
 
-void CFeatureBlockLogisticRegression::set_termination(int32_t termination)
+void FeatureBlockLogisticRegression::set_termination(int32_t termination)
 {
 	ASSERT(termination>=0 && termination<=4)
 	m_termination = termination;
 }
 
-void CFeatureBlockLogisticRegression::set_tolerance(float64_t tolerance)
+void FeatureBlockLogisticRegression::set_tolerance(float64_t tolerance)
 {
 	ASSERT(tolerance>0.0)
 	m_tolerance = tolerance;
 }
 
-void CFeatureBlockLogisticRegression::set_z(float64_t z)
+void FeatureBlockLogisticRegression::set_z(float64_t z)
 {
 	m_z = z;
 }
 
-void CFeatureBlockLogisticRegression::set_q(float64_t q)
+void FeatureBlockLogisticRegression::set_q(float64_t q)
 {
 	m_q = q;
 }
 
-bool CFeatureBlockLogisticRegression::train_machine(CFeatures* data)
+bool FeatureBlockLogisticRegression::train_machine(std::shared_ptr<Features> data)
 {
-	if (data && (CDotFeatures*)data)
-		set_features((CDotFeatures*)data);
+	if (data)
+		set_features(data->as<DotFeatures>());
 
 	ASSERT(features)
 	ASSERT(m_labels)
@@ -154,7 +150,7 @@ bool CFeatureBlockLogisticRegression::train_machine(CFeatures* data)
 	int32_t n_vecs = m_labels->get_num_labels();
 	SGVector<float64_t> y(n_vecs);
 	for (int32_t i=0; i<n_vecs; i++)
-		y[i] = ((CBinaryLabels*)m_labels)->get_label(i);
+		y[i] = m_labels->as<BinaryLabels>()->get_label(i);
 
 	slep_options options = slep_options::default_options();
 	options.q = m_q;
@@ -169,7 +165,7 @@ bool CFeatureBlockLogisticRegression::train_machine(CFeatures* data)
 	{
 		case GROUP:
 		{
-			CIndexBlockGroup* feature_group = (CIndexBlockGroup*)m_feature_relation;
+			auto feature_group = m_feature_relation->as<IndexBlockGroup>();
 			SGVector<index_t> ind = feature_group->get_SLEP_ind();
 			options.ind = ind.vector;
 			options.n_feature_blocks = ind.vlen-1;
@@ -196,7 +192,7 @@ bool CFeatureBlockLogisticRegression::train_machine(CFeatures* data)
 		break;
 		case TREE:
 		{
-			CIndexBlockTree* feature_tree = (CIndexBlockTree*)m_feature_relation;
+			auto feature_tree = m_feature_relation->as<IndexBlockTree>();
 
 			SGVector<float64_t> ind_t = feature_tree->get_SLEP_ind_t();
 			SGVector<float64_t> G;
@@ -231,20 +227,20 @@ bool CFeatureBlockLogisticRegression::train_machine(CFeatures* data)
 	return true;
 }
 
-float64_t CFeatureBlockLogisticRegression::apply_one(int32_t vec_idx)
+float64_t FeatureBlockLogisticRegression::apply_one(int32_t vec_idx)
 {
 	SGVector<float64_t> w = get_w();
 	return std::exp(-(features->dense_dot(vec_idx, w.vector, w.vlen) + bias));
 }
 
-SGVector<float64_t> CFeatureBlockLogisticRegression::apply_get_outputs(CFeatures* data)
+SGVector<float64_t> FeatureBlockLogisticRegression::apply_get_outputs(std::shared_ptr<Features> data)
 {
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CDotFeatures\n")
+			SG_ERROR("Specified features are not of type DotFeatures\n")
 
-		set_features((CDotFeatures*) data);
+		set_features(data->as<DotFeatures>());
 	}
 
 	if (!features)
