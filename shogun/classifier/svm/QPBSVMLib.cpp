@@ -55,6 +55,7 @@
 #include <shogun/mathematics/Cplex.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
+#include <shogun/mathematics/UniformRealDistribution.h>
 
 #include <shogun/classifier/svm/QPBSVMLib.h>
 #include <shogun/lib/external/pr_loqo.h>
@@ -84,7 +85,7 @@ CQPBSVMLib::CQPBSVMLib()
 
 CQPBSVMLib::CQPBSVMLib(
 	float64_t* H, int32_t n, float64_t* f, int32_t m, float64_t UB)
-: CSGObject()
+: RandomMixin<CSGObject>()
 {
 	ASSERT(H && n>0)
 	m_H=H;
@@ -592,9 +593,10 @@ int32_t CQPBSVMLib::qpbsvm_gauss_seidel(float64_t *x,
             float64_t **ptr_History,
             int32_t   verb)
 {
+  UniformRealDistribution<float64_t> uniform_real_dist(0.0, 1.0);
   SGVector<float64_t> wrap_x(x, m_dim, false);
 	for (int32_t i=0; i<m_dim; i++)
-		x[i]=CMath::random(0.0, 1.0);
+		x[i]=uniform_real_dist(m_prng);
 
 	for (int32_t t=0; t<200; t++)
 	{
@@ -625,9 +627,10 @@ int32_t CQPBSVMLib::qpbsvm_gradient_descent(float64_t *x,
             float64_t **ptr_History,
             int32_t   verb)
 {
+  UniformRealDistribution<float64_t> uniform_real_dist(0.0, 1.0);
   SGVector<float64_t> wrap_x(x, m_dim, false);
 	for (int32_t i=0; i<m_dim; i++)
-		x[i]=CMath::random(0.0, 1.0);
+		x[i]=uniform_real_dist(m_prng);
 
 	for (int32_t t=0; t<2000; t++)
 	{
