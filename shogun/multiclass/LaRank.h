@@ -61,6 +61,9 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/multiclass/MulticlassSVM.h>
+#include <shogun/mathematics/RandomMixin.h>
+#include <shogun/mathematics/RandomNamespace.h>
+#include <shogun/mathematics/UniformIntDistribution.h>
 
 namespace shogun
 {
@@ -247,12 +250,15 @@ namespace shogun
 				return patterns.size () - freeidx.size ();
 			}
 
-			LaRankPattern & sample ()
+			template <typename PRNG>
+			LaRankPattern & sample (PRNG& prng)
 			{
 				ASSERT (!empty ())
+				UniformIntDistribution<uint32_t>
+					uniform_int_dist(uint32_t(0), uint32_t(patterns.size() - 1));
 				while (true)
 				{
-					uint32_t r = CMath::random(uint32_t(0), uint32_t(patterns.size ()-1));
+					uint32_t r = uniform_int_dist(prng);
 					if (patterns[r].exists ())
 						return patterns[r];
 				}
@@ -315,7 +321,7 @@ namespace shogun
 	 The current value of the upper limit can be queried
 	 with get_max_iteration() method.
 	 */
-	class CLaRank:  public CMulticlassSVM
+	class CLaRank:  public RandomMixin<CMulticlassSVM>
 	{
 		public:
                         /** Default constructor
