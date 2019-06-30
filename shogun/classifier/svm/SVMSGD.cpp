@@ -122,7 +122,7 @@ bool CSVMSGD::train_machine(CFeatures* data)
 		{
 			float64_t eta = 1.0 / (lambda * t);
 			float64_t y = labels->get_label(i);
-			float64_t z = y * (features->dense_dot(i, w.vector, w.vlen) + bias);
+			float64_t z = y * (features->dot(i, w) + bias);
 
 			if (z < 1 || is_log_loss)
 			{

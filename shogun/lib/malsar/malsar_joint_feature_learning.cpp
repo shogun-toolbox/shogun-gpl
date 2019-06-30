@@ -45,6 +45,9 @@ malsar_result_t malsar_joint_feature_learning(
 	MatrixXd Wz=Ws, Wzp=Ws, Wz_old=Ws, delta_Wzp=Ws, gWs=Ws;
 	VectorXd Cz=Cs, Czp=Cs, Cz_old=Cs, delta_Czp=Cs, gCs=Cs;
 
+	SGMatrix<float64_t> Ws_sgmat(Ws.data(), n_feats, n_tasks, false);
+	SGMatrix<float64_t> Wzp_sgmat(Wzp.data(), n_feats, n_tasks, false);
+
 	double t=1, t_old=0;
 	double gamma=1, gamma_inc=2;
 	double obj=0.0, obj_old=0.0;
@@ -74,7 +77,7 @@ malsar_result_t malsar_joint_feature_learning(
 			int n_task_vecs = task_idx.vlen;
 			for (int i=0; i<n_task_vecs; i++)
 			{
-				double aa = -y[task_idx[i]]*(features->dense_dot(task_idx[i], Ws.col(task).data(), n_feats)+Cs[task]);
+				double aa = -y[task_idx[i]]*(features->dot(task_idx[i], Ws_sgmat.get_column(task))+Cs[task]);
 				double bb = CMath::max(aa,0.0);
 
 				// avoid underflow when computing exponential loss
@@ -127,7 +130,7 @@ malsar_result_t malsar_joint_feature_learning(
 				int n_task_vecs = task_idx.vlen;
 				for (int i=0; i<n_task_vecs; i++)
 				{
-					double aa = -y[task_idx[i]]*(features->dense_dot(task_idx[i], Wzp.col(task).data(), n_feats)+Czp[task]);
+					double aa = -y[task_idx[i]]*(features->dot(task_idx[i], Wzp_sgmat.get_column(task))+Czp[task]);
 					double bb = CMath::max(aa,0.0);
 
 					Fzp += (std::log(std::exp(-bb) + std::exp(aa-bb)) + bb)/n_task_vecs;

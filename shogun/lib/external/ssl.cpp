@@ -96,14 +96,14 @@ int32_t CGLS(
 	float64_t *beta = Weights->vec;
 	float64_t *o  = Outputs->vec;
 	// initialize z
-	float64_t *z = SG_MALLOC(float64_t, active);
-	float64_t *q = SG_MALLOC(float64_t, active);
+	SGVector<float64_t> z(active);
+	SGVector<float64_t> q(active);
 	int32_t ii=0;
 	for (int32_t i = active ; i-- ;){
 		ii=J[i];
 		z[i]  = C[ii]*(Y[ii] - o[ii]);
 	}
-	float64_t *r = SG_MALLOC(float64_t, n);
+	SGVector<float64_t> r(n);
 	for (int32_t i = n ; i-- ;)
 		r[i] = 0.0;
 	for (int32_t j=0; j < active; j++)
@@ -111,7 +111,7 @@ int32_t CGLS(
 		features->add_to_dense_vec(z[j], J[j], r, n-1);
 		r[n-1]+=Options->bias*z[j]; //bias (modelled as last dim)
 	}
-	float64_t *p = SG_MALLOC(float64_t, n);
+	SGVector<float64_t> p(n);
 	float64_t omega1 = 0.0;
 	for (int32_t i = n ; i-- ;)
 	{
@@ -139,7 +139,7 @@ int32_t CGLS(
 		for (i=0; i < active; i++)
 		{
 			ii=J[i];
-			t=features->dense_dot(ii, p, n-1);
+			t=features->dot(ii, p.slice(0, n-1));
 			t+=Options->bias*p[n-1]; //bias (modelled as last dim)
 			q[i]=t;
 			omega_q += C[ii]*t*t;
@@ -188,10 +188,6 @@ int32_t CGLS(
 	SG_SDEBUG("...Done.")
 	SG_SINFO("CGLS converged in %d iteration(s)", cgiter)
 
-	SG_FREE(z);
-	SG_FREE(q);
-	SG_FREE(r);
-	SG_FREE(p);
 	return optimality;
 }
 
@@ -248,8 +244,8 @@ int32_t L2_SVM_MFN(
 	int32_t opt2=0;
 	vector_double *Weights_bar = SG_MALLOC(vector_double, 1);
 	vector_double *Outputs_bar = SG_MALLOC(vector_double, 1);
-	float64_t *w_bar = SG_MALLOC(float64_t, n);
-	float64_t *o_bar = SG_MALLOC(float64_t, m);
+	SGVector<float64_t> w_bar(n);
+	SGVector<float64_t> o_bar(m);
 	Weights_bar->vec=w_bar;
 	Outputs_bar->vec=o_bar;
 	Weights_bar->d=n;
@@ -271,7 +267,7 @@ int32_t L2_SVM_MFN(
 		{
 			ii=ActiveSubset->vec[i];
 
-			t=features->dense_dot(ii, w_bar, n-1);
+			t=features->dot(ii, w_bar.slice(0, n-1));
 			t+=Options->bias*w_bar[n-1]; //bias (modelled as last dim)
 
 			o_bar[ii]=t;
@@ -304,8 +300,6 @@ int32_t L2_SVM_MFN(
 					o[i]=o_bar[i];
 				SG_FREE(ActiveSubset->vec);
 				SG_FREE(ActiveSubset);
-				SG_FREE(o_bar);
-				SG_FREE(w_bar);
 				SG_FREE(Weights_bar);
 				SG_FREE(Outputs_bar);
 				SG_SINFO("L2_SVM_MFN converged (optimality) in %d", iter)
@@ -344,8 +338,6 @@ int32_t L2_SVM_MFN(
 		{
 			SG_FREE(ActiveSubset->vec);
 			SG_FREE(ActiveSubset);
-			SG_FREE(o_bar);
-			SG_FREE(w_bar);
 			SG_FREE(Weights_bar);
 			SG_FREE(Outputs_bar);
 			SG_SINFO("L2_SVM_MFN converged (rel. criterion) in %d iterations", iter)
@@ -354,8 +346,6 @@ int32_t L2_SVM_MFN(
 	}
 	SG_FREE(ActiveSubset->vec);
 	SG_FREE(ActiveSubset);
-	SG_FREE(o_bar);
-	SG_FREE(w_bar);
 	SG_FREE(Weights_bar);
 	SG_FREE(Outputs_bar);
 	SG_SINFO("L2_SVM_MFN converged (max iter exceeded) in %d iterations", iter)
@@ -459,11 +449,12 @@ int32_t TSVM_MFN(
 	int32_t *JU = SG_MALLOC(int32_t, Data->u);
 	float64_t *ou = SG_MALLOC(float64_t, Data->u);
 	float64_t lambda_0 = TSVM_LAMBDA_SMALL;
+	SGVector<float64_t> weights_sgvec(Weights->vec, Weights->d, false);
 	for (int32_t i=0;i<Data->m;i++)
 	{
 		if(Data->Y[i]==0.0)
 		{
-			t=Data->features->dense_dot(i, Weights->vec, Data->n-1);
+			t=Data->features->dot(i, weights_sgvec.slice(0, Data->n-1));
 			t+=Options->bias*Weights->vec[Data->n-1]; //bias (modelled as last dim)
 
 			Outputs->vec[i]=t;
@@ -667,11 +658,11 @@ int32_t optimize_w(
 	int32_t u  = Data->u;
 	float64_t lambda = Options->lambda;
 	float64_t epsilon;
-	float64_t *w = Weights->vec;
-	float64_t *o = SG_MALLOC(float64_t, m+u);
-	float64_t *Y = SG_MALLOC(float64_t, m+u);
-	float64_t *C = SG_MALLOC(float64_t, m+u);
-	int32_t *labeled_indices = SG_MALLOC(int32_t, m);
+	SGVector<float64_t> w(Weights->vec, Weights->d, false);
+	SGVector<float64_t> o(m+u);
+	SGVector<float64_t> Y(m+u);
+	SGVector<float64_t> C(m+u);
+	SGVector<int32_t> labeled_indices(m);
 	float64_t F_old = 0.0;
 	float64_t F = 0.0;
 	float64_t diff=0.0;
@@ -761,8 +752,8 @@ int32_t optimize_w(
 	int32_t opt2=0;
 	vector_double *Weights_bar = SG_MALLOC(vector_double, 1);
 	vector_double *Outputs_bar = SG_MALLOC(vector_double, 1);
-	float64_t *w_bar = SG_MALLOC(float64_t, n);
-	float64_t *o_bar = SG_MALLOC(float64_t, m+u);
+	SGVector<float64_t> w_bar(n);
+	SGVector<float64_t> o_bar(m+u);
 	Weights_bar->vec=w_bar;
 	Outputs_bar->vec=o_bar;
 	Weights_bar->d=n;
@@ -783,7 +774,7 @@ int32_t optimize_w(
 		for(i=active; i < m; i++)
 		{
 			ii=ActiveSubset->vec[i];
-			t=features->dense_dot(ii, w_bar, n-1);
+			t=features->dot(ii, w_bar.slice(0, n-1));
 			t+=Options->bias*w_bar[n-1]; //bias (modelled as last dim)
 
 			o_bar[ii]=t;
@@ -838,14 +829,8 @@ int32_t optimize_w(
 				}
 				SG_FREE(ActiveSubset->vec);
 				SG_FREE(ActiveSubset);
-				SG_FREE(o_bar);
-				SG_FREE(w_bar);
-				SG_FREE(o);
 				SG_FREE(Weights_bar);
 				SG_FREE(Outputs_bar);
-				SG_FREE(Y);
-				SG_FREE(C);
-				SG_FREE(labeled_indices);
 				SG_SINFO("L2_SVM_MFN converged in %d iteration(s)", iter)
 				return 1;
 			}
@@ -922,15 +907,9 @@ int32_t optimize_w(
 			Data->Y[i]=0.0;
 	}
 	SG_FREE(ActiveSubset->vec);
-	SG_FREE(labeled_indices);
 	SG_FREE(ActiveSubset);
-	SG_FREE(o_bar);
-	SG_FREE(w_bar);
-	SG_FREE(o);
 	SG_FREE(Weights_bar);
 	SG_FREE(Outputs_bar);
-	SG_FREE(Y);
-	SG_FREE(C);
 	SG_SINFO("L2_SVM_MFN converged in %d iterations", iter)
 	return 0;
 }
