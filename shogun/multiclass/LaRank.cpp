@@ -66,6 +66,7 @@
 #include <shogun/multiclass/MulticlassOneVsRestStrategy.h>
 #include <shogun/kernel/Kernel.h>
 #include <shogun/labels/MulticlassLabels.h>
+#include <shogun/mathematics/UniformRealDistribution.h>
 
 using namespace shogun;
 
@@ -587,7 +588,7 @@ int32_t LaRankOutput::getSV (float32_t* &sv) const
 	return l;
 }
 
-CLaRank::CLaRank (): CMulticlassSVM(new CMulticlassOneVsRestStrategy()),
+CLaRank::CLaRank (): RandomMixin<CMulticlassSVM>(new CMulticlassOneVsRestStrategy()),
 	nb_seen_examples (0), nb_removed (0),
 	n_pro (0), n_rep (0), n_opt (0),
 	w_pro (1), w_rep (1), w_opt (1), y0 (0), m_dual (0),
@@ -596,7 +597,7 @@ CLaRank::CLaRank (): CMulticlassSVM(new CMulticlassOneVsRestStrategy()),
 }
 
 CLaRank::CLaRank (float64_t C, CKernel* k, CLabels* lab):
-	CMulticlassSVM(new CMulticlassOneVsRestStrategy(), C, k, lab),
+	RandomMixin<CMulticlassSVM>(new CMulticlassOneVsRestStrategy(), C, k, lab),
 	nb_seen_examples (0), nb_removed (0),
 	n_pro (0), n_rep (0), n_opt (0),
 	w_pro (1), w_rep (1), w_opt (1), y0 (0), m_dual (0),
@@ -746,6 +747,7 @@ int32_t CLaRank::add (int32_t x_id, int32_t yi)
 
 	// ProcessOld & Optimize until ready for a new processnew
 	// (Adaptative schedule here)
+	UniformRealDistribution<float64_t> uniform_real_dist;
 	for (;;)
 	{
 		float64_t w_sum = w_pro + w_rep + w_opt;
@@ -757,7 +759,7 @@ int32_t CLaRank::add (int32_t x_id, int32_t yi)
 		if (w_opt < prop_min)
 			w_opt = prop_min;
 		w_sum = w_pro + w_rep + w_opt;
-		float64_t r = CMath::random(0.0, w_sum);
+		float64_t r = uniform_real_dist(m_prng, {0.0, w_sum});
 		if (r <= w_pro)
 		{
 			break;
@@ -1031,7 +1033,7 @@ float64_t CLaRank::reprocess ()
 	{
 		for (int32_t n = 0; n < 10; ++n)
 		{
-			process_return_t pro_ret = process (patterns.sample (), processOld);
+			process_return_t pro_ret = process (patterns.sample (m_prng), processOld);
 			if (pro_ret.dual_increase)
 				return pro_ret.dual_increase;
 		}
@@ -1048,7 +1050,7 @@ float64_t CLaRank::optimize ()
 		for (int32_t n = 0; n < 10; ++n)
 		{
 			process_return_t pro_ret =
-				process (patterns.sample(), processOptimize);
+				process (patterns.sample(m_prng), processOptimize);
 			dual_increase += pro_ret.dual_increase;
 		}
 	}

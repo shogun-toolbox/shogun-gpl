@@ -21,6 +21,8 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/lib/common.h>
 #include <shogun/kernel/Kernel.h>
+#include <shogun/mathematics/RandomMixin.h>
+
 
 namespace shogun
 {
@@ -40,7 +42,7 @@ enum E_QPB_SOLVER
 #endif
 
 /** @brief class QPBSVMLib */
-class CQPBSVMLib: public CSGObject
+class CQPBSVMLib: public RandomMixin<CSGObject>
 {
 	public:
 		/** default constructor  */
