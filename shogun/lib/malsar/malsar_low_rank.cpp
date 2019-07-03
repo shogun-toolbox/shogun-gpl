@@ -57,6 +57,8 @@ malsar_result_t malsar_low_rank(
 		Ws = (1+alpha)*Wz - alpha*Wz_old;
 		Cs = (1+alpha)*Cz - alpha*Cz_old;
 
+		SGMatrix<float64_t> Ws_sgmat(Ws.data(), n_feats, n_tasks, false);
+
 		// zero gradient
 		gWs.setZero();
 		gCs.setZero();
@@ -69,7 +71,7 @@ malsar_result_t malsar_low_rank(
 			int n_task_vecs = task_idx.vlen;
 			for (int i=0; i<n_task_vecs; i++)
 			{
-				double aa = -y[task_idx[i]]*(features->dense_dot(task_idx[i], Ws.col(task).data(), n_feats)+Cs[task]);
+				double aa = -y[task_idx[i]]*(features->dot(task_idx[i], Ws_sgmat.get_column(task))+Cs[task]);
 				double bb = CMath::max(aa,0.0);
 
 				// avoid underflow when computing exponential loss
@@ -109,13 +111,14 @@ malsar_result_t malsar_low_rank(
 
 			// compute objective at line search point
 			Fzp = 0.0;
+			SGMatrix<float64_t> Wzp_sgmat(Wzp.data(), n_feats, n_tasks, false);
 			for (task=0; task<n_tasks; task++)
 			{
 				SGVector<index_t> task_idx = options.tasks_indices[task];
 				int n_task_vecs = task_idx.vlen;
 				for (int i=0; i<n_task_vecs; i++)
 				{
-					double aa = -y[task_idx[i]]*(features->dense_dot(task_idx[i], Wzp.col(task).data(), n_feats)+Czp[task]);
+					double aa = -y[task_idx[i]]*(features->dot(task_idx[i], Wzp_sgmat.get_column(task))+Czp[task]);
 					double bb = CMath::max(aa,0.0);
 
 					Fzp += (std::log(std::exp(-bb) + std::exp(aa-bb)) + bb)/n_task_vecs;

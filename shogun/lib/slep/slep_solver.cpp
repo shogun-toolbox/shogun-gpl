@@ -482,7 +482,7 @@ slep_result_t slep_solver(
 				//task_idx.display_vector("task");
 				int n_vecs_task = task_idx.vlen;
 				for (i=0; i<n_vecs_task; i++)
-					Aw[task_idx[i]] = features->dense_dot(task_idx[i],w.matrix+t*n_feats,n_feats);
+					Aw[task_idx[i]] = features->dot(task_idx[i],w.get_column(t));
 			}
 		}
 		break;
@@ -492,7 +492,7 @@ slep_result_t slep_solver(
 		case FUSED:
 		{
 			for (i=0; i<n_vecs; i++)
-				Aw[i] = features->dense_dot(i,w.matrix,n_feats);
+				Aw[i] = features->dot(i,w.get_column(0));
 		}
 		break;
 	}
@@ -578,7 +578,7 @@ slep_result_t slep_solver(
 						int n_vecs_task = task_idx.vlen;
 						for (i=0; i<n_vecs_task; i++)
 						{
-							Aw[task_idx[i]] = features->dense_dot(task_idx[i],w.matrix+t*n_feats,n_feats);
+							Aw[task_idx[i]] = features->dot(task_idx[i],w.get_column(t));
 							if (options.loss==LOGISTIC)
 							{
 								double aa = -y[task_idx[i]]*(Aw[task_idx[i]]+c[t]);
@@ -594,7 +594,7 @@ slep_result_t slep_solver(
 				case FUSED:
 					for (i=0; i<n_vecs; i++)
 					{
-						Aw[i] = features->dense_dot(i, w.matrix, n_feats);
+						Aw[i] = features->dot(i, w.get_column(0));
 						if (options.loss==LOGISTIC)
 						{
 							double aa = -y[i]*(Aw[i]+c[0]);

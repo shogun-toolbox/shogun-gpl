@@ -234,7 +234,7 @@ bool CFeatureBlockLogisticRegression::train_machine(CFeatures* data)
 float64_t CFeatureBlockLogisticRegression::apply_one(int32_t vec_idx)
 {
 	SGVector<float64_t> w = get_w();
-	return std::exp(-(features->dense_dot(vec_idx, w.vector, w.vlen) + bias));
+	return std::exp(-(features->dot(vec_idx, w) + bias));
 }
 
 SGVector<float64_t> CFeatureBlockLogisticRegression::apply_get_outputs(CFeatures* data)
