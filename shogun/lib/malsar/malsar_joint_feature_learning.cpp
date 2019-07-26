@@ -31,11 +31,11 @@ malsar_result_t malsar_joint_feature_learning(
 {
 	int task;
 	int n_feats = features->get_dim_feature_space();
-	SG_SDEBUG("n feats = %d\n", n_feats)
+	SG_DEBUG("n feats = %d\n", n_feats)
 	int n_vecs = features->get_num_vectors();
-	SG_SDEBUG("n vecs = %d\n", n_vecs)
+	SG_DEBUG("n vecs = %d\n", n_vecs)
 	int n_tasks = options.n_tasks;
-	SG_SDEBUG("n tasks = %d\n", n_tasks)
+	SG_DEBUG("n tasks = %d\n", n_tasks)
 
 	int iter = 0;
 
@@ -95,7 +95,7 @@ malsar_result_t malsar_joint_feature_learning(
 
 		//cout << "gWs" << endl << gWs << endl;
 		//cout << "gCs" << endl << gCs << endl;
-		//SG_SPRINT("Fs = %f\n",Fs)
+		//SG_PRINT("Fs = %f\n",Fs)
 
 		double Fzp = 0.0;
 
@@ -156,7 +156,7 @@ malsar_result_t malsar_joint_feature_learning(
 			// break if delta is getting too small
 			if (r_sum <= 1e-20)
 			{
-				SG_SDEBUG("Line search point is too close to search point\n")
+				SG_DEBUG("Line search point is too close to search point\n")
 				done = true;
 				break;
 			}
@@ -182,7 +182,7 @@ malsar_result_t malsar_joint_feature_learning(
 			obj += rho1*(Wz.row(i).lpNorm<2>());
 		//for (task=0; task<n_tasks; task++)
 		//	obj += rho1*(Wz.col(task).norm());
-		SG_SDEBUG("Obj = %f\n",obj)
+		SG_DEBUG("Obj = %f\n",obj)
 		// check if process should be terminated
 		switch (options.termination)
 		{
@@ -191,7 +191,7 @@ malsar_result_t malsar_joint_feature_learning(
 				{
 					if ( CMath::abs(obj-obj_old) <= options.tolerance )
 					{
-						SG_SDEBUG("Objective changes less than tolerance\n")
+						SG_DEBUG("Objective changes less than tolerance\n")
 						done = true;
 					}
 				}
@@ -218,8 +218,8 @@ malsar_result_t malsar_joint_feature_learning(
 		t = 0.5 * (1 + CMath::sqrt(1.0 + 4*t*t));
 	}
 	//internal::set_is_malloc_allowed(true);
-	SG_SDONE()
-	SG_SDEBUG("%d iteration passed, objective = %f\n",iter,obj)
+	SG_DONE()
+	SG_DEBUG("%d iteration passed, objective = %f\n",iter,obj)
 
 	SGMatrix<float64_t> tasks_w(n_feats, n_tasks);
 	for (int i=0; i<n_feats; i++)

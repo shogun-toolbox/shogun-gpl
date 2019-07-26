@@ -411,7 +411,7 @@ float64_t CIntegration::integrate_quadgk(CFunction* f, float64_t a,
 
 	if (err>tol)
 	{
-		SG_SWARNING("Error tolerance not met. Estimated error is equal to %g "
+		SG_WARNING("Error tolerance not met. Estimated error is equal to %g "
 				"after %d iterations\n", err, iter)
 	}
 

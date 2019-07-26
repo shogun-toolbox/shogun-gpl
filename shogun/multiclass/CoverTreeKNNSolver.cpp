@@ -40,7 +40,7 @@ CMulticlassLabels* CCoverTreeKNNSolver::classify_objects(CDistance* knn_distance
 	v_array< v_array< CJLCoverTreePoint > > res;
 	k_nearest_neighbor(top, top_query, res, m_k);
 
-if (io->get_loglevel()<= MSG_DEBUG)
+if (env()->io()->get_loglevel()<= MSG_DEBUG)
 {
 	SG_DEBUG("\nJL Results:\n")
 	for ( int32_t i = 0 ; i < res.index ; ++i )

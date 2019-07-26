@@ -47,7 +47,7 @@ void add_cutting_plane(
 
 	if (cp==NULL)
 	{
-		SG_SERROR("Out of memory.\n")
+		SG_ERROR("Out of memory.\n")
 		return;
 	}
 
@@ -369,7 +369,7 @@ BmrmStatistics svm_bmrm_solver(
 	tstop=ttime.cur_time_diff(false);
 
 	/* Verbose output */
-	SG_SINFO("%4d: tim=%.3lf, Fp=%lf, Fd=%lf, R=%lf\n",
+	SG_INFO("%4d: tim=%.3lf, Fp=%lf, Fd=%lf, R=%lf\n",
 				bmrm.nIter, tstop-tstart, bmrm.Fp, bmrm.Fd, R);
 
 	/* store Fp, Fd and wdist history */
@@ -495,7 +495,7 @@ BmrmStatistics svm_bmrm_solver(
 		tstop=ttime.cur_time_diff(false);
 
 		/* Verbose output */
-		SG_SINFO("%4d: tim=%.3lf, Fp=%lf, Fd=%lf, (Fp-Fd)=%lf, (Fp-Fd)/Fp=%lf, R=%lf, nCP=%d, nzA=%d, QPexitflag=%d\n",
+		SG_INFO("%4d: tim=%.3lf, Fp=%lf, Fd=%lf, (Fp-Fd)=%lf, (Fp-Fd)/Fp=%lf, R=%lf, nCP=%d, nzA=%d, QPexitflag=%d\n",
 					bmrm.nIter, tstop-tstart, bmrm.Fp, bmrm.Fd, bmrm.Fp-bmrm.Fd,
 					(bmrm.Fp-bmrm.Fd)/bmrm.Fp, R, bmrm.nCP, bmrm.nzA, qp_exitflag.exitflag);
 
@@ -540,7 +540,7 @@ BmrmStatistics svm_bmrm_solver(
 
 			float64_t info_tstop=ttime.cur_time_diff(false);
 
-			SG_SINFO("On iteration %4d, tim=%.3lf, primal=%.3lf, train_error=%lf\n", bmrm.nIter, info_tstop-info_tstart, primal, train_error);
+			SG_INFO("On iteration %4d, tim=%.3lf, primal=%.3lf, train_error=%lf\n", bmrm.nIter, info_tstop-info_tstart, primal, train_error);
 		}
 
 	} /* end of main loop */

@@ -124,7 +124,7 @@ float64_t CNLOPTMinimizer::minimize()
 	nlopt_result error_code=nlopt_optimize(opt, m_target_variable.vector, &cost);
 	if(error_code!=1)
 	{
-		SG_SWARNING("Error(s) happened and NLopt failed during minimization (error code:%d)\n",
+		SG_WARNING("Error(s) happened and NLopt failed during minimization (error code:%d)\n",
 			error_code);
 	}
 
