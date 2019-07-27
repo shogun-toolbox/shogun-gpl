@@ -186,7 +186,7 @@ int32_t CGLS(
 		}
 	}
 	SG_DEBUG("...Done.")
-	SG_INFO("CGLS converged in %d iteration(s)", cgiter)
+	SG_INFO("CGLS converged in {} iteration(s)", cgiter)
 
 	return optimality;
 }
@@ -256,7 +256,7 @@ int32_t L2_SVM_MFN(
 	while(iter<MFNITERMAX)
 	{
 		iter++;
-		SG_DEBUG("L2_SVM_MFN Iteration# %d (%d active examples, objective_value = %f)\n", iter, active, F)
+		SG_DEBUG("L2_SVM_MFN Iteration# {} ({} active examples, objective_value = {})\n", iter, active, F)
 		for (int32_t i=n; i-- ;)
 			w_bar[i]=w[i];
 		for (int32_t i=m; i-- ;)
@@ -289,7 +289,7 @@ int32_t L2_SVM_MFN(
 			{
 				epsilon=EPSILON;
 				Options->epsilon=EPSILON;
-				SG_DEBUG("epsilon = %f case converged (speedup heuristic 2). Continuing with epsilon=%f",  BIG_EPSILON , EPSILON)
+				SG_DEBUG("epsilon = {} case converged (speedup heuristic 2). Continuing with epsilon={}",  BIG_EPSILON , EPSILON)
 				continue;
 			}
 			else
@@ -302,12 +302,12 @@ int32_t L2_SVM_MFN(
 				SG_FREE(ActiveSubset);
 				SG_FREE(Weights_bar);
 				SG_FREE(Outputs_bar);
-				SG_INFO("L2_SVM_MFN converged (optimality) in %d", iter)
+				SG_INFO("L2_SVM_MFN converged (optimality) in {}", iter)
 				return 1;
 			}
 		}
 		delta=line_search(w,w_bar,lambda,o,o_bar,Y,C,n,m);
-		SG_DEBUG("LINE_SEARCH delta = %f\n", delta)
+		SG_DEBUG("LINE_SEARCH delta = {}\n", delta)
 		F_old=F;
 		F=0.0;
 		for (int32_t i=n; i-- ;) {
@@ -340,7 +340,7 @@ int32_t L2_SVM_MFN(
 			SG_FREE(ActiveSubset);
 			SG_FREE(Weights_bar);
 			SG_FREE(Outputs_bar);
-			SG_INFO("L2_SVM_MFN converged (rel. criterion) in %d iterations", iter)
+			SG_INFO("L2_SVM_MFN converged (rel. criterion) in {} iterations", iter)
 			return 2;
 		}
 	}
@@ -348,7 +348,7 @@ int32_t L2_SVM_MFN(
 	SG_FREE(ActiveSubset);
 	SG_FREE(Weights_bar);
 	SG_FREE(Outputs_bar);
-	SG_INFO("L2_SVM_MFN converged (max iter exceeded) in %d iterations", iter)
+	SG_INFO("L2_SVM_MFN converged (max iter exceeded) in {} iterations", iter)
 	return 0;
 }
 
@@ -495,8 +495,8 @@ int32_t TSVM_MFN(
 			s=switch_labels(Data->Y,Outputs->vec,JU,Data->u,Options->S);
 			if(s==0) break;
 			iter2++;
-			SG_DEBUG("****** lambda_0 = %f iteration = %d ************************************\n", lambda_0, iter2)
-			SG_DEBUG("Optimizing unknown labels. switched %d labels.\n")
+			SG_DEBUG("****** lambda_0 = {} iteration = {} ************************************\n", lambda_0, iter2)
+			SG_DEBUG("Optimizing unknown labels. switched {} labels.\n")
 			num_switches+=s;
 			SG_DEBUG("Optimizing weights\n")
 			L2_SVM_MFN(Data,Options,Weights,Outputs,1);
@@ -506,15 +506,15 @@ int32_t TSVM_MFN(
 		if(lambda_0 >= Options->lambda_u) {lambda_0 = Options->lambda_u; last_round=1;}
 		for (int32_t i=0;i<Data->u;i++)
 			Data->C[JU[i]]=lambda_0*1.0/Data->u;
-		SG_DEBUG("****** lambda0 increased to %f%% of lambda_u = %f ************************\n", lambda_0*100/Options->lambda_u, Options->lambda_u)
+		SG_DEBUG("****** lambda0 increased to {}% of lambda_u = {} ************************\n", lambda_0*100/Options->lambda_u, Options->lambda_u)
 		SG_DEBUG("Optimizing weights\n")
 		L2_SVM_MFN(Data,Options,Weights,Outputs,1);
 	}
-	SG_DEBUG("Total Number of Switches = %d\n", num_switches)
+	SG_DEBUG("Total Number of Switches = {}\n", num_switches)
 	/* reset labels */
 	for (int32_t i=0;i<Data->u;i++) Data->Y[JU[i]] = 0.0;
 	float64_t F = transductive_cost(norm_square(Weights),Data->Y,Outputs->vec,Outputs->d,Options->lambda,Options->lambda_u);
-	SG_DEBUG("Objective Value = %f\n",F)
+	SG_DEBUG("Objective Value = {}\n",F)
 	delete [] JU;
 	return num_switches;
 }
@@ -626,10 +626,10 @@ int32_t DA_S3VM(
 				for (int32_t i=0;i<Outputs->d;i++)
 					o_min[i]=o[i];
 			}
-			SG_DEBUG("***** outer_iter = %d  T = %g  inner_iter = %d  kl = %g  cost = %g *****\n",iter1,T,iter2,kl_divergence,F)
+			SG_DEBUG("***** outer_iter = {}  T = {:g}  inner_iter = {}  kl = {:g}  cost = {:g} *****\n",iter1,T,iter2,kl_divergence,F)
 		}
 		H = entropy(p,Data->u);
-		SG_DEBUG("***** Finished outer_iter = %d T = %g  Entropy = %g ***\n", iter1,T,H)
+		SG_DEBUG("***** Finished outer_iter = {} T = {:g}  Entropy = {:g} ***\n", iter1,T,H)
 		T = T/DA_ANNEALING_RATE;
 	}
 	for (int32_t i=0;i<Weights->d;i++)
@@ -643,7 +643,7 @@ int32_t DA_S3VM(
 	SG_FREE(JU);
 	SG_FREE(w_min);
 	SG_FREE(o_min);
-	SG_INFO("(min) Objective Value = %f", F_min)
+	SG_INFO("(min) Objective Value = {}", F_min)
 	return 1;
 }
 
@@ -764,7 +764,7 @@ int32_t optimize_w(
 	while(iter<MFNITERMAX)
 	{
 		iter++;
-		SG_DEBUG("L2_SVM_MFN Iteration# %d (%d active examples,  objective_value = %f)", iter, active, F)
+		SG_DEBUG("L2_SVM_MFN Iteration# {} ({} active examples,  objective_value = {})", iter, active, F)
 		for(i=n; i-- ;)
 			w_bar[i]=w[i];
 
@@ -813,7 +813,7 @@ int32_t optimize_w(
 			{
 				epsilon=EPSILON;
 				Options->epsilon=EPSILON;
-				SG_DEBUG("epsilon = %f case converged (speedup heuristic 2). Continuing with epsilon=%f\n", BIG_EPSILON, EPSILON)
+				SG_DEBUG("epsilon = {} case converged (speedup heuristic 2). Continuing with epsilon={}\n", BIG_EPSILON, EPSILON)
 				continue;
 			}
 			else
@@ -831,13 +831,13 @@ int32_t optimize_w(
 				SG_FREE(ActiveSubset);
 				SG_FREE(Weights_bar);
 				SG_FREE(Outputs_bar);
-				SG_INFO("L2_SVM_MFN converged in %d iteration(s)", iter)
+				SG_INFO("L2_SVM_MFN converged in {} iteration(s)", iter)
 				return 1;
 			}
 		}
 
 		delta=line_search(w,w_bar,lambda,o,o_bar,Y,C,n,m+u);
-		SG_DEBUG("LINE_SEARCH delta = %f", delta)
+		SG_DEBUG("LINE_SEARCH delta = {}", delta)
 		F_old=F;
 		F=0.0;
 		for(i=0;i<n;i++) {w[i]+=delta*(w_bar[i]-w[i]);  F+=w[i]*w[i];}
@@ -910,7 +910,7 @@ int32_t optimize_w(
 	SG_FREE(ActiveSubset);
 	SG_FREE(Weights_bar);
 	SG_FREE(Outputs_bar);
-	SG_INFO("L2_SVM_MFN converged in %d iterations", iter)
+	SG_INFO("L2_SVM_MFN converged in {} iterations", iter)
 	return 0;
 }
 
@@ -990,7 +990,7 @@ void optimize_p(
 		if(std::isinf(s)) p[i]=0.0;
 		else p[i]=1.0/(1.0+s);
 	}
-	SG_INFO(" root (nu) = %f B(nu) = %f", nu, Bnu)
+	SG_INFO(" root (nu) = {} B(nu) = {}", nu, Bnu)
 }
 
 float64_t transductive_cost(

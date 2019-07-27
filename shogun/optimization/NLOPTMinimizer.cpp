@@ -88,7 +88,7 @@ float64_t CNLOPTMinimizer::minimize()
 		else if (bound.vlen>1)
 		{
 			REQUIRE(bound.vlen==m_target_variable.vlen,
-				"The length of target variable (%d) and the length of lower bound (%d) do not match\n",
+				"The length of target variable ({}) and the length of lower bound ({}) do not match\n",
 				m_target_variable.vlen, bound.vlen);
 			nlopt_set_lower_bounds(opt, bound.vector);
 		}
@@ -101,7 +101,7 @@ float64_t CNLOPTMinimizer::minimize()
 		else if (bound.vlen>1)
 		{
 			REQUIRE(bound.vlen==m_target_variable.vlen,
-			"The length of target variable (%d) and the length of upper bound (%d) do not match\n",
+			"The length of target variable ({}) and the length of upper bound ({}) do not match\n",
 				m_target_variable.vlen, bound.vlen);
 			nlopt_set_upper_bounds(opt, bound.vector);
 		}
@@ -124,7 +124,7 @@ float64_t CNLOPTMinimizer::minimize()
 	nlopt_result error_code=nlopt_optimize(opt, m_target_variable.vector, &cost);
 	if(error_code!=1)
 	{
-		SG_WARNING("Error(s) happened and NLopt failed during minimization (error code:%d)\n",
+		SG_WARNING("Error(s) happened and NLopt failed during minimization (error code:{})\n",
 			error_code);
 	}
 
@@ -266,7 +266,7 @@ double CNLOPTMinimizer::nlopt_function(unsigned dim, const double* variable, dou
 	SGVector<float64_t> grad=obj_prt->m_fun->get_gradient();
 
 	REQUIRE(grad.vlen==(index_t)dim,
-		"The length of gradient (%d) and the length of variable (%d) do not match\n",
+		"The length of gradient ({}) and the length of variable ({}) do not match\n",
 		grad.vlen,dim);
 
 	std::copy(grad.vector,grad.vector+dim,gradient);

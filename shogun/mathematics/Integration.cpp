@@ -257,14 +257,14 @@ float64_t CIntegration::integrate_quadgk(CFunction* f, float64_t a,
 {
 	// check the parameters
 	REQUIRE(f, "Integrable function should not be NULL\n")
-	REQUIRE(abs_tol>0.0, "Absolute tolerance must be positive, but is %f\n",
+	REQUIRE(abs_tol>0.0, "Absolute tolerance must be positive, but is {}\n",
 			abs_tol)
-	REQUIRE(rel_tol>0.0, "Relative tolerance must be positive, but is %f\n",
+	REQUIRE(rel_tol>0.0, "Relative tolerance must be positive, but is {}\n",
 			rel_tol)
 	REQUIRE(max_iter>0, "Maximum number of iterations must be greater than 0, "
-			"but is %d\n", max_iter)
+			"but is {}\n", max_iter)
 	REQUIRE(sn>0, "Initial number of subintervals must be greater than 0, "
-			"but is %d\n", sn)
+			"but is {}\n", sn)
 
 	// integral evaluation function
 	typedef void TQuadGKEvaluationFunction(CFunction* f,
@@ -411,8 +411,8 @@ float64_t CIntegration::integrate_quadgk(CFunction* f, float64_t a,
 
 	if (err>tol)
 	{
-		SG_WARNING("Error tolerance not met. Estimated error is equal to %g "
-				"after %d iterations\n", err, iter)
+		SG_WARNING("Error tolerance not met. Estimated error is equal to {:g} "
+				"after {} iterations\n", err, iter)
 	}
 
 	// clean up
@@ -440,7 +440,7 @@ float64_t CIntegration::integrate_quadgh_customized(CFunction* f,
 	SGVector<float64_t> xgh, SGVector<float64_t> wgh)
 {
 	REQUIRE(xgh.vlen == wgh.vlen,
-		"The length of node array (%d) and weight array (%d) should be the same\n",
+		"The length of node array ({}) and weight array ({}) should be the same\n",
 		xgh.vlen, wgh.vlen);
 
 	SG_REF(f);
@@ -509,7 +509,7 @@ void CIntegration::evaluate_quadgk(CFunction* f, CDynamicArray<float64_t>* subs,
 void CIntegration::generate_gauher(SGVector<float64_t> xgh, SGVector<float64_t> wgh)
 {
 	REQUIRE(xgh.vlen == wgh.vlen,
-		"The length of node array (%d) and weight array (%d) should be the same\n",
+		"The length of node array ({}) and weight array ({}) should be the same\n",
 		xgh.vlen, wgh.vlen);
 
 	index_t n = xgh.vlen;
@@ -548,7 +548,7 @@ void CIntegration::generate_gauher(SGVector<float64_t> xgh, SGVector<float64_t> 
 void CIntegration::generate_gauher20(SGVector<float64_t> xgh, SGVector<float64_t> wgh)
 {
 	REQUIRE(xgh.vlen == wgh.vlen,
-		"The length of node array (%d) and weight array (%d) should be the same\n",
+		"The length of node array ({}) and weight array ({}) should be the same\n",
 		xgh.vlen, wgh.vlen);
 	REQUIRE(xgh.vlen == 20, "The length of xgh and wgh should be 20\n");
 

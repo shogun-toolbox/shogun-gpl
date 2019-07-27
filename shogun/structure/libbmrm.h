@@ -129,7 +129,7 @@ inline float64_t * get_cutting_plane(bmrm_ll *ptr) { return ptr->address; }
 inline uint32_t find_free_idx(bool *map, uint32_t size)
 {
     for (uint32_t i=0; i<size; ++i) if (map[i]) return i;
-    SG_ERROR("No free index available in CP buffer of size %d.\n", size);
+    SG_ERROR("No free index available in CP buffer of size {}.\n", size);
     return size-1;
 }
 

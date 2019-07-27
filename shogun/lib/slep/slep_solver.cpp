@@ -127,7 +127,7 @@ double compute_lambda(
 	else
 		q_bar = options.q/(options.q-1);
 
-	SG_INFO("q bar = %f \n",q_bar)
+	SG_INFO("q bar = {} \n",q_bar)
 
 	switch (options.mode)
 	{
@@ -186,7 +186,7 @@ double compute_lambda(
 					for (int i=0; i<n_vecs; i++)
 						y[i]>0 ? m1++ : m2++;
 
-					SG_DEBUG("# pos = %d , # neg = %d\n",m1,m2)
+					SG_DEBUG("# pos = {} , # neg = {}\n",m1,m2)
 
 					for (int i=0; i<n_vecs; i++)
 					{
@@ -245,7 +245,7 @@ double compute_lambda(
 
 				sum = CMath::pow(sum, 1.0/q_bar);
 				sum /= options.gWeight[t];
-				SG_INFO("sum = %f\n",sum)
+				SG_INFO("sum = {}\n",sum)
 				if (sum>lambda_max)
 					lambda_max = sum;
 			}
@@ -273,7 +273,7 @@ double compute_lambda(
 		break;
 	}
 
-	SG_INFO("Computed lambda = %f * %f = %f\n",z,lambda_max,z*lambda_max)
+	SG_INFO("Computed lambda = {} * {} = {}\n",z,lambda_max,z*lambda_max)
 	return z*lambda_max;
 }
 
@@ -432,8 +432,8 @@ slep_result_t slep_solver(
 			n_blocks = 1;
 		break;
 	}
-	SG_DEBUG("n_tasks = %d, n_blocks = %d\n",n_tasks,n_blocks)
-	SG_DEBUG("n_nodes = %d\n",options.n_nodes)
+	SG_DEBUG("n_tasks = {}, n_blocks = {}\n",n_tasks,n_blocks)
+	SG_DEBUG("n_nodes = {}\n",options.n_nodes)
 
 	int iter = 1;
 	bool done = false;
@@ -538,7 +538,7 @@ slep_result_t slep_solver(
 
 		double fun_s = search_point_gradient_and_objective(features, ATx, As, sc, y, n_vecs, n_feats, n_tasks, g, gc, options);
 
-		//SG_DEBUG("fun_s = %f\n", fun_s)
+		//SG_DEBUG("fun_s = {}\n", fun_s)
 
 		if (options.mode==PLAIN || options.mode==FUSED)
 		{
@@ -667,7 +667,7 @@ slep_result_t slep_solver(
 			for (i=0; i<n_vecs; i++)
 				func += CMath::sq(Aw[i] - y[i]);
 		}
-		SG_DEBUG("Obj = %f + %f = %f \n",fun_x, regularizer, func)
+		SG_DEBUG("Obj = {} + {} = {} \n",fun_x, regularizer, func)
 
 		if (gradient_break)
 		{
@@ -725,7 +725,7 @@ slep_result_t slep_solver(
 
 		iter++;
 	}
-	SG_INFO("Finished %d iterations, objective = %f\n", iter, func)
+	SG_INFO("Finished {} iterations, objective = {}\n", iter, func)
 
 	SG_FREE(ATx);
 	SG_FREE(s);

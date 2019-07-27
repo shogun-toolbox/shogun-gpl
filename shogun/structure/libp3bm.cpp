@@ -266,7 +266,7 @@ BmrmStatistics svm_p3bm_solver(
 
 	/* Verbose output */
 	if (verbose)
-		SG_DEBUG("%4d: tim=%.3lf, Fp=%lf, Fd=%lf, R=%lf, K=%lf, CPmodels=%d\n",
+		SG_DEBUG("{:4d}: tim={:.3f}, Fp={}, Fd={}, R={}, K={}, CPmodels={}\n",
 				p3bmrm.nIter, tstop-tstart, p3bmrm.Fp, p3bmrm.Fd, R, K, cp_models);
 
 	if (verbose)
@@ -629,7 +629,7 @@ BmrmStatistics svm_p3bm_solver(
 
 		/* Verbose output */
 		if (verbose)
-			SG_DEBUG("%4d: tim=%.3lf, Fp=%lf, Fd=%lf, (Fp-Fd)=%lf, (Fp-Fd)/Fp=%lf, R=%lf, nCP=%d, nzA=%d, wdist=%lf, alpha=%lf, qp_cnt=%d, gamma=%lf, tuneAlpha=%d\n",
+			SG_DEBUG("{:4d}: tim={:.3f}, Fp={}, Fd={}, (Fp-Fd)={}, (Fp-Fd)/Fp={}, R={}, nCP={}, nzA={}, wdist={}, alpha={}, qp_cnt={}, gamma={}, tuneAlpha={}\n",
 					p3bmrm.nIter, tstop-tstart, p3bmrm.Fp, p3bmrm.Fd, p3bmrm.Fp-p3bmrm.Fd,
 					(p3bmrm.Fp-p3bmrm.Fd)/p3bmrm.Fp, R, p3bmrm.nCP, p3bmrm.nzA, wdist, alpha,
 					qp_cnt, gamma, tuneAlpha);

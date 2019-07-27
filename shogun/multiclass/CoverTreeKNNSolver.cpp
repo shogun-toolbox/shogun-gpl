@@ -47,7 +47,7 @@ if (env()->io()->get_loglevel()<= MSG_DEBUG)
 	{
 		for ( int32_t j = 0 ; j < res[i].index ; ++j )
 		{
-			SG_DEBUG("%d ", res[i][j].m_index);
+			SG_DEBUG("{} ", res[i][j].m_index);
 		}
 		SG_DEBUG("\n");
 	}

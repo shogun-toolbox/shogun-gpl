@@ -85,7 +85,7 @@ const float64_t* OptimizationSolver::Self::get_Q_col(uint32_t i)
 
 void OptimizationSolver::Self::print_state(libqp_state_T state)
 {
-	SG_DEBUG("libqp state: primal=%f\n", state.QP);
+	SG_DEBUG("libqp state: primal={}\n", state.QP);
 }
 
 SGVector<float64_t> OptimizationSolver::Self::solve() const
@@ -122,7 +122,7 @@ SGVector<float64_t> OptimizationSolver::Self::solve() const
 			opt_epsilon,
 			&OptimizationSolver::Self::print_state);
 
-		SG_DEBUG("libqp returns: nIts=%d, exit_flag: %d\n", qp_exitflag.nIter, qp_exitflag.exitflag);
+		SG_DEBUG("libqp returns: nIts={}, exit_flag: {}\n", qp_exitflag.nIter, qp_exitflag.exitflag);
 		m_Q=SGMatrix<float64_t>();
 
 		// set really small entries to zero and sum up for normalization
@@ -131,7 +131,7 @@ SGVector<float64_t> OptimizationSolver::Self::solve() const
 		{
 			if (weights[i]<opt_low_cut)
 			{
-				SG_DEBUG("lowcut: weight[%i]=%f<%f setting to zero\n", i, weights[i], opt_low_cut);
+				SG_DEBUG("lowcut: weight[{}]={}<{} setting to zero\n", i, weights[i], opt_low_cut);
 				weights[i]=0;
 			}
 			sum_weights+=weights[i];

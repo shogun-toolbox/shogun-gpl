@@ -173,7 +173,7 @@ slep_result_t slep_mc_plain_lr(
 			// stop if projected gradient is less than 1e-20
 			if (r_sum <= 1e-20)
 			{
-				SG_INFO("Gradient step makes little improvement (%f)\n",r_sum)
+				SG_INFO("Gradient step makes little improvement ({})\n",r_sum)
 				done = true;
 				break;
 			}
@@ -215,7 +215,7 @@ slep_result_t slep_mc_plain_lr(
 
 		iter++;
 	}
-	SG_INFO("%d iterations passed, objective = %f\n",iter,objective)
+	SG_INFO("{} iterations passed, objective = {}\n",iter,objective)
 	//internal::set_is_malloc_allowed(true);
 
 	// output computed weight vectors and intercepts

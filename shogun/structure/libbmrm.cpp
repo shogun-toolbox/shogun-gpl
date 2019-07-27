@@ -38,7 +38,7 @@ void add_cutting_plane(
 		uint32_t	dim)
 {
 	REQUIRE(map[free_idx],
-		"add_cutting_plane: CP index %u is not free\n", free_idx)
+		"add_cutting_plane: CP index {} is not free\n", free_idx)
 
 	LIBBMRM_MEMCPY(A+free_idx*dim, cp_data, dim*sizeof(float64_t));
 	map[free_idx]=false;
@@ -241,7 +241,7 @@ BmrmStatistics svm_bmrm_solver(
 	ASSERT(nDim > 0);
 	ASSERT(BufSize > 0);
 	REQUIRE(BufSize < (std::numeric_limits<size_t>::max() / nDim),
-		"overflow: %u * %u > %u -- biggest possible BufSize=%u or nDim=%u\n",
+		"overflow: {} * {} > {} -- biggest possible BufSize={} or nDim={}\n",
 		BufSize, nDim, std::numeric_limits<size_t>::max(),
 		(std::numeric_limits<size_t>::max() / nDim),
 		(std::numeric_limits<size_t>::max() / BufSize));
@@ -369,7 +369,7 @@ BmrmStatistics svm_bmrm_solver(
 	tstop=ttime.cur_time_diff(false);
 
 	/* Verbose output */
-	SG_INFO("%4d: tim=%.3lf, Fp=%lf, Fd=%lf, R=%lf\n",
+	SG_INFO("{:4d}: tim={:.3f}, Fp={}, Fd={}, R={}\n",
 				bmrm.nIter, tstop-tstart, bmrm.Fp, bmrm.Fd, R);
 
 	/* store Fp, Fd and wdist history */
@@ -495,7 +495,7 @@ BmrmStatistics svm_bmrm_solver(
 		tstop=ttime.cur_time_diff(false);
 
 		/* Verbose output */
-		SG_INFO("%4d: tim=%.3lf, Fp=%lf, Fd=%lf, (Fp-Fd)=%lf, (Fp-Fd)/Fp=%lf, R=%lf, nCP=%d, nzA=%d, QPexitflag=%d\n",
+		SG_INFO("{:4d}: tim={:.3f}, Fp={}, Fd={}, (Fp-Fd)={}, (Fp-Fd)/Fp={}, R={}, nCP={}, nzA={}, QPexitflag={}\n",
 					bmrm.nIter, tstop-tstart, bmrm.Fp, bmrm.Fd, bmrm.Fp-bmrm.Fd,
 					(bmrm.Fp-bmrm.Fd)/bmrm.Fp, R, bmrm.nCP, bmrm.nzA, qp_exitflag.exitflag);
 
@@ -540,7 +540,7 @@ BmrmStatistics svm_bmrm_solver(
 
 			float64_t info_tstop=ttime.cur_time_diff(false);
 
-			SG_INFO("On iteration %4d, tim=%.3lf, primal=%.3lf, train_error=%lf\n", bmrm.nIter, info_tstop-info_tstart, primal, train_error);
+			SG_INFO("On iteration {:4d}, tim={:.3f}, primal={:.3f}, train_error={}\n", bmrm.nIter, info_tstop-info_tstart, primal, train_error);
 		}
 
 	} /* end of main loop */

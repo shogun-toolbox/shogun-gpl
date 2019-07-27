@@ -40,7 +40,7 @@ namespace shogun
 
 void nrerror(char error_text[])
 {
-	SG_DEBUG("terminating optimizer - %s\n", error_text)
+	SG_DEBUG("terminating optimizer - {}\n", error_text)
  // exit(1);
 }
 
@@ -539,7 +539,7 @@ int32_t pr_loqo(
 
     /* generate report */
     if ((verb >= FLOOD) | ((verb == STATUS) & (status != 0)))
-     SG_DEBUG("%7i | %.2e | %.2e | % .2e | % .2e | %6.3f | %.4f | %.2e\n",
+     SG_DEBUG("{:7} | {:.2e} | {:.2e} | % .2e | % .2e | {:6.3f} | {:.4f} | {:.2e}\n",
 	     counter, primal_inf, dual_inf, primal_obj, dual_obj,
 	     sigfig, alfa, mu);
 

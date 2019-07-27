@@ -31,11 +31,11 @@ malsar_result_t malsar_joint_feature_learning(
 {
 	int task;
 	int n_feats = features->get_dim_feature_space();
-	SG_DEBUG("n feats = %d\n", n_feats)
+	SG_DEBUG("n feats = {}\n", n_feats)
 	int n_vecs = features->get_num_vectors();
-	SG_DEBUG("n vecs = %d\n", n_vecs)
+	SG_DEBUG("n vecs = {}\n", n_vecs)
 	int n_tasks = options.n_tasks;
-	SG_DEBUG("n tasks = %d\n", n_tasks)
+	SG_DEBUG("n tasks = {}\n", n_tasks)
 
 	int iter = 0;
 
@@ -95,7 +95,7 @@ malsar_result_t malsar_joint_feature_learning(
 
 		//cout << "gWs" << endl << gWs << endl;
 		//cout << "gCs" << endl << gCs << endl;
-		//SG_PRINT("Fs = %f\n",Fs)
+		//SG_PRINT("Fs = {}\n",Fs)
 
 		double Fzp = 0.0;
 
@@ -182,7 +182,7 @@ malsar_result_t malsar_joint_feature_learning(
 			obj += rho1*(Wz.row(i).lpNorm<2>());
 		//for (task=0; task<n_tasks; task++)
 		//	obj += rho1*(Wz.col(task).norm());
-		SG_DEBUG("Obj = %f\n",obj)
+		SG_DEBUG("Obj = {}\n",obj)
 		// check if process should be terminated
 		switch (options.termination)
 		{
@@ -219,7 +219,7 @@ malsar_result_t malsar_joint_feature_learning(
 	}
 	//internal::set_is_malloc_allowed(true);
 	SG_DONE()
-	SG_DEBUG("%d iteration passed, objective = %f\n",iter,obj)
+	SG_DEBUG("{} iteration passed, objective = {}\n",iter,obj)
 
 	SGMatrix<float64_t> tasks_w(n_feats, n_tasks);
 	for (int i=0; i<n_feats; i++)

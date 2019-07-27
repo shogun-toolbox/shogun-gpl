@@ -102,13 +102,13 @@ bool CSVMSGD::train_machine(CFeatures* data)
 	float64_t eta0 = typw / CMath::max(1.0,-loss->first_derivative(-typw,1));
 	t = 1 / (eta0 * lambda);
 
-	SG_INFO("lambda=%f, epochs=%d, eta0=%f\n", lambda, epochs, eta0)
+	SG_INFO("lambda={}, epochs={}, eta0={}\n", lambda, epochs, eta0)
 
 
 	//do the sgd
 	calibrate();
 
-	SG_INFO("Training on %d vectors\n", num_vec)
+	SG_INFO("Training on {} vectors\n", num_vec)
 
 	ELossType loss_type = loss->get_loss_type();
 	bool is_log_loss = false;
@@ -150,7 +150,7 @@ bool CSVMSGD::train_machine(CFeatures* data)
 	}
 
 	float64_t wnorm = linalg::dot(w, w);
-	SG_INFO("Norm: %.6f, Bias: %.6f\n", wnorm, bias)
+	SG_INFO("Norm: {:.6f}, Bias: {:.6f}\n", wnorm, bias)
 
 	set_w(w);
 
@@ -169,7 +169,7 @@ void CSVMSGD::calibrate()
 	float64_t* c=SG_MALLOC(float64_t, c_dim);
 	memset(c, 0, c_dim*sizeof(float64_t));
 
-	SG_INFO("Estimating sparsity and bscale num_vec=%d num_feat=%d.\n", num_vec, c_dim)
+	SG_INFO("Estimating sparsity and bscale num_vec={} num_feat={}.\n", num_vec, c_dim)
 
 	// compute average gradient size
 	int32_t n = 0;
@@ -191,7 +191,7 @@ void CSVMSGD::calibrate()
 
 	// compute weight decay skip
 	skip = (int32_t) ((16 * n * c_dim) / r);
-	SG_INFO("using %d examples. skip=%d  bscale=%.6f\n", n, skip, bscale)
+	SG_INFO("using {} examples. skip={}  bscale={:.6f}\n", n, skip, bscale)
 
 	SG_FREE(c);
 }

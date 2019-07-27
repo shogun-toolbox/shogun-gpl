@@ -140,11 +140,11 @@ void print(int depth, node<P> &top_node)
   if ( top_node.num_children > 0 )
   {
     print_space(depth);
-    SG_PRINT("scale = %i\n",top_node.scale)
+    SG_PRINT("scale = {}\n",top_node.scale)
     print_space(depth);
-    SG_PRINT("max_dist = %f\n",top_node.max_dist)
+    SG_PRINT("max_dist = {}\n",top_node.max_dist)
     print_space(depth);
-    SG_PRINT("num children = %i\n",top_node.num_children)
+    SG_PRINT("num children = {}\n",top_node.num_children)
     for (int i = 0; i < top_node.num_children;i++)
       print(depth+1, top_node.children[i]);
   }
@@ -593,9 +593,9 @@ void print_query(const node<P> *top_node)
   SG_PRINT ("query = \n")
   print(top_node->p);
   if ( top_node->num_children > 0 ) {
-    SG_PRINT("scale = %i\n",top_node->scale)
-    SG_PRINT("max_dist = %f\n",top_node->max_dist)
-    SG_PRINT("num children = %i\n",top_node->num_children)
+    SG_PRINT("scale = {}\n",top_node->scale)
+    SG_PRINT("max_dist = {}\n",top_node->max_dist)
+    SG_PRINT("num children = {}\n",top_node->num_children)
   }
 }
 
@@ -609,7 +609,7 @@ void print_cover_sets(v_array<v_array<d_node<P> > > &cover_sets,
     {
       d_node<P> *ele = cover_sets[current_scale].elements;
       d_node<P> *end = cover_sets[current_scale].elements + cover_sets[current_scale].index;
-      SG_PRINT ("%i\n", current_scale)
+      SG_PRINT ("{}\n", current_scale)
       for (; ele != end; ele++)
 	{
 	  node<P> *n = (node<P> *)ele->n;
