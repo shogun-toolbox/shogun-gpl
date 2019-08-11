@@ -638,7 +638,7 @@ BmrmStatistics svm_p3bm_solver(
 		if (p3bmrm.nCP>=BufSize)
 		{
 			p3bmrm.exitflag=-2;
-			SG_ERROR("Buffer exceeded.\n")
+			error("Buffer exceeded.\n");
 		}
 
 		/* keep w_t + Fp */

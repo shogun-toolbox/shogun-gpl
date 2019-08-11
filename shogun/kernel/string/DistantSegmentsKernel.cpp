@@ -58,7 +58,7 @@ float64_t CDistantSegmentsKernel::compute(int32_t idx_a, int32_t idx_b)
 	ASSERT(a && b)
 
 	if ((aLength<1)||(bLength<1))
-		SG_ERROR("Empty sequences")
+		error("Empty sequences");
 
 	float64_t result=compute(a, aLength, b, bLength, m_delta, m_theta);
 

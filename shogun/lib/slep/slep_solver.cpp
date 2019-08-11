@@ -117,7 +117,7 @@ double compute_lambda(
 {
 	double lambda_max = 0.0;
 	if (z<0 || z>1)
-		SG_ERROR("z is not in range [0,1]")
+		error("z is not in range [0,1]");
 
 	double q_bar = 0.0;
 	if (options.q==1)
@@ -127,7 +127,7 @@ double compute_lambda(
 	else
 		q_bar = options.q/(options.q-1);
 
-	SG_INFO("q bar = {} \n",q_bar)
+	io::info("q bar = {} \n",q_bar);
 
 	switch (options.mode)
 	{
@@ -245,7 +245,7 @@ double compute_lambda(
 
 				sum = CMath::pow(sum, 1.0/q_bar);
 				sum /= options.gWeight[t];
-				SG_INFO("sum = {}\n",sum)
+				io::info("sum = {}\n",sum);
 				if (sum>lambda_max)
 					lambda_max = sum;
 			}
@@ -273,7 +273,7 @@ double compute_lambda(
 		break;
 	}
 
-	SG_INFO("Computed lambda = {} * {} = {}\n",z,lambda_max,z*lambda_max)
+	io::info("Computed lambda = {} * {} = {}\n",z,lambda_max,z*lambda_max);
 	return z*lambda_max;
 }
 
@@ -671,7 +671,7 @@ slep_result_t slep_solver(
 
 		if (gradient_break)
 		{
-			SG_INFO("Gradient norm is less than 1e-20\n")
+			io::info("Gradient norm is less than 1e-20\n");
 			break;
 		}
 
@@ -685,7 +685,7 @@ slep_result_t slep_solver(
 					step = CMath::abs(func-funcp);
 					if (step <= options.tolerance)
 					{
-						SG_INFO("Objective changes less than tolerance\n")
+						io::info("Objective changes less than tolerance\n");
 						done = true;
 					}
 				}
@@ -696,7 +696,7 @@ slep_result_t slep_solver(
 					step = CMath::abs(func-funcp);
 					if (step <= step*options.tolerance)
 					{
-						SG_INFO("Objective changes relatively less than tolerance\n")
+						io::info("Objective changes relatively less than tolerance\n");
 						done = true;
 					}
 				}
@@ -704,7 +704,7 @@ slep_result_t slep_solver(
 			case 2:
 				if (func <= options.tolerance)
 				{
-					SG_INFO("Objective is less than tolerance\n")
+					io::info("Objective is less than tolerance\n");
 					done = true;
 				}
 			break;
@@ -725,7 +725,7 @@ slep_result_t slep_solver(
 
 		iter++;
 	}
-	SG_INFO("Finished {} iterations, objective = {}\n", iter, func)
+	io::info("Finished {} iterations, objective = {}\n", iter, func);
 
 	SG_FREE(ATx);
 	SG_FREE(s);

@@ -18,7 +18,7 @@ using namespace shogun;
 
 void CJacobiEllipticFunctions::ellipKKp(Real L, Real &K, Real &Kp)
 {
-	REQUIRE(L>=0.0,
+	require(L>=0.0,
 		"CJacobiEllipticFunctions::ellipKKp(): \
 		Parameter L should be non-negative\n");
 #if defined HAVE_ARPREC
@@ -58,7 +58,7 @@ void CJacobiEllipticFunctions::ellipKKp(Real L, Real &K, Real &Kp)
 void CJacobiEllipticFunctions
 	::ellipJC(Complex u, Real m, Complex &sn, Complex &cn, Complex &dn)
 {
-	REQUIRE(m>=0.0 && m<=1.0,
+	require(m>=0.0 && m<=1.0,
 		"CJacobiEllipticFunctions::ellipJC(): \
 		Parameter m should be >=0 and <=1\n");
 

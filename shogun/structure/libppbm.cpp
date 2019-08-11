@@ -93,7 +93,7 @@ BmrmStatistics svm_ppbm_solver(
 
 	ASSERT(nDim > 0);
 	ASSERT(BufSize > 0);
-	REQUIRE(BufSize < (std::numeric_limits<size_t>::max() / nDim),
+	require(BufSize < (std::numeric_limits<size_t>::max() / nDim),
 		"overflow: {} * {} > {} -- biggest possible BufSize={} or nDim={}\n",
 		BufSize, nDim, std::numeric_limits<size_t>::max(),
 		(std::numeric_limits<size_t>::max() / nDim),
@@ -592,7 +592,7 @@ BmrmStatistics svm_ppbm_solver(
 		if (ppbmrm.nCP>=BufSize)
 		{
 			ppbmrm.exitflag=-2;
-			SG_ERROR("Buffer exceeded.\n")
+			error("Buffer exceeded.\n");
 		}
 
 		/* keep w_t + Fp */

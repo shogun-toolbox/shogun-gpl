@@ -45,31 +45,31 @@ void ssl_train(struct data *Data,
 	switch(Options->algo)
 	{
 		case -1:
-			SG_INFO("Regularized Least Squares Regression (CGLS)\n")
+			io::info("Regularized Least Squares Regression (CGLS)\n");
 			optimality=CGLS(Data,Options,Subset,Weights,Outputs);
 			break;
 		case RLS:
-			SG_INFO("Regularized Least Squares Classification (CGLS)\n")
+			io::info("Regularized Least Squares Classification (CGLS)\n");
 			optimality=CGLS(Data,Options,Subset,Weights,Outputs);
 			break;
 		case SVM:
-			SG_INFO("Modified Finite Newton L2-SVM (L2-SVM-MFN)\n")
+			io::info("Modified Finite Newton L2-SVM (L2-SVM-MFN)\n");
 			optimality=L2_SVM_MFN(Data,Options,Weights,Outputs,0);
 			break;
 		case TSVM:
-			SG_INFO("Transductive L2-SVM (TSVM)\n")
+			io::info("Transductive L2-SVM (TSVM)\n");
 			optimality=TSVM_MFN(Data,Options,Weights,Outputs);
 			break;
 		case DA_SVM:
-			SG_INFO("Deterministic Annealing Semi-supervised L2-SVM (DAS3VM)\n")
+			io::info("Deterministic Annealing Semi-supervised L2-SVM (DAS3VM)\n");
 			optimality=DA_S3VM(Data,Options,Weights,Outputs);
 			break;
 		default:
-			SG_ERROR("Algorithm unspecified\n")
+			error("Algorithm unspecified\n");
 	}
 
 	if (!optimality)
-		SG_WARNING("SSL-Algorithm terminated without reaching optimum.\n")
+		io::warn("SSL-Algorithm terminated without reaching optimum.\n");
 
 	SG_FREE(Subset->vec);
     SG_FREE(Subset);
@@ -186,7 +186,7 @@ int32_t CGLS(
 		}
 	}
 	SG_DEBUG("...Done.")
-	SG_INFO("CGLS converged in {} iteration(s)", cgiter)
+	io::info("CGLS converged in {} iteration(s)", cgiter);
 
 	return optimality;
 }
@@ -302,7 +302,7 @@ int32_t L2_SVM_MFN(
 				SG_FREE(ActiveSubset);
 				SG_FREE(Weights_bar);
 				SG_FREE(Outputs_bar);
-				SG_INFO("L2_SVM_MFN converged (optimality) in {}", iter)
+				io::info("L2_SVM_MFN converged (optimality) in {}", iter);
 				return 1;
 			}
 		}
@@ -340,7 +340,7 @@ int32_t L2_SVM_MFN(
 			SG_FREE(ActiveSubset);
 			SG_FREE(Weights_bar);
 			SG_FREE(Outputs_bar);
-			SG_INFO("L2_SVM_MFN converged (rel. criterion) in {} iterations", iter)
+			io::info("L2_SVM_MFN converged (rel. criterion) in {} iterations", iter);
 			return 2;
 		}
 	}
@@ -348,7 +348,7 @@ int32_t L2_SVM_MFN(
 	SG_FREE(ActiveSubset);
 	SG_FREE(Weights_bar);
 	SG_FREE(Outputs_bar);
-	SG_INFO("L2_SVM_MFN converged (max iter exceeded) in {} iterations", iter)
+	io::info("L2_SVM_MFN converged (max iter exceeded) in {} iterations", iter);
 	return 0;
 }
 
@@ -643,7 +643,7 @@ int32_t DA_S3VM(
 	SG_FREE(JU);
 	SG_FREE(w_min);
 	SG_FREE(o_min);
-	SG_INFO("(min) Objective Value = {}", F_min)
+	io::info("(min) Objective Value = {}", F_min);
 	return 1;
 }
 
@@ -831,7 +831,7 @@ int32_t optimize_w(
 				SG_FREE(ActiveSubset);
 				SG_FREE(Weights_bar);
 				SG_FREE(Outputs_bar);
-				SG_INFO("L2_SVM_MFN converged in {} iteration(s)", iter)
+				io::info("L2_SVM_MFN converged in {} iteration(s)", iter);
 				return 1;
 			}
 		}
@@ -910,7 +910,7 @@ int32_t optimize_w(
 	SG_FREE(ActiveSubset);
 	SG_FREE(Weights_bar);
 	SG_FREE(Outputs_bar);
-	SG_INFO("L2_SVM_MFN converged in {} iterations", iter)
+	io::info("L2_SVM_MFN converged in {} iterations", iter);
 	return 0;
 }
 
@@ -982,7 +982,7 @@ void optimize_p(
 			break;
 	}
 	if(CMath::abs(Bnu)>epsilon)
-		SG_WARNING("Warning (Root): root not found to required precision\n")
+		io::warn("Warning (Root): root not found to required precision\n");
 
 	for (int32_t i=0;i<u;i++)
 	{
@@ -990,7 +990,7 @@ void optimize_p(
 		if(std::isinf(s)) p[i]=0.0;
 		else p[i]=1.0/(1.0+s);
 	}
-	SG_INFO(" root (nu) = {} B(nu) = {}", nu, Bnu)
+	io::info(" root (nu) = {} B(nu) = {}", nu, Bnu);
 }
 
 float64_t transductive_cost(

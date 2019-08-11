@@ -145,7 +145,7 @@ SGVector<float64_t> OptimizationSolver::Self::solve() const
 	}
 	else
 	{
-		SG_WARNING("All mmd estimates are negative. This is techically possible,"
+		io::warn("All mmd estimates are negative. This is techically possible,"
 			"although extremely rare. Consider using different kernels. "
 			"This combination will lead to a bad two-sample test. Since any"
 			"combination is bad, will now just return equally distributed "

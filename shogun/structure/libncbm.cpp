@@ -122,7 +122,7 @@ inline static line_search_res zoom
 				ls_res.reg = cur_reg;
 				ls_res.gradient = cur_grad;
 				ls_res.solution = cur_solution;
-//				SG_PRINT("in zoom (wolfe2): {}\n", cur_fval)
+//				io::print("in zoom (wolfe2): {}\n", cur_fval);
 				return ls_res;
 			}
 
@@ -149,7 +149,7 @@ inline static line_search_res zoom
 			ls_res.reg = cur_reg;
 			ls_res.gradient = cur_grad;
 			ls_res.solution = cur_solution;
-//			SG_PRINT("in zoom iter: {} {}\n", iter, cur_fval)
+//			io::print("in zoom iter: {} {}\n", iter, cur_fval);
 			return ls_res;
 		}
 		iter++;
@@ -432,12 +432,12 @@ BmrmStatistics svm_ncbm_solver(
 	update_H(ncbm, CPList_head, CPList_tail, H, diag_H, _lambda, maxCPs, w_dim);
 	tstop=ttime.cur_time_diff(false);
 	if (verbose)
-		SG_PRINT("{:4d}: tim={:.3f}, Fp={}, Fd={}, R={}\n",
+		io::print("{:4d}: tim={:.3f}, Fp={}, Fd={}, R={}\n",
 				ncbm.nIter, tstop-tstart, ncbm.Fp, ncbm.Fd, cur_risk);
 
 	float64_t astar = 0.01;
 
-	SG_PRINT("clean icps: {}\n", cleanICP)
+	io::print("clean icps: {}\n", cleanICP);
 	while (ncbm.exitflag==0)
 	{
 		tstart=ttime.cur_time_diff(false);
@@ -513,7 +513,7 @@ BmrmStatistics svm_ncbm_solver(
 			float64_t PO = 0.5*_lambda*w_norm + CMath::max(scores.vector, scores.vlen);
 			float64_t QP_gap = PO - ncbm.Fd;
 
-			SG_PRINT("{:4d}: primal:{} dual:{} QP_gap:{}\n", ncbm.nIter, PO, ncbm.Fd, QP_gap)
+			io::print("{:4d}: primal:{} dual:{} QP_gap:{}\n", ncbm.nIter, PO, ncbm.Fd, QP_gap);
 		}
 
 		/* Stopping conditions */
@@ -534,7 +534,7 @@ BmrmStatistics svm_ncbm_solver(
 
 		/* Verbose output */
 		if (verbose)
-			SG_PRINT("{:4d}: tim={:.3f}, Fp={}, Fd={}, (Fp-Fd)={}, (Fp-Fd)/Fp={}, R={}, nCP={}, nzA={}, QPexitflag={}, best_fp={}, gap={}\n",
+			io::print("{:4d}: tim={:.3f}, Fp={}, Fd={}, (Fp-Fd)={}, (Fp-Fd)/Fp={}, R={}, nCP={}, nzA={}, QPexitflag={}, best_fp={}, gap={}\n",
 					ncbm.nIter, tstop-tstart, ncbm.Fp, ncbm.Fd, ncbm.Fp-ncbm.Fd,
 					(ncbm.Fp-ncbm.Fd)/ncbm.Fp, cur_risk, ncbm.nCP, ncbm.nzA, qp_exitflag.exitflag, best_Fp, (best_Fp-ncbm.Fd)/best_Fp);
 
@@ -631,7 +631,7 @@ BmrmStatistics svm_ncbm_solver(
 				ls.fval = cur_risk+0.5*_lambda*linalg::dot(cur_w, cur_w);
 				ls.solution = cur_w;
 				ls.gradient = cur_subgrad;
-				SG_PRINT("{}\n", ls.fval)
+				io::print("{}\n", ls.fval);
 
 				wbest_candidates.push_back(ls);
 			}
@@ -639,16 +639,16 @@ BmrmStatistics svm_ncbm_solver(
 			astar = ls_res[1].a * norm_dir;
 
 			tstop=ttime.cur_time_diff(false);
-			SG_PRINT("\t\tline search time: {:.5f}\n", tstop-tstart)
+			io::print("\t\tline search time: {:.5f}\n", tstop-tstart);
 		}
 
 		/* search for the best w among the new candidates */
 		if (verbose)
-			SG_PRINT("\t searching for the best Fp:\n")
+			io::print("\t searching for the best Fp:\n");
 		for (size_t i = 0; i < wbest_candidates.size(); i++)
 		{
 			if (verbose)
-				SG_PRINT("\t\t {} fcurrent: {:.16f}\n", i, wbest_candidates[i].fval)
+				io::print("\t\t {} fcurrent: {:.16f}\n", i, wbest_candidates[i].fval);
 
 			if (wbest_candidates[i].fval < best_Fp)
 			{
@@ -660,7 +660,7 @@ BmrmStatistics svm_ncbm_solver(
 				ncbm.Fp = best_Fp;
 
 				if (verbose)
-					SG_PRINT("\t\t new best norm: {}\n",
+					io::print("\t\t new best norm: {}\n",
 							best_w.twonorm(best_w.vector, w_dim));
 			}
 
@@ -683,11 +683,11 @@ BmrmStatistics svm_ncbm_solver(
 						- linalg::dot(wbest_candidates[i].solution,	wbest_candidates[i].gradient);
 
 					if (verbose)
-						SG_PRINT("CONFLICT Rbest={:.6g} score={:g} L={:.6g} U={:.6g}\n", best_risk, score, L, U)
+						io::print("CONFLICT Rbest={:.6g} score={:g} L={:.6g} U={:.6g}\n", best_risk, score, L, U);
 					if (L <= U)
 					{
 						if (verbose)
-							SG_PRINT("{:.6f} < {:.6f} => changing bias[{}]={:g}\n", L, U, cp_idx, L)
+							io::print("{:.6f} < {:.6f} => changing bias[{}]={:g}\n", L, U, cp_idx, L);
 						bias[cp_idx]= -L;
 					}
 					else
@@ -699,7 +699,7 @@ BmrmStatistics svm_ncbm_solver(
 						for (size_t j = wbest_candidates.size()-1; i < j; --j)
 						{
 							cp_ptr = cp_ptr->prev;
-							SG_PRINT("tail - {}\n ({})", j, i)
+							io::print("tail - {}\n ({})", j, i);
 						}
 
 						float64_t* cp = get_cutting_plane(cp_ptr);
@@ -728,7 +728,7 @@ BmrmStatistics svm_ncbm_solver(
 							- linalg::dot(wbest_candidates[i].solution, wbest_candidates[i].gradient);
 
 						if (verbose)
-							SG_PRINT("solved by changing nCP={} bias:{:g} ({:g})\n", cp_idx, bias[cp_idx], L)
+							io::print("solved by changing nCP={} bias:{:g} ({:g})\n", cp_idx, bias[cp_idx], L);
 					}
 				}
 			}

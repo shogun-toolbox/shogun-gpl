@@ -623,7 +623,7 @@ bool CLaRank::train_machine(CFeatures* data)
 	{
 		if (data->get_num_vectors() != m_labels->get_num_labels())
 		{
-			SG_ERROR("Numbert of vectors ({}) does not match number of labels ({})\n",
+			error("Numbert of vectors ({}) does not match number of labels ({})\n",
 					data->get_num_vectors(), m_labels->get_num_labels());
 		}
 		m_kernel->init(data, data);
@@ -638,7 +638,7 @@ bool CLaRank::train_machine(CFeatures* data)
 	float64_t gap = DBL_MAX;
 
 	auto pb = SG_PROGRESS(range(0, 10));
-	SG_INFO("Training on {} examples\n", nb_train)
+	io::info("Training on {} examples\n", nb_train);
 	while (gap > get_C() && (!cancel_computation()) &&
 	       n_it < max_iteration) // stopping criteria
 	{
@@ -673,8 +673,8 @@ bool CLaRank::train_machine(CFeatures* data)
 
 	if (n_it >= max_iteration && gap > get_C())
 	{
-		SG_WARNING(
-		    "LaRank did not converge after {} iterations.\n", max_iteration)
+		io::warn(
+		    "LaRank did not converge after {} iterations.\n", max_iteration);
 	}
 
 	int32_t num_classes = outputs.size();
@@ -855,7 +855,7 @@ uint32_t CLaRank::getNumOutputs () const
 // Set max number of iterations before training is stopped
 void CLaRank::set_max_iteration(int32_t max_iter)
 {
-    REQUIRE(max_iter > 0,
+    require(max_iter > 0,
             "Max iteration (given: {}) must be positive.\n",
             max_iter);
     max_iteration = max_iter;

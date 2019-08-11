@@ -95,7 +95,7 @@ malsar_result_t malsar_joint_feature_learning(
 
 		//cout << "gWs" << endl << gWs << endl;
 		//cout << "gCs" << endl << gCs << endl;
-		//SG_PRINT("Fs = {}\n",Fs)
+		//io::print("Fs = {}\n",Fs);
 
 		double Fzp = 0.0;
 
@@ -218,7 +218,7 @@ malsar_result_t malsar_joint_feature_learning(
 		t = 0.5 * (1 + CMath::sqrt(1.0 + 4*t*t));
 	}
 	//internal::set_is_malloc_allowed(true);
-	SG_DONE()
+	io::progress_done();
 	SG_DEBUG("{} iteration passed, objective = {}\n",iter,obj)
 
 	SGMatrix<float64_t> tasks_w(n_feats, n_tasks);

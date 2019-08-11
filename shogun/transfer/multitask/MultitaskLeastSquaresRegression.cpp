@@ -61,7 +61,7 @@ void CMultitaskLeastSquaresRegression::initialize_parameters()
 
 bool CMultitaskLeastSquaresRegression::train_locked_implementation(SGVector<index_t>* tasks)
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	return false;
 }
 
@@ -171,7 +171,7 @@ bool CMultitaskLeastSquaresRegression::train_machine(CFeatures* data)
 		}
 		break;
 		default:
-			SG_ERROR("Not supported task relation type\n")
+			error("Not supported task relation type\n");
 	}
 
 	SG_FREE(options.tasks_indices);

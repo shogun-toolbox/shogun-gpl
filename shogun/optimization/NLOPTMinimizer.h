@@ -103,7 +103,7 @@ private:
 
 	static nlopt_algorithm get_nlopt_algorithm(int16_t method_id)
 	{
-		REQUIRE(method_id>=0 && method_id<(int16_t)NLOPT_NUM_ALGORITHMS,
+		require(method_id>=0 && method_id<(int16_t)NLOPT_NUM_ALGORITHMS,
 			"Unsupported method id ({})\n", method_id);
 		return (nlopt_algorithm) method_id;
 	}

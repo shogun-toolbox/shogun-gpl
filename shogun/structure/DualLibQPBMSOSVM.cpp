@@ -120,7 +120,7 @@ bool CDualLibQPBMSOSVM::train_machine(CFeatures* data)
 					true /* use line search*/, m_verbose);
 			break;
 		default:
-			SG_ERROR("CDualLibQPBMSOSVM: m_solver={} is not supported", m_solver);
+			error("CDualLibQPBMSOSVM: m_solver={} is not supported", m_solver);
 	}
 
 	if (m_result.exitflag>0)

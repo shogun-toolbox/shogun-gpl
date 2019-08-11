@@ -80,7 +80,7 @@ CKernel* WeightedMaxMeasure::select_kernel()
 	for (size_t i=0; i<num_kernels; ++i)
 	{
 		if (!kernel->append_kernel(kernel_mgr.kernel_at(i)))
-			SG_ERROR("Error while creating a combined kernel! Please contact Shogun developers!\n");
+			error("Error while creating a combined kernel! Please contact Shogun developers!\n");
 	}
 	kernel->set_subkernel_weights(weights);
 	SG_DEBUG("Created a weighted kernel!\n");

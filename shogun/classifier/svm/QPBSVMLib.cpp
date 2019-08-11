@@ -68,7 +68,7 @@ using namespace shogun;
 
 CQPBSVMLib::CQPBSVMLib()
 {
-	SG_UNSTABLE("CQPBSVMLib::CQPBSVMLib()", "\n")
+	io::unstable("CQPBSVMLib::CQPBSVMLib()");
 
 	m_H=0;
 	m_dim = 0;
@@ -147,11 +147,11 @@ int32_t CQPBSVMLib::solve_qp(float64_t* result, int32_t len)
 		case QPB_SOLVER_CPLEX:
 			status = qpbsvm_cplex(result, Nabla, &t, &History, verb );
 #else
-			SG_ERROR("cplex not enabled at compile time - unknow solver\n")
+			error("cplex not enabled at compile time - unknow solver\n");
 #endif
 			break;
 		default:
-			SG_ERROR("unknown solver\n")
+			error("unknown solver\n");
 			break;
 	}
 
@@ -217,7 +217,7 @@ int32_t CQPBSVMLib::qpbsvm_sca(float64_t *x,
   History[INDEX(1,t,2)] = Q_D;
 
   if( verb > 0 ) {
-    SG_PRINT("{}: Q_P={}, Q_D={}, Q_P-Q_D={}, (Q_P-Q_D)/|Q_P|={} \n",
+    io::print("{}: Q_P={}, Q_D={}, Q_P-Q_D={}, (Q_P-Q_D)/|Q_P|={} \n",
      t, Q_P, Q_D, Q_P-Q_D,(Q_P-Q_D)/CMath::abs(Q_P));
   }
 
@@ -269,7 +269,7 @@ int32_t CQPBSVMLib::qpbsvm_sca(float64_t *x,
     else if(KKTsatisf == 1) exitflag = 3;
 
     if( verb > 0 && (t % verb == 0 || t==1)) {
-      SG_PRINT("{}: Q_P={}_f, Q_D={}_f, Q_P-Q_D={}_f, (Q_P-Q_D)/|Q_P|={}_f \n",
+      io::print("{}: Q_P={}_f, Q_D={}_f, Q_P-Q_D={}_f, (Q_P-Q_D)/|Q_P|={}_f \n",
         t, Q_P, Q_D, Q_P-Q_D,(Q_P-Q_D)/CMath::abs(Q_P));
     }
 
@@ -298,7 +298,7 @@ int32_t CQPBSVMLib::qpbsvm_sca(float64_t *x,
   (*ptr_t) = t;
   (*ptr_History) = History;
 
-  SG_PRINT("QP: {} QD: {}\n", Q_P, Q_D)
+  io::print("QP: {} QD: {}\n", Q_P, Q_D);
 
   return( exitflag );
 }
@@ -363,7 +363,7 @@ int32_t CQPBSVMLib::qpbsvm_scas(float64_t *x,
   History[INDEX(1,t,2)] = Q_D;
 
   if( verb > 0 ) {
-    SG_PRINT("{}: Q_P={}_f, Q_D={}_f, Q_P-Q_D={}_f, (Q_P-Q_D)/|Q_P|={}_f \n",
+    io::print("{}: Q_P={}_f, Q_D={}_f, Q_P-Q_D={}_f, (Q_P-Q_D)/|Q_P|={}_f \n",
      t, Q_P, Q_D, Q_P-Q_D,(Q_P-Q_D)/CMath::abs(Q_P));
   }
 
@@ -427,7 +427,7 @@ int32_t CQPBSVMLib::qpbsvm_scas(float64_t *x,
     else if(KKTsatisf == 1) exitflag = 3;
 
     if( verb > 0 && (t % verb == 0 || t==1)) {
-      SG_PRINT("{}: Q_P={}_f, Q_D={}_f, Q_P-Q_D={}_f, (Q_P-Q_D)/|Q_P|={}_f \n",
+      io::print("{}: Q_P={}_f, Q_D={}_f, Q_P-Q_D={}_f, (Q_P-Q_D)/|Q_P|={}_f \n",
         t, Q_P, Q_D, Q_P-Q_D,(Q_P-Q_D)/CMath::abs(Q_P));
     }
 
@@ -505,7 +505,7 @@ int32_t CQPBSVMLib::qpbsvm_scamv(float64_t *x,
       else if( max_viol < Nabla[i]) { u = i; max_viol = Nabla[i]; }
     }
 
-/*    SG_PRINT("{}: max_viol={}_f, u={}\n", t, max_viol, u)*/
+/*    io::print("{}: max_viol={}_f, u={}\n", t, max_viol, u)*/
 
     if( max_viol <= m_tolKKT )
     {
@@ -615,7 +615,7 @@ int32_t CQPBSVMLib::qpbsvm_gauss_seidel(float64_t *x,
 		if (x[i]==0.0 || x[i]==1.0)
 			atbound++;
 	}
-	SG_PRINT("atbound:{} of {} ({:2.2f}%)\n", atbound, m_dim, ((float64_t) 100.0*atbound)/m_dim)
+	io::print("atbound:{} of {} ({:2.2f}%)\n", atbound, m_dim, ((float64_t) 100.0*atbound)/m_dim);
 	*ptr_t=0;
 	*ptr_History=NULL;
 	return 0;
@@ -648,7 +648,7 @@ int32_t CQPBSVMLib::qpbsvm_gradient_descent(float64_t *x,
 		if (x[i]==0.0 || x[i]==1.0)
 			atbound++;
 	}
-	SG_PRINT("atbound:{} of {} ({:2.2f}%)\n", atbound, m_dim, ((float64_t) 100.0*atbound)/m_dim)
+	io::print("atbound:{} of {} ({:2.2f}%)\n", atbound, m_dim, ((float64_t) 100.0*atbound)/m_dim);
 	*ptr_t=0;
 	*ptr_History=NULL;
 	return 0;

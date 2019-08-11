@@ -80,7 +80,7 @@ bool CMultitaskClusteredLogisticRegression::train_locked_implementation(SGVector
 	options.tasks_indices = tasks;
 	options.n_clusters = m_num_clusters;
 
-	SG_WARNING("Clustered LR is unstable with C++11\n")
+	io::warn("Clustered LR is unstable with C++11\n");
 	m_tasks_w = SGMatrix<float64_t>(((CDotFeatures*)features)->get_dim_feature_space(), options.n_tasks);
 	m_tasks_w.set_const(0);
 	m_tasks_c = SGVector<float64_t>(options.n_tasks);
@@ -110,7 +110,7 @@ bool CMultitaskClusteredLogisticRegression::train_machine(CFeatures* data)
 	options.tasks_indices = ((CTaskGroup*)m_task_relation)->get_tasks_indices();
 	options.n_clusters = m_num_clusters;
 
-	SG_WARNING("Clustered LR is unstable with C++11\n")
+	io::warn("Clustered LR is unstable with C++11\n");
 	m_tasks_w = SGMatrix<float64_t>(((CDotFeatures*)features)->get_dim_feature_space(), options.n_tasks);
 	m_tasks_w.set_const(0);
 	m_tasks_c = SGVector<float64_t>(options.n_tasks);

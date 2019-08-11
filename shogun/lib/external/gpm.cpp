@@ -426,7 +426,7 @@ int32_t gvpm(
       } // stopping rule based on the norm of d_k
   }
 
-  SG_WARNING("GVPM exits after maxvpm = {} iterations.\n", maxvpm)
+  io::warn("GVPM exits after maxvpm = {} iterations.\n", maxvpm);
 
 Clean:
 
@@ -768,7 +768,7 @@ int32_t FletcherAlg2A(
       }
   }
 
-  SG_WARNING("Dai-Fletcher method exits after maxvpm = {} iterations.\n", maxvpm)
+  io::warn("Dai-Fletcher method exits after maxvpm = {} iterations.\n", maxvpm);
 
 Clean:
 
@@ -993,7 +993,7 @@ int32_t ProjectDai(
 
   lam_ext = lambda;
   if (iter >= maxprojections)
-      SG_ERROR("Projector exits after max iterations: {}\n", iter)
+      error("Projector exits after max iterations: {}\n", iter);
 
   return (iter);
 }
@@ -1205,7 +1205,7 @@ int32_t Pardalos(
       else if ((a[i]<=xmin) && (xmax<=b[i]))
           x[i] = xx;
       else
-          SG_WARNING("Inner solver troubles...\n")
+          io::warn("Inner solver troubles...\n");
   }
 
   for (i = 0; i < n; i++)

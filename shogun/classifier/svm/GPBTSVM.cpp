@@ -44,7 +44,7 @@ bool CGPBTSVM::train_machine(CFeatures* data)
 	if (data)
 	{
 		if (m_labels->get_num_labels() != data->get_num_vectors())
-			SG_ERROR("Number of training vectors does not match number of labels\n")
+			error("Number of training vectors does not match number of labels\n");
 		kernel->init(data, data);
 	}
 
@@ -52,7 +52,7 @@ bool CGPBTSVM::train_machine(CFeatures* data)
 	prob.KER=new sKernel(kernel, lab.vlen);
 	prob.y=lab.vector;
 	prob.ell=lab.vlen;
-	SG_INFO("{} trainlabels\n", prob.ell)
+	io::info("{} trainlabels\n", prob.ell);
 
 	//  /*** set options defaults ***/
 	prob.delta = epsilon;
@@ -73,14 +73,14 @@ bool CGPBTSVM::train_machine(CFeatures* data)
 		prob.maxmw = 5;
 
 	/*** set the problem description for final report ***/
-	SG_INFO("\nTRAINING PARAMETERS:\n")
-	SG_INFO("\tNumber of training documents: {}\n", prob.ell)
-	SG_INFO("\tq: {}\n", prob.chunk_size)
-	SG_INFO("\tn: {}\n", prob.q)
-	SG_INFO("\tC: {}\n", prob.c_const)
-	SG_INFO("\tkernel type: {}\n", prob.ker_type)
-	SG_INFO("\tcache size: {}Mb\n", prob.maxmw)
-	SG_INFO("\tStopping tolerance: {}\n", prob.delta)
+	io::info("\nTRAINING PARAMETERS:\n");
+	io::info("\tNumber of training documents: {}\n", prob.ell);
+	io::info("\tq: {}\n", prob.chunk_size);
+	io::info("\tn: {}\n", prob.q);
+	io::info("\tC: {}\n", prob.c_const);
+	io::info("\tkernel type: {}\n", prob.ker_type);
+	io::info("\tcache size: {}Mb\n", prob.maxmw);
+	io::info("\tStopping tolerance: {}\n", prob.delta);
 
 	//  /*** compute the number of cache rows up to maxmw Mb. ***/
 	if (prob.preprocess_size == -1)
@@ -116,7 +116,7 @@ bool CGPBTSVM::train_machine(CFeatures* data)
 	create_new_model(num_sv);
 	set_bias(prob.bee);
 
-	SG_INFO("SV: {} BSV = {}\n", num_sv, bsv)
+	io::info("SV: {} BSV = {}\n", num_sv, bsv);
 
 	for (i = 0; i < prob.ell; i++)
 	{

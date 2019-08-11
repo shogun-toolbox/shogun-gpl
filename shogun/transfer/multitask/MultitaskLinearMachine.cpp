@@ -76,7 +76,7 @@ void CMultitaskLinearMachine::set_task_relation(CTaskRelation* task_relation)
 
 bool CMultitaskLinearMachine::train_machine(CFeatures* data)
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	return false;
 }
 
@@ -133,7 +133,7 @@ bool CMultitaskLinearMachine::train_locked(SGVector<index_t> indices)
 
 bool CMultitaskLinearMachine::train_locked_implementation(SGVector<index_t>* tasks)
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	return false;
 }
 
@@ -159,7 +159,7 @@ CBinaryLabels* CMultitaskLinearMachine::apply_locked_binary(SGVector<index_t> in
 
 float64_t CMultitaskLinearMachine::apply_one(int32_t i)
 {
-	SG_NOTIMPLEMENTED
+	not_implemented(SOURCE_LOCATION);
 	return 0.0;
 }
 
@@ -168,7 +168,7 @@ SGVector<float64_t> CMultitaskLinearMachine::apply_get_outputs(CFeatures* data)
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CDotFeatures\n")
+			error("Specified features are not of type CDotFeatures\n");
 
 		set_features((CDotFeatures*) data);
 	}
