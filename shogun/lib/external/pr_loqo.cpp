@@ -40,7 +40,7 @@ namespace shogun
 
 void nrerror(char error_text[])
 {
-	SG_DEBUG("terminating optimizer - {}\n", error_text)
+	SG_DEBUG("terminating optimizer - {}", error_text)
  // exit(1);
 }
 
@@ -82,7 +82,7 @@ bool choldc(float64_t* a, int32_t n, float64_t* p)
 	}
 
 	if (result>0)
-		SG_DEBUG("Choldc failed, matrix not positive definite\n")
+		SG_DEBUG("Choldc failed, matrix not positive definite")
 
 	SG_FREE(a2);
 
@@ -459,9 +459,9 @@ int32_t pr_loqo(
   /* the main loop */
   if (verb >= STATUS) {
 	  SG_DEBUG("counter | pri_inf  | dual_inf  | pri_obj   | dual_obj  | ")
-	  SG_DEBUG("sigfig | alpha  | nu \n")
+	  SG_DEBUG("sigfig | alpha  | nu ")
 	  SG_DEBUG("-------------------------------------------------------")
-	  SG_DEBUG("---------------------------\n")
+	  SG_DEBUG("---------------------------")
   }
 
   while (status == STILL_RUNNING) {
@@ -539,7 +539,7 @@ int32_t pr_loqo(
 
     /* generate report */
     if ((verb >= FLOOD) | ((verb == STATUS) & (status != 0)))
-     SG_DEBUG("{:7} | {:.2e} | {:.2e} | % .2e | % .2e | {:6.3f} | {:.4f} | {:.2e}\n",
+     SG_DEBUG("{:7} | {:.2e} | {:.2e} | % .2e | % .2e | {:6.3f} | {:.4f} | {:.2e}",
 	     counter, primal_inf, dual_inf, primal_obj, dual_obj,
 	     sigfig, alfa, mu);
 
@@ -644,8 +644,8 @@ int32_t pr_loqo(
 
 exit_optimizer:
   if ((status == 1) && (verb >= STATUS)) {
-	  SG_DEBUG("----------------------------------------------------------------------------------\n")
-	  SG_DEBUG("optimization converged\n")
+	  SG_DEBUG("----------------------------------------------------------------------------------")
+	  SG_DEBUG("optimization converged")
   }
 
   /* free memory */

@@ -27,11 +27,11 @@ malsar_result_t malsar_low_rank(
 {
 	int task;
 	int n_feats = features->get_dim_feature_space();
-	SG_DEBUG("n feats = {}\n", n_feats)
+	SG_DEBUG("n feats = {}", n_feats)
 	int n_vecs = features->get_num_vectors();
-	SG_DEBUG("n vecs = {}\n", n_vecs)
+	SG_DEBUG("n vecs = {}", n_vecs)
 	int n_tasks = options.n_tasks;
-	SG_DEBUG("n tasks = {}\n", n_tasks)
+	SG_DEBUG("n tasks = {}", n_tasks)
 
 	int iter = 0;
 
@@ -83,7 +83,7 @@ malsar_result_t malsar_low_rank(
 			}
 		}
 		gWs.noalias() += 2*rho_L2*Ws;
-		//SG_DEBUG("gWs={}\n",gWs.squaredNorm())
+		//SG_DEBUG("gWs={}",gWs.squaredNorm())
 
 		// add regularizer
 		Fs += rho_L2*Ws.squaredNorm();
@@ -201,7 +201,7 @@ malsar_result_t malsar_low_rank(
 		t = 0.5 * (1 + CMath::sqrt(1.0 + 4*t*t));
 	}
 	//internal::set_is_malloc_allowed(true);
-	SG_DEBUG("{} iteration passed, objective = {}\n",iter,obj)
+	SG_DEBUG("{} iteration passed, objective = {}",iter,obj)
 
 	SGMatrix<float64_t> tasks_w(n_feats, n_tasks);
 	for (int i=0; i<n_feats; i++)

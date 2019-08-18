@@ -145,7 +145,7 @@ float distance(CJLCoverTreePoint p1, CJLCoverTreePoint p2, float64_t upper_bound
 		if ( ! p1.m_distance->lhs_equals_rhs() )
 		{
 			error("lhs != rhs but the distance of two points "
-			       "from the same container has been requested\n");
+			       "from the same container has been requested");
 		}
 		else
 		{
@@ -158,7 +158,7 @@ float distance(CJLCoverTreePoint p1, CJLCoverTreePoint p2, float64_t upper_bound
 		if ( p1.m_distance->lhs_equals_rhs() )
 		{
 			error("lhs == rhs but the distance of two points "
-			      "from different containers has been requested\n");
+			      "from different containers has been requested");
 		}
 		else
 		{
@@ -175,7 +175,7 @@ float distance(CJLCoverTreePoint p1, CJLCoverTreePoint p2, float64_t upper_bound
 		}
 	}
 
-	error("Something has gone wrong, case not handled\n");
+	error("Something has gone wrong, case not handled");
 	return -1;
 }
 
@@ -206,7 +206,7 @@ v_array< CJLCoverTreePoint > parse_points(CDistance* distance, EFeaturesContaine
 /** Print the information of the CoverTree point */
 void print(CJLCoverTreePoint &p)
 {
-	error("Print JLCoverTreePoint not implemented\n");
+	error("Print JLCoverTreePoint not implemented");
 }
 
 } /* namespace shogun */

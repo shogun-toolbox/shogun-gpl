@@ -171,7 +171,7 @@ bool CMultitaskLeastSquaresRegression::train_machine(CFeatures* data)
 		}
 		break;
 		default:
-			error("Not supported task relation type\n");
+			error("Not supported task relation type");
 	}
 
 	SG_FREE(options.tasks_indices);

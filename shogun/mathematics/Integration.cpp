@@ -256,15 +256,15 @@ float64_t CIntegration::integrate_quadgk(CFunction* f, float64_t a,
 		index_t sn)
 {
 	// check the parameters
-	require(f, "Integrable function should not be NULL\n");
-	require(abs_tol>0.0, "Absolute tolerance must be positive, but is {}\n",
+	require(f, "Integrable function should not be NULL");
+	require(abs_tol>0.0, "Absolute tolerance must be positive, but is {}",
 			abs_tol);
-	require(rel_tol>0.0, "Relative tolerance must be positive, but is {}\n",
+	require(rel_tol>0.0, "Relative tolerance must be positive, but is {}",
 			rel_tol);
 	require(max_iter>0, "Maximum number of iterations must be greater than 0, "
-			"but is {}\n", max_iter);
+			"but is {}", max_iter);
 	require(sn>0, "Initial number of subintervals must be greater than 0, "
-			"but is {}\n", sn);
+			"but is {}", sn);
 
 	// integral evaluation function
 	typedef void TQuadGKEvaluationFunction(CFunction* f,
@@ -412,7 +412,7 @@ float64_t CIntegration::integrate_quadgk(CFunction* f, float64_t a,
 	if (err>tol)
 	{
 		io::warn("Error tolerance not met. Estimated error is equal to {:g} "
-				"after {} iterations\n", err, iter);
+				"after {} iterations", err, iter);
 	}
 
 	// clean up
@@ -440,7 +440,7 @@ float64_t CIntegration::integrate_quadgh_customized(CFunction* f,
 	SGVector<float64_t> xgh, SGVector<float64_t> wgh)
 {
 	require(xgh.vlen == wgh.vlen,
-		"The length of node array ({}) and weight array ({}) should be the same\n",
+		"The length of node array ({}) and weight array ({}) should be the same",
 		xgh.vlen, wgh.vlen);
 
 	SG_REF(f);
@@ -457,16 +457,16 @@ void CIntegration::evaluate_quadgk(CFunction* f, CDynamicArray<float64_t>* subs,
 		float64_t* xgk, float64_t* wg, float64_t* wgk)
 {
 	// check the parameters
-	require(f, "Integrable function should not be NULL\n");
-	require(subs, "Array of subintervals should not be NULL\n");
+	require(f, "Integrable function should not be NULL");
+	require(subs, "Array of subintervals should not be NULL");
 	require(!(subs->get_array_size()%2), "Size of the array of subintervals "
 		"should be even\n");
-	require(q, "Array of values of integrals should not be NULL\n");
-	require(err, "Array of errors should not be NULL\n");
-	require(n%2, "Order of Gauss-Kronrod should be odd\n");
-	require(xgk, "Gauss-Kronrod nodes should not be NULL\n");
-	require(wgk, "Gauss-Kronrod weights should not be NULL\n");
-	require(wg, "Gauss weights should not be NULL\n");
+	require(q, "Array of values of integrals should not be NULL");
+	require(err, "Array of errors should not be NULL");
+	require(n%2, "Order of Gauss-Kronrod should be odd");
+	require(xgk, "Gauss-Kronrod nodes should not be NULL");
+	require(wgk, "Gauss-Kronrod weights should not be NULL");
+	require(wg, "Gauss weights should not be NULL");
 
 	// create eigen representation of subs, xgk, wg, wgk
 	Map<MatrixXd> eigen_subs(subs->get_array(), 2, subs->get_num_elements()/2);
@@ -509,7 +509,7 @@ void CIntegration::evaluate_quadgk(CFunction* f, CDynamicArray<float64_t>* subs,
 void CIntegration::generate_gauher(SGVector<float64_t> xgh, SGVector<float64_t> wgh)
 {
 	require(xgh.vlen == wgh.vlen,
-		"The length of node array ({}) and weight array ({}) should be the same\n",
+		"The length of node array ({}) and weight array ({}) should be the same",
 		xgh.vlen, wgh.vlen);
 
 	index_t n = xgh.vlen;
@@ -548,9 +548,9 @@ void CIntegration::generate_gauher(SGVector<float64_t> xgh, SGVector<float64_t> 
 void CIntegration::generate_gauher20(SGVector<float64_t> xgh, SGVector<float64_t> wgh)
 {
 	require(xgh.vlen == wgh.vlen,
-		"The length of node array ({}) and weight array ({}) should be the same\n",
+		"The length of node array ({}) and weight array ({}) should be the same",
 		xgh.vlen, wgh.vlen);
-	require(xgh.vlen == 20, "The length of xgh and wgh should be 20\n");
+	require(xgh.vlen == 20, "The length of xgh and wgh should be 20");
 
 	static const index_t n = 20;
 	static float64_t wgh_pre[n]=
@@ -750,9 +750,9 @@ float64_t CIntegration::evaluate_quadgh(CFunction* f, index_t n, float64_t* xgh,
 		float64_t* wgh)
 {
 	// check the parameters
-	require(f, "Integrable function should not be NULL\n");
-	require(xgh, "Gauss-Hermite nodes should not be NULL\n");
-	require(wgh, "Gauss-Hermite weights should not be NULL\n");
+	require(f, "Integrable function should not be NULL");
+	require(xgh, "Gauss-Hermite nodes should not be NULL");
+	require(wgh, "Gauss-Hermite weights should not be NULL");
 
 	float64_t q=0.0;
 

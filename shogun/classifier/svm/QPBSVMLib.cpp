@@ -68,7 +68,7 @@ using namespace shogun;
 
 CQPBSVMLib::CQPBSVMLib()
 {
-	io::unstable("CQPBSVMLib::CQPBSVMLib()");
+	unstable(SOURCE_LOCATION);
 
 	m_H=0;
 	m_dim = 0;
@@ -147,11 +147,11 @@ int32_t CQPBSVMLib::solve_qp(float64_t* result, int32_t len)
 		case QPB_SOLVER_CPLEX:
 			status = qpbsvm_cplex(result, Nabla, &t, &History, verb );
 #else
-			error("cplex not enabled at compile time - unknow solver\n");
+			error("cplex not enabled at compile time - unknow solver");
 #endif
 			break;
 		default:
-			error("unknown solver\n");
+			error("unknown solver");
 			break;
 	}
 

@@ -168,7 +168,7 @@ SGVector<float64_t> CMultitaskLinearMachine::apply_get_outputs(CFeatures* data)
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-			error("Specified features are not of type CDotFeatures\n");
+			error("Specified features are not of type CDotFeatures");
 
 		set_features((CDotFeatures*) data);
 	}

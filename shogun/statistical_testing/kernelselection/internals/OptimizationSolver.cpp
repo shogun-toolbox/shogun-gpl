@@ -85,7 +85,7 @@ const float64_t* OptimizationSolver::Self::get_Q_col(uint32_t i)
 
 void OptimizationSolver::Self::print_state(libqp_state_T state)
 {
-	SG_DEBUG("libqp state: primal={}\n", state.QP);
+	SG_DEBUG("libqp state: primal={}", state.QP);
 }
 
 SGVector<float64_t> OptimizationSolver::Self::solve() const
@@ -95,7 +95,7 @@ SGVector<float64_t> OptimizationSolver::Self::solve() const
 	SGVector<float64_t> weights(num_kernels);
 	if (std::any_of(m_mmds.data(), m_mmds.data()+m_mmds.size(), [](float64_t& value) { return value > 0; }))
 	{
-		SG_DEBUG("At least one MMD entry is positive, performing optimisation\n")
+		SG_DEBUG("At least one MMD entry is positive, performing optimisation")
 
 		std::vector<float64_t> Q_diag(num_kernels);
 		std::vector<float64_t> f(num_kernels, 0);
@@ -108,7 +108,7 @@ SGVector<float64_t> OptimizationSolver::Self::solve() const
 		for (index_t i=0; i<num_kernels; ++i)
 			Q_diag[i]=m_Q(i,i);
 
-		SG_DEBUG("starting libqp optimization\n");
+		SG_DEBUG("starting libqp optimization");
 		libqp_state_T qp_exitflag=libqp_gsmo_solver(&OptimizationSolver::Self::get_Q_col,
 			Q_diag.data(),
 			f.data(),
@@ -122,7 +122,7 @@ SGVector<float64_t> OptimizationSolver::Self::solve() const
 			opt_epsilon,
 			&OptimizationSolver::Self::print_state);
 
-		SG_DEBUG("libqp returns: nIts={}, exit_flag: {}\n", qp_exitflag.nIter, qp_exitflag.exitflag);
+		SG_DEBUG("libqp returns: nIts={}, exit_flag: {}", qp_exitflag.nIter, qp_exitflag.exitflag);
 		m_Q=SGMatrix<float64_t>();
 
 		// set really small entries to zero and sum up for normalization
@@ -131,7 +131,7 @@ SGVector<float64_t> OptimizationSolver::Self::solve() const
 		{
 			if (weights[i]<opt_low_cut)
 			{
-				SG_DEBUG("lowcut: weight[{}]={}<{} setting to zero\n", i, weights[i], opt_low_cut);
+				SG_DEBUG("lowcut: weight[{}]={}<{} setting to zero", i, weights[i], opt_low_cut);
 				weights[i]=0;
 			}
 			sum_weights+=weights[i];
@@ -149,7 +149,7 @@ SGVector<float64_t> OptimizationSolver::Self::solve() const
 			"although extremely rare. Consider using different kernels. "
 			"This combination will lead to a bad two-sample test. Since any"
 			"combination is bad, will now just return equally distributed "
-			"kernel weights\n");
+			"kernel weights");
 
 		// if no element is positive, we can choose arbritary weights since
 		// the results will be bad anyway

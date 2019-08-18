@@ -266,7 +266,7 @@ BmrmStatistics svm_p3bm_solver(
 
 	/* Verbose output */
 	if (verbose)
-		SG_DEBUG("{:4d}: tim={:.3f}, Fp={}, Fd={}, R={}, K={}, CPmodels={}\n",
+		SG_DEBUG("{:4d}: tim={:.3f}, Fp={}, Fd={}, R={}, K={}, CPmodels={}",
 				p3bmrm.nIter, tstop-tstart, p3bmrm.Fp, p3bmrm.Fd, R, K, cp_models);
 
 	if (verbose)
@@ -629,7 +629,7 @@ BmrmStatistics svm_p3bm_solver(
 
 		/* Verbose output */
 		if (verbose)
-			SG_DEBUG("{:4d}: tim={:.3f}, Fp={}, Fd={}, (Fp-Fd)={}, (Fp-Fd)/Fp={}, R={}, nCP={}, nzA={}, wdist={}, alpha={}, qp_cnt={}, gamma={}, tuneAlpha={}\n",
+			SG_DEBUG("{:4d}: tim={:.3f}, Fp={}, Fd={}, (Fp-Fd)={}, (Fp-Fd)/Fp={}, R={}, nCP={}, nzA={}, wdist={}, alpha={}, qp_cnt={}, gamma={}, tuneAlpha={}",
 					p3bmrm.nIter, tstop-tstart, p3bmrm.Fp, p3bmrm.Fd, p3bmrm.Fp-p3bmrm.Fd,
 					(p3bmrm.Fp-p3bmrm.Fd)/p3bmrm.Fp, R, p3bmrm.nCP, p3bmrm.nzA, wdist, alpha,
 					qp_cnt, gamma, tuneAlpha);
@@ -638,7 +638,7 @@ BmrmStatistics svm_p3bm_solver(
 		if (p3bmrm.nCP>=BufSize)
 		{
 			p3bmrm.exitflag=-2;
-			error("Buffer exceeded.\n");
+			error("Buffer exceeded.");
 		}
 
 		/* keep w_t + Fp */

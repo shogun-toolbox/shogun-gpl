@@ -444,9 +444,9 @@ int32_t QPproblem::optimal()
   else
   {
       if (verbosity > 1)
-          io::info("  Max KKT violation: {}\n", aux);
+          io::info("  Max KKT violation: {}", aux);
       else if (verbosity > 0)
-          io::info("  {}\n", aux);
+          io::info("  {}", aux);
 
       if (fabs(kktold-aux) < delta*0.01 &&  aux < delta*2.0)
       {
@@ -454,7 +454,7 @@ int32_t QPproblem::optimal()
           {
               DELTAvpm = (DELTAvpm*0.5 > InitialDELTAvpm*0.1 ?
                                             DELTAvpm*0.5 : InitialDELTAvpm*0.1);
-              io::info("Inner tolerance changed to: {}\n", DELTAvpm);
+              io::info("Inner tolerance changed to: {}", DELTAvpm);
           }
       }
 
@@ -512,7 +512,7 @@ int32_t QPproblem::optimal()
       if (k < q)
       {
           if (verbosity > 1)
-              io::info("  New q: {}\n", k);
+              io::info("  New q: {}", k);
           q = k;
       }
 
@@ -672,13 +672,13 @@ int32_t QPproblem::optimal()
           {
               io::info("\n***ERROR***: GPDT stops with tolerance");
               io::info(
-              " {} because it is unable to change the working set.\n", kktold);
+              " {} because it is unable to change the working set.", kktold);
               return 1;
           }
           else
           {
               io::info("Inner tolerance temporary changed to:");
-              io::info(" {:e}\n", DELTAvpm*DELTAkin);
+              io::info(" {:e}", DELTAvpm*DELTAkin);
           }
       }
       else
@@ -687,7 +687,7 @@ int32_t QPproblem::optimal()
       if (verbosity > 1)
       {
           io::info("  Working set: new components: {}", kin);
-          io::info(",  new parameter n: {}\n", q);
+          io::info(",  new parameter n: {}", q);
       }
 
       return 0;
@@ -736,7 +736,7 @@ int32_t QPproblem::Preprocess1(sKernel* kernel, int32_t *aux, int32_t *sv)
   {
       io::info("  Preprocessing: examples = {}", s);
       io::info(", subp. = {}", n);
-      io::info(", size = {}\n",sl);
+      io::info(", size = {}",sl);
   }
 
   sv_loc   = SG_MALLOC(int32_t, s);
@@ -865,7 +865,7 @@ int32_t QPproblem::Preprocess1(sKernel* kernel, int32_t *aux, int32_t *sv)
   if (verbosity > 0)
   {
       io::info("\n  Preprocessing: SV = {}", nsv);
-      io::info(", BSV = {}\n", nbsv);
+      io::info(", BSV = {}", nbsv);
   }
 
   return(nsv);
@@ -935,7 +935,7 @@ float64_t QPproblem::gpdtsolve(float64_t *solution)
   ti = clock();
 
   /* arrays allocation */
-  SG_DEBUG("ell:{}, chunk_size:{}, nb:{} dim:{}\n", ell, chunk_size,nb, dim)
+  SG_DEBUG("ell:{}, chunk_size:{}, nb:{} dim:{}", ell, chunk_size,nb, dim)
   ing       = SG_MALLOC(int32_t, ell);
   inaux     = SG_MALLOC(int32_t, ell);
   index_in  = SG_MALLOC(int32_t, chunk_size);
@@ -947,7 +947,7 @@ float64_t QPproblem::gpdtsolve(float64_t *solution)
   memset(ing,   0, ell*sizeof(int32_t));
 
   if (verbosity > 0 && PreprocessMode != 0)
-      io::info("\n*********** Begin setup step...\n");
+      io::info("\n*********** Begin setup step...");
   t = clock();
 
   switch(PreprocessMode)
@@ -967,9 +967,9 @@ float64_t QPproblem::gpdtsolve(float64_t *solution)
   t = clock() - t;
   if (verbosity > 0 && PreprocessMode != 0)
   {
-      io::info("  Time for setup: %.2lf\n", (float64_t)t/CLOCKS_PER_SEC);
+      io::info("  Time for setup: %.2lf", (float64_t)t/CLOCKS_PER_SEC);
       io::info(
-              "\n\n*********** Begin decomposition technique...\n");
+              "\n\n*********** Begin decomposition technique...");
   }
 
   /* arrays allocation */
@@ -1012,9 +1012,9 @@ float64_t QPproblem::gpdtsolve(float64_t *solution)
   if (verbosity == 1)
   {
       io::info("  IT  | Prep Time | Solver IT | Solver Time |");
-      io::info(" Grad Time | KKT violation\n");
+      io::info(" Grad Time | KKT violation");
       io::info("------+-----------+-----------+-------------+");
-      io::info("-----------+--------------\n");
+      io::info("-----------+--------------");
   }
 
   /***************************************************************************/
@@ -1033,7 +1033,7 @@ float64_t QPproblem::gpdtsolve(float64_t *solution)
       }
 
       if (verbosity > 1)
-          io::info("\n*********** ITERATION: {}\n", nit + 1);
+          io::info("\n*********** ITERATION: {}", nit + 1);
       else if (verbosity > 0)
           io::info("{:5d} |", nit + 1);
       else
@@ -1125,7 +1125,7 @@ float64_t QPproblem::gpdtsolve(float64_t *solution)
 
     t = clock() - t;
     if (verbosity > 1)
-        io::info("  Preparation Time: %.2lf\n", (float64_t)t/CLOCKS_PER_SEC);
+        io::info("  Preparation Time: %.2lf", (float64_t)t/CLOCKS_PER_SEC);
     else if (verbosity > 0)
         io::info("  {:8.2f} |", (float64_t)t/CLOCKS_PER_SEC);
     tot_prep_time += (float64_t)t/CLOCKS_PER_SEC;
@@ -1164,13 +1164,13 @@ float64_t QPproblem::gpdtsolve(float64_t *solution)
         {
             io::info("\n WARNING: inner subproblem hard to solve;");
             io::info(" setting a smaller -q or");
-            io::info(" tuning -c and -g options might help.\n");
+            io::info(" tuning -c and -g options might help.");
         }
         else
         {
             io::info("\n WARNING: inner subproblem hard to solve;");
             io::info(" set a smaller -q or");
-            io::info(" try a better data scaling.\n");
+            io::info(" try a better data scaling.");
         }
       }
 
@@ -1182,7 +1182,7 @@ float64_t QPproblem::gpdtsolve(float64_t *solution)
       {
           io::info("  Solver it: {}", i);
           io::info(", ls: {}", lsCount);
-          io::info(", time: {:.2f}\n", (float64_t)t/CLOCKS_PER_SEC);
+          io::info(", time: {:.2f}", (float64_t)t/CLOCKS_PER_SEC);
       }
       else if (verbosity > 0)
       {
@@ -1281,7 +1281,7 @@ float64_t QPproblem::gpdtsolve(float64_t *solution)
             }
             if (verbosity > 1)
                 io::info(
-                 "  G*x0 time: %.2lf\n", (float64_t)(clock()-ti2)/CLOCKS_PER_SEC);
+                 "  G*x0 time: %.2lf", (float64_t)(clock()-ti2)/CLOCKS_PER_SEC);
         }
     }
 
@@ -1289,7 +1289,7 @@ float64_t QPproblem::gpdtsolve(float64_t *solution)
 
     t = clock() - t;
     if (verbosity > 1)
-        io::info("  Gradient updating time: %.2lf\n", (float64_t)t/CLOCKS_PER_SEC);
+        io::info("  Gradient updating time: %.2lf", (float64_t)t/CLOCKS_PER_SEC);
     else if (verbosity > 0)
         io::info("  {:8.2f} |", (float64_t)t/CLOCKS_PER_SEC);
     tot_st_time += (float64_t)t/CLOCKS_PER_SEC;
@@ -1307,7 +1307,7 @@ float64_t QPproblem::gpdtsolve(float64_t *solution)
             if (is_bound(i)) k++;
         }
         io::info("  SV: {}", j+k);
-        io::info(",  BSV: {}\n", k);
+        io::info(",  BSV: {}", k);
     }
     Cache->Iteration();
     nit = nit+1;
@@ -1332,9 +1332,9 @@ float64_t QPproblem::gpdtsolve(float64_t *solution)
       fval += alpha[i]*(y[i]*st[i]*0.5 - 1.0);
 
   io::info("\n------+-----------+-----------+-------------+");
-  io::info("-----------+--------------\n");
+  io::info("-----------+--------------");
   io::info(
-      "\n- TOTAL ITERATIONS: {}\n", nit);
+      "\n- TOTAL ITERATIONS: {}", nit);
 
   if (verbosity > 1)
   {
@@ -1348,11 +1348,11 @@ float64_t QPproblem::gpdtsolve(float64_t *solution)
            if (cec[i] > 2) z++;
       }
       io::info(
-        "- Variables entering the working set at least one time:  {}\n", j);
+        "- Variables entering the working set at least one time:  {}", j);
       io::info(
-        "- Variables entering the working set at least two times:  {}\n", k);
+        "- Variables entering the working set at least two times:  {}", k);
       io::info(
-        "- Variables entering the working set at least three times:  {}\n", z);
+        "- Variables entering the working set at least three times:  {}", z);
   }
 
 
@@ -1382,24 +1382,24 @@ float64_t QPproblem::gpdtsolve(float64_t *solution)
   delete Cache;
 
   aux = KER->KernelEvaluations;
-  io::info("- Total CPU time: {}\n", total_time);
+  io::info("- Total CPU time: {}", total_time);
   if (verbosity > 0)
   {
       io::info(
-              "- Total kernel evaluations: {:.0f}\n", aux);
+              "- Total kernel evaluations: {:.0f}", aux);
       io::info(
-              "- Total inner solver iterations: {}\n", tot_vpm_iter);
+              "- Total inner solver iterations: {}", tot_vpm_iter);
       if (projection_projector == 1)
           io::info(
-              "- Total projector iterations: {}\n", tot_vpm_secant);
+              "- Total projector iterations: {}", tot_vpm_secant);
       io::info(
-              "- Total preparation time: {}\n", tot_prep_time);
+              "- Total preparation time: {}", tot_prep_time);
       io::info(
-              "- Total inner solver time: {}\n", tot_vpm_time);
+              "- Total inner solver time: {}", tot_vpm_time);
       io::info(
-              "- Total gradient updating time: {}\n", tot_st_time);
+              "- Total gradient updating time: {}", tot_st_time);
   }
-  io::info("- Objective function value: {}\n", fval);
+  io::info("- Objective function value: {}", fval);
   objective_value=fval;
   return aux;
 }

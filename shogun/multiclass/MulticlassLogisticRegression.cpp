@@ -56,10 +56,10 @@ bool CMulticlassLogisticRegression::train_machine(CFeatures* data)
 	if (data)
 		set_features((CDotFeatures*)data);
 
-	require(m_features, "No features attached!\n");
-	require(m_labels, "No labels attached!\n");
+	require(m_features, "No features attached!");
+	require(m_labels, "No labels attached!");
 	require(m_multiclass_strategy, "No multiclass strategy"
-			" attached!\n");
+			" attached!");
 
 	auto mc_labels = multiclass_labels(m_labels);
 	int32_t n_classes = mc_labels->get_num_classes();

@@ -38,7 +38,7 @@ void add_cutting_plane(
 		uint32_t	dim)
 {
 	require(map[free_idx],
-		"add_cutting_plane: CP index {} is not free\n", free_idx);
+		"add_cutting_plane: CP index {} is not free", free_idx);
 
 	LIBBMRM_MEMCPY(A+free_idx*dim, cp_data, dim*sizeof(float64_t));
 	map[free_idx]=false;
@@ -47,7 +47,7 @@ void add_cutting_plane(
 
 	if (cp==NULL)
 	{
-		error("Out of memory.\n");
+		error("Out of memory.");
 		return;
 	}
 
@@ -241,7 +241,7 @@ BmrmStatistics svm_bmrm_solver(
 	ASSERT(nDim > 0);
 	ASSERT(BufSize > 0);
 	require(BufSize < (std::numeric_limits<size_t>::max() / nDim),
-		"overflow: {} * {} > {} -- biggest possible BufSize={} or nDim={}\n",
+		"overflow: {} * {} > {} -- biggest possible BufSize={} or nDim={}",
 		BufSize, nDim, std::numeric_limits<size_t>::max(),
 		(std::numeric_limits<size_t>::max() / nDim),
 		(std::numeric_limits<size_t>::max() / BufSize));
@@ -369,7 +369,7 @@ BmrmStatistics svm_bmrm_solver(
 	tstop=ttime.cur_time_diff(false);
 
 	/* Verbose output */
-	io::info("{:4d}: tim={:.3f}, Fp={}, Fd={}, R={}\n",
+	io::info("{:4d}: tim={:.3f}, Fp={}, Fd={}, R={}",
 				bmrm.nIter, tstop-tstart, bmrm.Fp, bmrm.Fd, R);
 
 	/* store Fp, Fd and wdist history */
@@ -495,7 +495,7 @@ BmrmStatistics svm_bmrm_solver(
 		tstop=ttime.cur_time_diff(false);
 
 		/* Verbose output */
-		io::info("{:4d}: tim={:.3f}, Fp={}, Fd={}, (Fp-Fd)={}, (Fp-Fd)/Fp={}, R={}, nCP={}, nzA={}, QPexitflag={}\n",
+		io::info("{:4d}: tim={:.3f}, Fp={}, Fd={}, (Fp-Fd)={}, (Fp-Fd)/Fp={}, R={}, nCP={}, nzA={}, QPexitflag={}",
 					bmrm.nIter, tstop-tstart, bmrm.Fp, bmrm.Fd, bmrm.Fp-bmrm.Fd,
 					(bmrm.Fp-bmrm.Fd)/bmrm.Fp, R, bmrm.nCP, bmrm.nzA, qp_exitflag.exitflag);
 
@@ -540,7 +540,7 @@ BmrmStatistics svm_bmrm_solver(
 
 			float64_t info_tstop=ttime.cur_time_diff(false);
 
-			io::info("On iteration {:4d}, tim={:.3f}, primal={:.3f}, train_error={}\n", bmrm.nIter, info_tstop-info_tstart, primal, train_error);
+			io::info("On iteration {:4d}, tim={:.3f}, primal={:.3f}, train_error={}", bmrm.nIter, info_tstop-info_tstart, primal, train_error);
 		}
 
 	} /* end of main loop */

@@ -88,7 +88,7 @@ float64_t CNLOPTMinimizer::minimize()
 		else if (bound.vlen>1)
 		{
 			require(bound.vlen==m_target_variable.vlen,
-				"The length of target variable ({}) and the length of lower bound ({}) do not match\n",
+				"The length of target variable ({}) and the length of lower bound ({}) do not match",
 				m_target_variable.vlen, bound.vlen);
 			nlopt_set_lower_bounds(opt, bound.vector);
 		}
@@ -101,7 +101,7 @@ float64_t CNLOPTMinimizer::minimize()
 		else if (bound.vlen>1)
 		{
 			require(bound.vlen==m_target_variable.vlen,
-			"The length of target variable ({}) and the length of upper bound ({}) do not match\n",
+			"The length of target variable ({}) and the length of upper bound ({}) do not match",
 				m_target_variable.vlen, bound.vlen);
 			nlopt_set_upper_bounds(opt, bound.vector);
 		}
@@ -124,7 +124,7 @@ float64_t CNLOPTMinimizer::minimize()
 	nlopt_result error_code=nlopt_optimize(opt, m_target_variable.vector, &cost);
 	if(error_code!=1)
 	{
-		io::warn("Error(s) happened and NLopt failed during minimization (error code:{})\n",
+		io::warn("Error(s) happened and NLopt failed during minimization (error code:{})",
 			error_code);
 	}
 
@@ -235,7 +235,7 @@ int16_t CNLOPTMinimizer::get_nlopt_algorithm_id(ENLOPTALGORITHM method)
 		method_id = (int16_t) NLOPT_G_MLSL_LDS;
 		break; 
 	};
-	require(method_id>=0, "Unsupported algorithm\n");
+	require(method_id>=0, "Unsupported algorithm");
 	return method_id;
 }
 
@@ -254,8 +254,8 @@ double CNLOPTMinimizer::nlopt_function(unsigned dim, const double* variable, dou
 	void* func_data)
 {
 	CNLOPTMinimizer* obj_prt=static_cast<CNLOPTMinimizer *>(func_data);
-	require(obj_prt, "The instance object passed to NLopt optimizer should not be NULL\n");
-	require((index_t)dim==(obj_prt->m_target_variable).vlen, "Length must be matched\n");
+	require(obj_prt, "The instance object passed to NLopt optimizer should not be NULL");
+	require((index_t)dim==(obj_prt->m_target_variable).vlen, "Length must be matched");
 
 	double *var = const_cast<double *>(variable);
 	std::swap_ranges(var, var+dim, (obj_prt->m_target_variable).vector);
@@ -266,7 +266,7 @@ double CNLOPTMinimizer::nlopt_function(unsigned dim, const double* variable, dou
 	SGVector<float64_t> grad=obj_prt->m_fun->get_gradient();
 
 	require(grad.vlen==(index_t)dim,
-		"The length of gradient ({}) and the length of variable ({}) do not match\n",
+		"The length of gradient ({}) and the length of variable ({}) do not match",
 		grad.vlen,dim);
 
 	std::copy(grad.vector,grad.vector+dim,gradient);
@@ -277,9 +277,9 @@ double CNLOPTMinimizer::nlopt_function(unsigned dim, const double* variable, dou
 
 void CNLOPTMinimizer::init_minimization()
 {
-	require(m_fun, "Cost function not set!\n");
+	require(m_fun, "Cost function not set!");
 	m_target_variable=m_fun->obtain_variable_reference();
-	require(m_target_variable.vlen>0,"Target variable from cost function must not empty!\n");
+	require(m_target_variable.vlen>0,"Target variable from cost function must not empty!");
 }
 #endif
 
