@@ -174,7 +174,7 @@ bool CFeatureBlockLogisticRegression::train_machine(CFeatures* data)
 			options.ind = ind.vector;
 			options.n_feature_blocks = ind.vlen-1;
 			if (ind[ind.vlen-1] > features->get_dim_feature_space())
-				SG_ERROR("Group of features covers more features than available\n")
+				error("Group of features covers more features than available");
 
 			options.gWeight = SG_MALLOC(double, options.n_feature_blocks);
 			for (int32_t i=0; i<options.n_feature_blocks; i++)
@@ -225,7 +225,7 @@ bool CFeatureBlockLogisticRegression::train_machine(CFeatures* data)
 		}
 		break;
 		default:
-			SG_ERROR("Not supported feature relation type\n")
+			error("Not supported feature relation type");
 	}
 
 	return true;
@@ -242,7 +242,7 @@ SGVector<float64_t> CFeatureBlockLogisticRegression::apply_get_outputs(CFeatures
 	if (data)
 	{
 		if (!data->has_property(FP_DOT))
-			SG_ERROR("Specified features are not of type CDotFeatures\n")
+			error("Specified features are not of type CDotFeatures");
 
 		set_features((CDotFeatures*) data);
 	}

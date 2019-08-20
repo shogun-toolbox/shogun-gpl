@@ -1064,7 +1064,7 @@ g(x0)-g(x*) <= lambda * \|A x0\|_1 - < z0, Av - A A^T z0>  (18)
 								  */
 
 								/*
-								   printf("\n iterStep=%d, numS=%d, gap=%e",iterStep, numS, *gap);
+								   printf("\n Iteration: %d, %e", iterStep, temp);
 								   */
 
 

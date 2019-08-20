@@ -93,8 +93,8 @@ BmrmStatistics svm_ppbm_solver(
 
 	ASSERT(nDim > 0);
 	ASSERT(BufSize > 0);
-	REQUIRE(BufSize < (std::numeric_limits<size_t>::max() / nDim),
-		"overflow: %u * %u > %u -- biggest possible BufSize=%u or nDim=%u\n",
+	require(BufSize < (std::numeric_limits<size_t>::max() / nDim),
+		"overflow: {} * {} > {} -- biggest possible BufSize={} or nDim={}",
 		BufSize, nDim, std::numeric_limits<size_t>::max(),
 		(std::numeric_limits<size_t>::max() / nDim),
 		(std::numeric_limits<size_t>::max() / BufSize));
@@ -228,7 +228,7 @@ BmrmStatistics svm_ppbm_solver(
 	/* Verbose output */
 
 	if (verbose)
-		SG_SDEBUG("%4d: tim=%.3lf, Fp=%lf, Fd=%lf, R=%lf, K=%lf\n",
+		SG_DEBUG("{:4d}: tim={:.3f}, Fp={}, Fd={}, R={}, K={}",
 				ppbmrm.nIter, tstop-tstart, ppbmrm.Fp, ppbmrm.Fd, R, K);
 
 	if (verbose)
@@ -583,7 +583,7 @@ BmrmStatistics svm_ppbm_solver(
 
 		/* Verbose output */
 		if (verbose)
-			SG_SDEBUG("%4d: tim=%.3lf, Fp=%lf, Fd=%lf, (Fp-Fd)=%lf, (Fp-Fd)/Fp=%lf, R=%lf, nCP=%d, nzA=%d, wdist=%lf, alpha=%lf, qp_cnt=%d, gamma=%lf, tuneAlpha=%d\n",
+			SG_DEBUG("{:4d}: tim={:.3f}, Fp={}, Fd={}, (Fp-Fd)={}, (Fp-Fd)/Fp={}, R={}, nCP={}, nzA={}, wdist={}, alpha={}, qp_cnt={}, gamma={}, tuneAlpha={}",
 					ppbmrm.nIter, tstop-tstart, ppbmrm.Fp, ppbmrm.Fd, ppbmrm.Fp-ppbmrm.Fd,
 					(ppbmrm.Fp-ppbmrm.Fd)/ppbmrm.Fp, R, ppbmrm.nCP, ppbmrm.nzA, wdist, alpha,
 					qp_cnt, gamma, tuneAlpha);
@@ -592,7 +592,7 @@ BmrmStatistics svm_ppbm_solver(
 		if (ppbmrm.nCP>=BufSize)
 		{
 			ppbmrm.exitflag=-2;
-			SG_SERROR("Buffer exceeded.\n")
+			error("Buffer exceeded.");
 		}
 
 		/* keep w_t + Fp */

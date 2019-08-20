@@ -18,7 +18,7 @@ CMulticlassLabels* CCoverTreeKNNSolver::classify_objects(CDistance* knn_distance
 	// m_q != 1.0 not supported with cover tree because the neighbors
 	// are not retrieved in increasing order of distance to the query
 	if ( m_q != 1.0 )
-		SG_INFO("q != 1.0 not supported with cover tree, using q = 1\n")
+		io::info("q != 1.0 not supported with cover tree, using q = 1");
 
 	// From the sets of features (lhs and rhs) stored in distance,
 	// build arrays of cover tree points
@@ -40,18 +40,18 @@ CMulticlassLabels* CCoverTreeKNNSolver::classify_objects(CDistance* knn_distance
 	v_array< v_array< CJLCoverTreePoint > > res;
 	k_nearest_neighbor(top, top_query, res, m_k);
 
-if (io->get_loglevel()<= MSG_DEBUG)
+if (env()->io()->get_loglevel()<= io::MSG_DEBUG)
 {
-	SG_DEBUG("\nJL Results:\n")
+	SG_DEBUG("\nJL Results:")
 	for ( int32_t i = 0 ; i < res.index ; ++i )
 	{
 		for ( int32_t j = 0 ; j < res[i].index ; ++j )
 		{
-			SG_DEBUG("%d ", res[i][j].m_index);
+			SG_DEBUG("{} ", res[i][j].m_index);
 		}
-		SG_DEBUG("\n");
+		SG_DEBUG("");
 	}
-	SG_DEBUG("\n")
+	SG_DEBUG("")
 }
 
 	for ( index_t i = 0 ; i < res.index ; ++i )

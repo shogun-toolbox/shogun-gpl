@@ -129,7 +129,7 @@ float max_set(v_array<ds_node<P> > &v)
 void print_space(int s)
 {
   for (int i = 0; i < s; i++)
-    SG_SPRINT(" ")
+    io::print(" ");
 }
 
 template<class P>
@@ -140,11 +140,11 @@ void print(int depth, node<P> &top_node)
   if ( top_node.num_children > 0 )
   {
     print_space(depth);
-    SG_SPRINT("scale = %i\n",top_node.scale)
+    io::print("scale = {}\n",top_node.scale);
     print_space(depth);
-    SG_SPRINT("max_dist = %f\n",top_node.max_dist)
+    io::print("max_dist = {}\n",top_node.max_dist);
     print_space(depth);
-    SG_SPRINT("num children = %i\n",top_node.num_children)
+    io::print("num children = {}\n",top_node.num_children);
     for (int i = 0; i < top_node.num_children;i++)
       print(depth+1, top_node.children[i]);
   }
@@ -590,12 +590,12 @@ inline void copy_cover_sets(node<P>* query_chi, float* new_upper_bound,
 template <class P>
 void print_query(const node<P> *top_node)
 {
-  SG_SPRINT ("query = \n")
+  io::print ("query = \n");
   print(top_node->p);
   if ( top_node->num_children > 0 ) {
-    SG_SPRINT("scale = %i\n",top_node->scale)
-    SG_SPRINT("max_dist = %f\n",top_node->max_dist)
-    SG_SPRINT("num children = %i\n",top_node->num_children)
+    io::print("scale = {}\n",top_node->scale);
+    io::print("max_dist = {}\n",top_node->max_dist);
+    io::print("num children = {}\n",top_node->num_children);
   }
 }
 
@@ -604,12 +604,12 @@ void print_cover_sets(v_array<v_array<d_node<P> > > &cover_sets,
 		      v_array<d_node<P> > &zero_set,
 		      int current_scale, int max_scale)
 {
-  SG_SPRINT("cover set = \n")
+  io::print("cover set = \n");
   for (; current_scale <= max_scale; current_scale++)
     {
       d_node<P> *ele = cover_sets[current_scale].elements;
       d_node<P> *end = cover_sets[current_scale].elements + cover_sets[current_scale].index;
-      SG_SPRINT ("%i\n", current_scale)
+      io::print ("{}\n", current_scale);
       for (; ele != end; ele++)
 	{
 	  node<P> *n = (node<P> *)ele->n;
@@ -617,7 +617,7 @@ void print_cover_sets(v_array<v_array<d_node<P> > > &cover_sets,
 	}
     }
   d_node<P> *end = zero_set.elements + zero_set.index;
-  SG_SPRINT ("infinity\n")
+  io::print ("infinity\n");
   for (d_node<P> *ele = zero_set.elements; ele != end ; ele++)
     {
       node<P> *n = (node<P> *)ele->n;

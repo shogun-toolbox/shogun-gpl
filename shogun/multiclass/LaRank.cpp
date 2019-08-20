@@ -623,7 +623,7 @@ bool CLaRank::train_machine(CFeatures* data)
 	{
 		if (data->get_num_vectors() != m_labels->get_num_labels())
 		{
-			SG_ERROR("Numbert of vectors (%d) does not match number of labels (%d)\n",
+			error("Numbert of vectors ({}) does not match number of labels ({})",
 					data->get_num_vectors(), m_labels->get_num_labels());
 		}
 		m_kernel->init(data, data);
@@ -638,7 +638,7 @@ bool CLaRank::train_machine(CFeatures* data)
 	float64_t gap = DBL_MAX;
 
 	auto pb = SG_PROGRESS(range(0, 10));
-	SG_INFO("Training on %d examples\n", nb_train)
+	io::info("Training on {} examples", nb_train);
 	while (gap > get_C() && (!cancel_computation()) &&
 	       n_it < max_iteration) // stopping criteria
 	{
@@ -652,14 +652,14 @@ bool CLaRank::train_machine(CFeatures* data)
 
 			if (ind && i / ind)
 			{
-				SG_DEBUG("Done: %d %% Train error (online): %f%%\n",
+				SG_DEBUG("Done: {} % Train error (online): {}%",
 						(int32_t) (((float64_t) i) / nb_train * 100), (tr_err / ((float64_t) i + 1)) * 100);
 				ind += step;
 			}
 		}
 
-		SG_DEBUG("End of iteration %d\n", n_it)
-		SG_DEBUG("Train error (online): %f%%\n", (tr_err / nb_train) * 100)
+		SG_DEBUG("End of iteration {}", n_it)
+		SG_DEBUG("Train error (online): {}%", (tr_err / nb_train) * 100)
 		gap = computeGap ();
 		pb.print_absolute(
 		    gap, -CMath::log10(gap), -CMath::log10(DBL_MAX),
@@ -673,13 +673,13 @@ bool CLaRank::train_machine(CFeatures* data)
 
 	if (n_it >= max_iteration && gap > get_C())
 	{
-		SG_WARNING(
-		    "LaRank did not converge after %d iterations.\n", max_iteration)
+		io::warn(
+		    "LaRank did not converge after {} iterations.", max_iteration);
 	}
 
 	int32_t num_classes = outputs.size();
 	create_multiclass_svm(num_classes);
-	SG_DEBUG("%d classes\n", num_classes)
+	SG_DEBUG("{} classes", num_classes)
 
 	// Used for saving a model file
 	int32_t i=0;
@@ -693,7 +693,7 @@ bool CLaRank::train_machine(CFeatures* data)
 		int32_t *r2i = larank_kcache_r2i (k, l);
 
 		ASSERT(l>0)
-		SG_DEBUG("svm[%d] has %d sv, b=%f\n", i, l, 0.0)
+		SG_DEBUG("svm[{}] has {} sv, b={}", i, l, 0.0)
 
 		CSVM* svm=new CSVM(l);
 
@@ -855,8 +855,8 @@ uint32_t CLaRank::getNumOutputs () const
 // Set max number of iterations before training is stopped
 void CLaRank::set_max_iteration(int32_t max_iter)
 {
-    REQUIRE(max_iter > 0,
-            "Max iteration (given: %d) must be positive.\n",
+    require(max_iter > 0,
+            "Max iteration (given: {}) must be positive.",
             max_iter);
     max_iteration = max_iter;
 }
