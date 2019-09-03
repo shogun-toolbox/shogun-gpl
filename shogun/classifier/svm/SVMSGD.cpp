@@ -14,43 +14,41 @@
 
    You should have received a copy of the GNU Lesser General Public
    License along with this library; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
    $Id: svmsgd.cpp,v 1.13 2007/10/02 20:40:06 cvs Exp $
 
    Shogun adjustments (w) 2008-2009 Soeren Sonnenburg
 */
 
-#include <shogun/classifier/svm/SVMSGD.h>
 #include <shogun/base/Parameter.h>
+#include <shogun/classifier/svm/SVMSGD.h>
+#include <shogun/labels/BinaryLabels.h>
 #include <shogun/lib/Signal.h>
+#include <shogun/loss/HingeLoss.h>
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
-#include <shogun/labels/BinaryLabels.h>
-#include <shogun/loss/HingeLoss.h>
 
 using namespace shogun;
 
-CSVMSGD::CSVMSGD()
-: CLinearMachine()
+CSVMSGD::CSVMSGD() : CLinearMachine()
 {
 	init();
 }
 
-CSVMSGD::CSVMSGD(float64_t C)
-: CLinearMachine()
+CSVMSGD::CSVMSGD(float64_t C) : CLinearMachine()
 {
 	init();
 
-	C1=C;
-	C2=C;
+	C1 = C;
+	C2 = C;
 }
 
 CSVMSGD::CSVMSGD(float64_t C, CDotFeatures* traindat, CLabels* trainlab)
-: CLinearMachine()
+    : CLinearMachine()
 {
 	init();
-	C1=C;
-	C2=C;
+	C1 = C;
+	C2 = C;
 
 	set_features(traindat);
 	set_labels(trainlab);
@@ -198,31 +196,32 @@ void CSVMSGD::calibrate()
 
 void CSVMSGD::init()
 {
-	t=1;
-	C1=1;
-	C2=1;
-	wscale=1;
-	bscale=1;
-	epochs=5;
-	skip=1000;
-	count=1000;
-	use_bias=true;
+	t = 1;
+	C1 = 1;
+	C2 = 1;
+	wscale = 1;
+	bscale = 1;
+	epochs = 5;
+	skip = 1000;
+	count = 1000;
+	use_bias = true;
 
-	use_regularized_bias=false;
+	use_regularized_bias = false;
 
-	loss=new CHingeLoss();
+	loss = new CHingeLoss();
 	SG_REF(loss);
 
 	SG_ADD(&C1, "C1", "Cost constant 1.", ParameterProperties::HYPER);
 	SG_ADD(&C2, "C2", "Cost constant 2.", ParameterProperties::HYPER);
-	SG_ADD(&wscale, "wscale", "W scale");
-	SG_ADD(&bscale, "bscale", "b scale");
-	SG_ADD(&epochs, "epochs", "epochs");
+	SG_ADD(&wscale, "wscale", "W scale", ParameterProperties::HYPER);
+	SG_ADD(&bscale, "bscale", "b scale", ParameterProperties::HYPER);
+	SG_ADD(&epochs, "epochs", "epochs", ParameterProperties::HYPER);
 	SG_ADD(&skip, "skip", "skip");
 	SG_ADD(&count, "count", "count");
 	SG_ADD(
-	    &use_bias, "use_bias", "Indicates if bias is used.");
+	    &use_bias, "use_bias", "Indicates if bias is used.",
+	    ParameterProperties::SETTING);
 	SG_ADD(
 	    &use_regularized_bias, "use_regularized_bias",
-	    "Indicates if bias is regularized.");
+	    "Indicates if bias is regularized.", ParameterProperties::SETTING);
 }
