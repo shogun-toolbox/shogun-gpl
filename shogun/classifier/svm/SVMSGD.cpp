@@ -207,7 +207,7 @@ void SVMSGD::init()
 
 	use_regularized_bias=false;
 
-	loss=std::shared_ptr<HingeLoss>();
+	loss=std::make_shared<HingeLoss>();
 
 	SG_ADD(&C1, "C1", "Cost constant 1.", ParameterProperties::HYPER);
 	SG_ADD(&C2, "C2", "Cost constant 2.", ParameterProperties::HYPER);
