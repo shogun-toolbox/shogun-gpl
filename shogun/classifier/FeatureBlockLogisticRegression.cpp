@@ -7,11 +7,10 @@
  * Copyright (C) 2012 Sergey Lisitsyn
  */
 
-
 #include <shogun/classifier/FeatureBlockLogisticRegression.h>
 #ifdef USE_GPL_SHOGUN
-#include <shogun/lib/slep/slep_solver.h>
 #include <shogun/lib/slep/slep_options.h>
+#include <shogun/lib/slep/slep_solver.h>
 
 #include <shogun/lib/IndexBlockGroup.h>
 #include <shogun/lib/IndexBlockTree.h>
@@ -55,16 +54,27 @@ CFeatureBlockLogisticRegression::~CFeatureBlockLogisticRegression()
 	SG_UNREF(m_feature_relation);
 }
 
-void CFeatureBlockLogisticRegression::register_parameters()
-{
-	SG_ADD((CSGObject**)&m_feature_relation, "feature_relation", "feature relation");
-	SG_ADD(&m_z, "z", "regularization coefficient", ParameterProperties::HYPER);
-	SG_ADD(&m_q, "q", "q of L1/Lq", ParameterProperties::HYPER);
-	SG_ADD(&m_termination, "termination", "termination");
-	SG_ADD(&m_regularization, "regularization", "regularization");
-	SG_ADD(&m_tolerance, "tolerance", "tolerance");
-	SG_ADD(&m_max_iter, "max_iter", "maximum number of iterations");
-}
+	void CFeatureBlockLogisticRegression::register_parameters()
+	{
+		SG_ADD(
+		    (CSGObject**)&m_feature_relation, "feature_relation",
+		    "feature relation");
+		SG_ADD(
+		    &m_z, "z", "regularization coefficient",
+		    ParameterProperties::HYPER);
+		SG_ADD(&m_q, "q", "q of L1/Lq", ParameterProperties::HYPER);
+		SG_ADD(
+		    &m_termination, "termination", "termination",
+		    ParameterProperties::SETTING);
+		SG_ADD(
+		    &m_regularization, "regularization", "regularization",
+		    ParameterProperties::SETTING);
+		SG_ADD(
+		    &m_tolerance, "tolerance", "tolerance", ParameterProperties::HYPER);
+		SG_ADD(
+		    &m_max_iter, "max_iter", "maximum number of iterations",
+		    ParameterProperties::HYPER);
+	}
 
 CIndexBlockRelation* CFeatureBlockLogisticRegression::get_feature_relation() const
 {

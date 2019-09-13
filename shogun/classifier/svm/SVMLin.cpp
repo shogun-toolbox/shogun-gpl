@@ -9,32 +9,29 @@
  */
 
 #include <shogun/classifier/svm/SVMLin.h>
+#include <shogun/features/DotFeatures.h>
+#include <shogun/labels/BinaryLabels.h>
 #include <shogun/labels/Labels.h>
-#include <shogun/mathematics/Math.h>
 #include <shogun/lib/external/ssl.h>
 #include <shogun/machine/LinearMachine.h>
-#include <shogun/features/DotFeatures.h>
-#include <shogun/labels/Labels.h>
-#include <shogun/labels/BinaryLabels.h>
+#include <shogun/mathematics/Math.h>
 
 using namespace shogun;
 
 CSVMLin::CSVMLin()
-: CLinearMachine(), C1(1), C2(1), epsilon(1e-5), use_bias(true)
+    : CLinearMachine(), C1(1), C2(1), epsilon(1e-5), use_bias(true)
 {
 	init();
 }
 
-CSVMLin::CSVMLin(
-	float64_t C, CDotFeatures* traindat, CLabels* trainlab)
-: CLinearMachine(), C1(C), C2(C), epsilon(1e-5), use_bias(true)
+CSVMLin::CSVMLin(float64_t C, CDotFeatures* traindat, CLabels* trainlab)
+    : CLinearMachine(), C1(C), C2(C), epsilon(1e-5), use_bias(true)
 {
 	set_features(traindat);
 	set_labels(trainlab);
 
 	init();
 }
-
 
 CSVMLin::~CSVMLin()
 {
@@ -43,11 +40,14 @@ CSVMLin::~CSVMLin()
 void CSVMLin::init()
 {
 	SG_ADD(
-	    &use_bias, "use_bias", "Indicates if bias is used.");
+	    &use_bias, "use_bias", "Indicates if bias is used.",
+	    ParameterProperties::SETTING);
 	SG_ADD(
-	    &C1, "C1", "C constant for negatively labeled examples.", ParameterProperties::HYPER);
+	    &C1, "C1", "C constant for negatively labeled examples.",
+	    ParameterProperties::HYPER);
 	SG_ADD(
-	    &C2, "C2", "C constant for positively labeled examples.", ParameterProperties::HYPER);
+	    &C2, "C2", "C constant for positively labeled examples.",
+	    ParameterProperties::HYPER);
 	SG_ADD(&epsilon, "epsilon", "Convergence precision.");
 }
 
