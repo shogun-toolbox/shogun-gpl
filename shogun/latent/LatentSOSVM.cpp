@@ -60,7 +60,7 @@ float64_t LatentSOSVM::do_inner_loop(float64_t cooling_eps)
 
 void LatentSOSVM::register_parameters()
 {
-	m_parameters->add((SGObject**)&m_so_solver, "so_solver", "Structured Output Solver.");
+	SG_ADD((std::shared_ptr<SGObject>*)&m_so_solver, "so_solver", "Structured Output Solver.");
 }
 
 #endif //USE_GPL_SHOGUN

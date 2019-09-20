@@ -11,7 +11,7 @@
 
 #include <shogun/mathematics/SparseInverseCovariance.h>
 #ifdef USE_GPL_SHOGUN
-#include <shogun/base/Parameter.h>
+
 #include <shogun/lib/slep/SpInvCoVa/invCov.h>
 
 using namespace shogun;

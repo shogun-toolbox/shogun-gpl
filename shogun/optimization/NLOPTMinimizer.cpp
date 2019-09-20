@@ -31,7 +31,7 @@
 
 #include <shogun/optimization/NLOPTMinimizer.h>
 #include <shogun/optimization/FirstOrderBoundConstraintsCostFunction.h>
-#include <shogun/base/Parameter.h>
+
 #include <algorithm>
 
 using namespace shogun;
@@ -77,7 +77,7 @@ float64_t NLOPTMinimizer::minimize()
 
 	//add bound constraints
 	auto bound_constraints_fun
-		=m_fun->as<FirstOrderBoundConstraintsCostFunction>();
+		=std::dynamic_pointer_cast<FirstOrderBoundConstraintsCostFunction>(m_fun);
 	if(bound_constraints_fun)
 	{
 		SGVector<float64_t> bound=bound_constraints_fun->get_lower_bound();
