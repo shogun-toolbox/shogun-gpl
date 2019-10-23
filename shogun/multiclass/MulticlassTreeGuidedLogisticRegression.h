@@ -35,7 +35,7 @@ class MulticlassTreeGuidedLogisticRegression : public LinearMulticlassMachine
 		 * @param labs labels
 		 * @param tree tree
 		 */
-		MulticlassTreeGuidedLogisticRegression(float64_t z, std::shared_ptr<DotFeatures> feats, std::shared_ptr<Labels> labs, std::shared_ptr<IndexBlockTree> tree);
+		MulticlassTreeGuidedLogisticRegression(float64_t z, const std::shared_ptr<DotFeatures>& feats, std::shared_ptr<Labels> labs, std::shared_ptr<IndexBlockTree> tree);
 
 		/** destructor */
 		virtual ~MulticlassTreeGuidedLogisticRegression();

@@ -41,7 +41,7 @@ class MultitaskTraceLogisticRegression : public MultitaskLogisticRegression
 		 */
 		MultitaskTraceLogisticRegression(
 		     float64_t rho, std::shared_ptr<Features> training_data,
-		     std::shared_ptr<BinaryLabels> training_labels, std::shared_ptr<TaskGroup> task_relation);
+		     std::shared_ptr<BinaryLabels> training_labels, const std::shared_ptr<TaskGroup>& task_relation);
 
 		/** destructor */
 		virtual ~MultitaskTraceLogisticRegression();

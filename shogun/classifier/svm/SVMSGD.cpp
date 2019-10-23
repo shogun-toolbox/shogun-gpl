@@ -27,6 +27,8 @@
 #include <shogun/mathematics/Math.h>
 #include <shogun/mathematics/linalg/LinalgNamespace.h>
 
+#include <utility>
+
 using namespace shogun;
 
 SVMSGD::SVMSGD()
@@ -51,8 +53,8 @@ SVMSGD::SVMSGD(float64_t C, std::shared_ptr<DotFeatures> traindat, std::shared_p
 	C1 = C;
 	C2 = C;
 
-	set_features(traindat);
-	set_labels(trainlab);
+	set_features(std::move(traindat));
+	set_labels(std::move(trainlab));
 }
 
 SVMSGD::~SVMSGD()
@@ -61,7 +63,7 @@ SVMSGD::~SVMSGD()
 
 void SVMSGD::set_loss_function(std::shared_ptr<LossFunction> loss_func)
 {
-	loss=loss_func;
+	loss=std::move(loss_func);
 }
 
 bool SVMSGD::train_machine(std::shared_ptr<Features> data)

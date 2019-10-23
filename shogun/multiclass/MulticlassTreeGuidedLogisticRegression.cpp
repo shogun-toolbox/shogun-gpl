@@ -15,6 +15,8 @@
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/lib/slep/slep_mc_tree_lr.h>
 
+#include <utility>
+
 using namespace shogun;
 
 MulticlassTreeGuidedLogisticRegression::MulticlassTreeGuidedLogisticRegression() :
@@ -23,12 +25,12 @@ MulticlassTreeGuidedLogisticRegression::MulticlassTreeGuidedLogisticRegression()
 	init_defaults();
 }
 
-MulticlassTreeGuidedLogisticRegression::MulticlassTreeGuidedLogisticRegression(float64_t z, std::shared_ptr<DotFeatures> feats, std::shared_ptr<Labels> labs, std::shared_ptr<IndexBlockTree> tree) :
-	LinearMulticlassMachine(std::make_shared<MulticlassOneVsRestStrategy>(),feats,NULL,labs)
+MulticlassTreeGuidedLogisticRegression::MulticlassTreeGuidedLogisticRegression(float64_t z, const std::shared_ptr<DotFeatures>& feats, std::shared_ptr<Labels> labs, std::shared_ptr<IndexBlockTree> tree) :
+	LinearMulticlassMachine(std::make_shared<MulticlassOneVsRestStrategy>(),feats,NULL,std::move(labs))
 {
 	init_defaults();
 	set_z(z);
-	set_index_tree(tree);
+	set_index_tree(std::move(tree));
 }
 
 void MulticlassTreeGuidedLogisticRegression::init_defaults()

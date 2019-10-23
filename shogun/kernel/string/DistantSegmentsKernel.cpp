@@ -27,8 +27,8 @@ DistantSegmentsKernel::DistantSegmentsKernel(int32_t size, int32_t delta,
 	init();
 }
 
-DistantSegmentsKernel::DistantSegmentsKernel(std::shared_ptr<StringFeatures<char>> l,
-		std::shared_ptr<StringFeatures<char>> r, int32_t size, int32_t delta, int32_t theta) :
+DistantSegmentsKernel::DistantSegmentsKernel(const std::shared_ptr<StringFeatures<char>>& l,
+		const std::shared_ptr<StringFeatures<char>>& r, int32_t size, int32_t delta, int32_t theta) :
 	StringKernel<char>(size), m_delta(delta), m_theta(theta)
 {
 	init();

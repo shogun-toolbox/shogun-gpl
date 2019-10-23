@@ -15,6 +15,8 @@
 #include <shogun/structure/libp3bm.h>
 #include <shogun/structure/libncbm.h>
 
+#include <utility>
+
 using namespace shogun;
 
 DualLibQPBMSOSVM::DualLibQPBMSOSVM()
@@ -28,7 +30,7 @@ DualLibQPBMSOSVM::DualLibQPBMSOSVM(
 		std::shared_ptr<StructuredLabels>	labs,
 		float64_t	_lambda,
 		SGVector< float64_t >	W)
- : LinearStructuredOutputMachine(model, labs)
+ : LinearStructuredOutputMachine(std::move(model), std::move(labs))
 {
 	init();
 	set_lambda(_lambda);

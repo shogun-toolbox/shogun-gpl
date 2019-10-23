@@ -40,7 +40,7 @@ class MultitaskLinearMachine : public LinearMachine
 		 * @param task_relation task relation
 		 */
 		MultitaskLinearMachine(
-		     std::shared_ptr<Features> training_data,
+		     const std::shared_ptr<Features>& training_data,
 		     std::shared_ptr<Labels> training_labels,
 		     std::shared_ptr<TaskRelation> task_relation);
 

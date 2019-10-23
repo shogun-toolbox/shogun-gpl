@@ -15,6 +15,8 @@
 #include <shogun/lib/slep/slep_solver.h>
 #include <shogun/lib/slep/slep_options.h>
 
+#include <utility>
+
 namespace shogun
 {
 
@@ -27,8 +29,8 @@ MultitaskLeastSquaresRegression::MultitaskLeastSquaresRegression() :
 
 MultitaskLeastSquaresRegression::MultitaskLeastSquaresRegression(
      float64_t z, std::shared_ptr<Features> train_features,
-     std::shared_ptr<RegressionLabels> train_labels, std::shared_ptr<TaskRelation> task_relation) :
-	MultitaskLinearMachine(train_features,train_labels,task_relation)
+     const std::shared_ptr<RegressionLabels>& train_labels, std::shared_ptr<TaskRelation> task_relation) :
+	MultitaskLinearMachine(std::move(train_features),train_labels,std::move(task_relation))
 {
 	set_z(z);
 	initialize_parameters();

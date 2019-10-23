@@ -45,7 +45,7 @@ class MultitaskLeastSquaresRegression : public MultitaskLinearMachine
 		 */
 		MultitaskLeastSquaresRegression(
 		     float64_t z, std::shared_ptr<Features> training_data,
-		     std::shared_ptr<RegressionLabels> training_labels, std::shared_ptr<TaskRelation> task_relation);
+		     const std::shared_ptr<RegressionLabels>& training_labels, std::shared_ptr<TaskRelation> task_relation);
 
 		/** destructor */
 		virtual ~MultitaskLeastSquaresRegression();

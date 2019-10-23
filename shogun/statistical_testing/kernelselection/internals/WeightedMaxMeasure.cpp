@@ -40,10 +40,12 @@
 #ifdef USE_GPL_SHOGUN
 #include <shogun/statistical_testing/kernelselection/internals/OptimizationSolver.h>
 
+#include <utility>
+
 using namespace shogun;
 using namespace internal;
 
-WeightedMaxMeasure::WeightedMaxMeasure(KernelManager& km, std::shared_ptr<MMD> est) : MaxMeasure(km, est)
+WeightedMaxMeasure::WeightedMaxMeasure(KernelManager& km, std::shared_ptr<MMD> est) : MaxMeasure(km, std::move(est))
 {
 }
 

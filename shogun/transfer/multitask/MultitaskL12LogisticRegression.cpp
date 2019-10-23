@@ -15,6 +15,8 @@
 #include <shogun/lib/SGVector.h>
 #include <shogun/features/DotFeatures.h>
 
+#include <utility>
+
 namespace shogun
 {
 
@@ -39,8 +41,8 @@ MultitaskL12LogisticRegression::MultitaskL12LogisticRegression() :
 
 MultitaskL12LogisticRegression::MultitaskL12LogisticRegression(
      float64_t rho1, float64_t rho2, std::shared_ptr<Features> train_features,
-     std::shared_ptr<BinaryLabels> train_labels, std::shared_ptr<TaskGroup> task_group) :
-	MultitaskLogisticRegression(0.0,train_features,train_labels,task_group->as<TaskRelation>())
+     std::shared_ptr<BinaryLabels> train_labels, const std::shared_ptr<TaskGroup>& task_group) :
+	MultitaskLogisticRegression(0.0,std::move(train_features),std::move(train_labels),task_group->as<TaskRelation>())
 {
 	set_rho1(rho1);
 	set_rho2(rho2);

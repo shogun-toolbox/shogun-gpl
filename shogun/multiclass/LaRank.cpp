@@ -49,10 +49,10 @@
 #include <shogun/base/progress.h>
 #include <shogun/lib/config.h>
 
-#include <vector>
 #include <algorithm>
 #include <ctime>
-#include <algorithm>
+#include <utility>
+#include <vector>
 #ifndef _MSC_VER
 #include <sys/time.h>
 #endif
@@ -78,7 +78,7 @@ namespace shogun
 		self = SG_CALLOC (larank_kcache_t, 1);
 		self->l = 0;
 		self->maxrowlen = 0;
-		self->func = kernelfunc;
+		self->func = std::move(kernelfunc);
 		self->prevbuddy = self;
 		self->nextbuddy = self;
 		self->cursize = sizeof (larank_kcache_t);
@@ -409,7 +409,7 @@ namespace shogun
 // Initializing an output class (basically creating a kernel cache for it)
 void LaRankOutput::initialize (std::shared_ptr<Kernel> kfunc, int64_t cache)
 {
-	kernel = larank_kcache_create (kfunc);
+	kernel = larank_kcache_create (std::move(kfunc));
 	larank_kcache_set_maximum_size (kernel, cache * 1024 * 1024);
 	m_beta = SGVector<float32_t>(1);
 	g = SG_MALLOC(float32_t, 1);
@@ -597,7 +597,7 @@ LaRank::LaRank (): RandomMixin<MulticlassSVM>(std::make_shared<MulticlassOneVsRe
 }
 
 LaRank::LaRank (float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab):
-	RandomMixin<MulticlassSVM>(std::make_shared<MulticlassOneVsRestStrategy>(), C, k, lab),
+	RandomMixin<MulticlassSVM>(std::make_shared<MulticlassOneVsRestStrategy>(), C, std::move(k), std::move(lab)),
 	nb_seen_examples (0), nb_removed (0),
 	n_pro (0), n_rep (0), n_opt (0),
 	w_pro (1), w_rep (1), w_opt (1), y0 (0), m_dual (0),

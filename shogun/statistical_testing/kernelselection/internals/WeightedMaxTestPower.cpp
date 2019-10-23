@@ -40,10 +40,12 @@
 #include <shogun/statistical_testing/internals/KernelManager.h>
 #include <shogun/statistical_testing/kernelselection/internals/OptimizationSolver.h>
 
+#include <utility>
+
 using namespace shogun;
 using namespace internal;
 
-WeightedMaxTestPower::WeightedMaxTestPower(KernelManager& km, std::shared_ptr<MMD> est) : WeightedMaxMeasure(km, est), lambda(1E-5)
+WeightedMaxTestPower::WeightedMaxTestPower(KernelManager& km, std::shared_ptr<MMD> est) : WeightedMaxMeasure(km, std::move(est)), lambda(1E-5)
 {
 }
 

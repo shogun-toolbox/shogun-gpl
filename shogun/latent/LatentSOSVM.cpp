@@ -12,6 +12,8 @@
 #ifdef USE_GPL_SHOGUN
 #include <shogun/structure/DualLibQPBMSOSVM.h>
 
+#include <utility>
+
 using namespace shogun;
 
 LatentSOSVM::LatentSOSVM()
@@ -22,10 +24,10 @@ LatentSOSVM::LatentSOSVM()
 }
 
 LatentSOSVM::LatentSOSVM(std::shared_ptr<LatentModel> model, std::shared_ptr<LinearStructuredOutputMachine> so_solver, float64_t C)
-	: LinearLatentMachine(model, C)
+	: LinearLatentMachine(std::move(model), C)
 {
 	register_parameters();
-	set_so_solver(so_solver);
+	set_so_solver(std::move(so_solver));
 }
 
 LatentSOSVM::~LatentSOSVM()
@@ -39,7 +41,7 @@ std::shared_ptr<LatentLabels> LatentSOSVM::apply_latent()
 
 void LatentSOSVM::set_so_solver(std::shared_ptr<LinearStructuredOutputMachine> so)
 {
-	m_so_solver = so;
+	m_so_solver = std::move(so);
 }
 
 float64_t LatentSOSVM::do_inner_loop(float64_t cooling_eps)

@@ -33,6 +33,7 @@
 #include <shogun/optimization/FirstOrderBoundConstraintsCostFunction.h>
 
 #include <algorithm>
+#include <utility>
 
 using namespace shogun;
 NLOPTMinimizer::NLOPTMinimizer()
@@ -46,7 +47,7 @@ NLOPTMinimizer::~NLOPTMinimizer()
 }
 
 NLOPTMinimizer::NLOPTMinimizer(std::shared_ptr<FirstOrderCostFunction> fun)
-	:FirstOrderMinimizer(fun)
+	:FirstOrderMinimizer(std::move(fun))
 {
 	init();
 }

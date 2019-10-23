@@ -16,6 +16,8 @@
 #include <shogun/labels/MulticlassLabels.h>
 #include <shogun/lib/slep/slep_mc_plain_lr.h>
 
+#include <utility>
+
 using namespace shogun;
 
 MulticlassLogisticRegression::MulticlassLogisticRegression() :
@@ -25,8 +27,8 @@ MulticlassLogisticRegression::MulticlassLogisticRegression() :
 	register_parameters();
 }
 
-MulticlassLogisticRegression::MulticlassLogisticRegression(float64_t z, std::shared_ptr<DotFeatures> feats, std::shared_ptr<Labels> labs) :
-	LinearMulticlassMachine(std::make_shared<MulticlassOneVsRestStrategy>(),feats,NULL,labs)
+MulticlassLogisticRegression::MulticlassLogisticRegression(float64_t z, const std::shared_ptr<DotFeatures>& feats, std::shared_ptr<Labels> labs) :
+	LinearMulticlassMachine(std::make_shared<MulticlassOneVsRestStrategy>(),feats,NULL,std::move(labs))
 {
 	init_defaults();
 	register_parameters();

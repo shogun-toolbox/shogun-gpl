@@ -43,7 +43,7 @@ class MultitaskClusteredLogisticRegression : public MultitaskLogisticRegression
 		 */
 		MultitaskClusteredLogisticRegression(
 		     float64_t rho1, float64_t rho2, std::shared_ptr<Features> training_data,
-		     std::shared_ptr<BinaryLabels> training_labels, std::shared_ptr<TaskGroup> task_group,
+		     std::shared_ptr<BinaryLabels> training_labels, const std::shared_ptr<TaskGroup>& task_group,
 		     int32_t num_clusters);
 
 		/** destructor */

@@ -16,6 +16,8 @@
 #include <shogun/machine/LinearMachine.h>
 #include <shogun/mathematics/Math.h>
 
+#include <utility>
+
 using namespace shogun;
 
 SVMLin::SVMLin()
@@ -28,8 +30,8 @@ SVMLin::SVMLin(
 	float64_t C, std::shared_ptr<DotFeatures> traindat, std::shared_ptr<Labels> trainlab)
 : LinearMachine(), C1(C), C2(C), epsilon(1e-5), use_bias(true)
 {
-	set_features(traindat);
-	set_labels(trainlab);
+	set_features(std::move(traindat));
+	set_labels(std::move(trainlab));
 
 	init();
 }

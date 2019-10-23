@@ -15,6 +15,8 @@
 #include <shogun/lib/IndexBlockGroup.h>
 #include <shogun/lib/IndexBlockTree.h>
 
+#include <utility>
+
 namespace shogun
 {
 
@@ -26,12 +28,12 @@ FeatureBlockLogisticRegression::FeatureBlockLogisticRegression() :
 }
 
 FeatureBlockLogisticRegression::FeatureBlockLogisticRegression(
-     float64_t z, std::shared_ptr<Features> train_features,
-     std::shared_ptr<Labels> train_labels, std::shared_ptr<IndexBlockRelation> feature_relation) :
+     float64_t z, const std::shared_ptr<Features>& train_features,
+     const std::shared_ptr<Labels>& train_labels, std::shared_ptr<IndexBlockRelation> feature_relation) :
 	LinearMachine()
 {
 	init();
-	set_feature_relation(feature_relation);
+	set_feature_relation(std::move(feature_relation));
 	set_z(z);
 	set_features(train_features->as<DotFeatures>());
 	set_labels(train_labels->as<BinaryLabels>());
@@ -75,7 +77,7 @@ std::shared_ptr<IndexBlockRelation> FeatureBlockLogisticRegression::get_feature_
 
 void FeatureBlockLogisticRegression::set_feature_relation(std::shared_ptr<IndexBlockRelation> feature_relation)
 {
-	m_feature_relation = feature_relation;
+	m_feature_relation = std::move(feature_relation);
 }
 
 int32_t FeatureBlockLogisticRegression::get_max_iter() const

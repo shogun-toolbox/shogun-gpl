@@ -10,8 +10,9 @@
 
 #include <shogun/transfer/multitask/MultitaskLogisticRegression.h>
 #ifdef USE_GPL_SHOGUN
-#include <shogun/lib/slep/slep_solver.h>
 #include <shogun/lib/slep/slep_options.h>
+#include <shogun/lib/slep/slep_solver.h>
+#include <utility>
 #include <vector>
 
 namespace shogun
@@ -26,8 +27,8 @@ MultitaskLogisticRegression::MultitaskLogisticRegression() :
 
 MultitaskLogisticRegression::MultitaskLogisticRegression(
      float64_t z, std::shared_ptr<Features> train_features,
-     std::shared_ptr<BinaryLabels> train_labels, std::shared_ptr<TaskRelation> task_relation) :
-	MultitaskLinearMachine(train_features,train_labels,task_relation)
+     const std::shared_ptr<BinaryLabels>& train_labels, std::shared_ptr<TaskRelation> task_relation) :
+	MultitaskLinearMachine(std::move(train_features),train_labels,std::move(task_relation))
 {
 	initialize_parameters();
 	register_parameters();

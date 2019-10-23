@@ -55,7 +55,7 @@ public:
 	 * @param delta \f[\delta\f]-parameter of the DS-kernel
 	 * @param theta \f[\theta\f]-parameter of the DS-kernel
 	 */
-	DistantSegmentsKernel(std::shared_ptr<StringFeatures<char>> l, std::shared_ptr<StringFeatures<char>> r,
+	DistantSegmentsKernel(const std::shared_ptr<StringFeatures<char>>& l, const std::shared_ptr<StringFeatures<char>>& r,
 			int32_t size, int32_t delta, int32_t theta);
 
 	/** initialize kernel with features

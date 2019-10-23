@@ -49,7 +49,7 @@ using namespace internal;
 
 struct OptimizationSolver::Self
 {
-	Self(SGVector<float64_t> mmds, SGMatrix<float64_t> Q);
+	Self(const SGVector<float64_t>& mmds, const SGMatrix<float64_t>& Q);
 	SGVector<float64_t> solve() const;
 	void init();
 	static const float64_t* get_Q_col(uint32_t i);
@@ -64,7 +64,7 @@ struct OptimizationSolver::Self
 
 SGMatrix<float64_t> OptimizationSolver::Self::m_Q=SGMatrix<float64_t>();
 
-OptimizationSolver::Self::Self(SGVector<float64_t> mmds, SGMatrix<float64_t> Q)
+OptimizationSolver::Self::Self(const SGVector<float64_t>& mmds, const SGMatrix<float64_t>& Q)
 {
 	m_Q=Q;
 	m_mmds=mmds;

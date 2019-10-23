@@ -34,7 +34,7 @@ class MulticlassLogisticRegression : public LinearMulticlassMachine
 		 * @param feats features
 		 * @param labs labels
 		 */
-		MulticlassLogisticRegression(float64_t z, std::shared_ptr<DotFeatures> feats, std::shared_ptr<Labels> labs);
+		MulticlassLogisticRegression(float64_t z, const std::shared_ptr<DotFeatures>& feats, std::shared_ptr<Labels> labs);
 
 		/** destructor */
 		virtual ~MulticlassLogisticRegression();

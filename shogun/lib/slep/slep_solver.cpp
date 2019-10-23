@@ -109,7 +109,7 @@ double compute_regularizer(double* w, double lambda, double lambda2, int n_vecs,
 double compute_lambda(
 		double* ATx,
 		double z,
-		std::shared_ptr<DotFeatures> features,
+		const std::shared_ptr<DotFeatures>& features,
 		double* y,
 		int n_vecs, int n_feats,
 		int n_blocks,
@@ -313,7 +313,7 @@ void projection(double* w, double* v, int n_feats, int n_blocks, double lambda, 
 
 }
 
-double search_point_gradient_and_objective(std::shared_ptr<DotFeatures> features, double* ATx, double* As,
+double search_point_gradient_and_objective(const std::shared_ptr<DotFeatures>& features, double* ATx, double* As,
                                            double* sc, double* y, int n_vecs,
                                            int n_feats, int n_tasks,
                                            double* g, double* gc,
@@ -400,7 +400,7 @@ double search_point_gradient_and_objective(std::shared_ptr<DotFeatures> features
 }
 
 slep_result_t slep_solver(
-		std::shared_ptr<DotFeatures> features,
+		const std::shared_ptr<DotFeatures>& features,
 		double* y,
 		double z,
 		const slep_options& options)

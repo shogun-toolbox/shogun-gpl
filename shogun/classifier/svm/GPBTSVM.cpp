@@ -16,6 +16,8 @@
 #include <shogun/io/SGIO.h>
 #include <shogun/labels/BinaryLabels.h>
 
+#include <utility>
+
 using namespace shogun;
 
 GPBTSVM::GPBTSVM()
@@ -24,7 +26,7 @@ GPBTSVM::GPBTSVM()
 }
 
 GPBTSVM::GPBTSVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab)
-: SVM(C, k, lab), model(NULL)
+: SVM(C, std::move(k), std::move(lab)), model(NULL)
 {
 }
 

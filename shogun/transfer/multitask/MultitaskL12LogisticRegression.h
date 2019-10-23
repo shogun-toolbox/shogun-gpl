@@ -44,7 +44,7 @@ class MultitaskL12LogisticRegression : public MultitaskLogisticRegression
 		 */
 		MultitaskL12LogisticRegression(
 		     float64_t rho1, float64_t rho2, std::shared_ptr<Features> training_data,
-		     std::shared_ptr<BinaryLabels> training_labels, std::shared_ptr<TaskGroup> task_group);
+		     std::shared_ptr<BinaryLabels> training_labels, const std::shared_ptr<TaskGroup>& task_group);
 
 		/** destructor */
 		virtual ~MultitaskL12LogisticRegression();

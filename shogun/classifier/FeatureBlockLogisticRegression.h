@@ -47,8 +47,8 @@ class FeatureBlockLogisticRegression : public LinearMachine
 		 * @param task_relation task relation
 		 */
 		FeatureBlockLogisticRegression(
-		     float64_t z, std::shared_ptr<Features> training_data,
-		     std::shared_ptr<Labels> training_labels, std::shared_ptr<IndexBlockRelation> task_relation);
+		     float64_t z, const std::shared_ptr<Features>& training_data,
+		     const std::shared_ptr<Labels>& training_labels, std::shared_ptr<IndexBlockRelation> task_relation);
 
 		/** destructor */
 		virtual ~FeatureBlockLogisticRegression();

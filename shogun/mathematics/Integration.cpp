@@ -26,6 +26,8 @@
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/lib/SGVector.h>
 
+#include <utility>
+
 using namespace shogun;
 using namespace Eigen;
 
@@ -53,7 +55,7 @@ public:
 	 */
 	ITransformFunction(std::shared_ptr<Function> f)
 	{
-		m_f=f;
+		m_f=std::move(f);
 	}
 
 	virtual ~ITransformFunction() { }
@@ -104,7 +106,7 @@ public:
 	 */
 	ILTransformFunction(std::shared_ptr<Function> f, float64_t b)
 	{
-		m_f=f;
+		m_f=std::move(f);
 		m_b=b;
 	}
 
@@ -159,7 +161,7 @@ public:
 	 */
 	IUTransformFunction(std::shared_ptr<Function> f, float64_t a)
 	{
-		m_f=f;
+		m_f=std::move(f);
 		m_a=a;
 	}
 
@@ -210,7 +212,7 @@ public:
 	 */
 	TransformFunction(std::shared_ptr<Function> f, float64_t a, float64_t b)
 	{
-		m_f=f;
+		m_f=std::move(f);
 		m_a=a;
 		m_b=b;
 	}
@@ -416,7 +418,7 @@ float64_t Integration::integrate_quadgk(std::shared_ptr<Function> f, float64_t a
 float64_t Integration::integrate_quadgh(std::shared_ptr<Function> f)
 {
 	// evaluate integral using Gauss-Hermite 64-point rule
-	float64_t q=evaluate_quadgh64(f);
+	float64_t q=evaluate_quadgh64(std::move(f));
 	return q;
 }
 
@@ -427,11 +429,11 @@ float64_t Integration::integrate_quadgh_customized(std::shared_ptr<Function> f,
 		"The length of node array ({}) and weight array ({}) should be the same",
 		xgh.vlen, wgh.vlen);
 
-	float64_t q=evaluate_quadgh(f, xgh.vlen, xgh.vector, wgh.vector);
+	float64_t q=evaluate_quadgh(std::move(f), xgh.vlen, xgh.vector, wgh.vector);
 	return q;
 }
 
-void Integration::evaluate_quadgk(std::shared_ptr<Function> f, DynamicArray<float64_t>* subs,
+void Integration::evaluate_quadgk(const std::shared_ptr<Function>& f, DynamicArray<float64_t>* subs,
 		DynamicArray<float64_t>* q, DynamicArray<float64_t>* err, index_t n,
 		float64_t* xgk, float64_t* wg, float64_t* wgk)
 {
@@ -647,7 +649,7 @@ void Integration::evaluate_quadgk15(std::shared_ptr<Function> f, DynamicArray<fl
 		};
 
 	// evaluate definite integral on each subinterval using Gauss-Kronrod rule
-	evaluate_quadgk(f, subs, q, err, n, xgk, wg, wgk);
+	evaluate_quadgk(std::move(f), subs, q, err, n, xgk, wg, wgk);
 }
 
 void Integration::evaluate_quadgk21(std::shared_ptr<Function> f, DynamicArray<float64_t>* subs,
@@ -722,10 +724,10 @@ void Integration::evaluate_quadgk21(std::shared_ptr<Function> f, DynamicArray<fl
 			0.011694638867371874278064396062192
 		};
 
-	evaluate_quadgk(f, subs, q, err, n, xgk, wg, wgk);
+	evaluate_quadgk(std::move(f), subs, q, err, n, xgk, wg, wgk);
 }
 
-float64_t Integration::evaluate_quadgh(std::shared_ptr<Function> f, index_t n, float64_t* xgh,
+float64_t Integration::evaluate_quadgh(const std::shared_ptr<Function>& f, index_t n, float64_t* xgh,
 		float64_t* wgh)
 {
 	// check the parameters
@@ -883,7 +885,7 @@ float64_t Integration::evaluate_quadgh64(std::shared_ptr<Function> f)
 		5.535706535856942820575463300987E-49
 	};
 
-	return evaluate_quadgh(f, n, xgh, wgh);
+	return evaluate_quadgh(std::move(f), n, xgh, wgh);
 }
 }
 

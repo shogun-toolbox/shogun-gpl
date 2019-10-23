@@ -14,6 +14,7 @@
 #include <shogun/lib/slep/slep_options.h>
 
 #include <map>
+#include <utility>
 #include <vector>
 
 using namespace std;
@@ -29,13 +30,13 @@ MultitaskLinearMachine::MultitaskLinearMachine() :
 }
 
 MultitaskLinearMachine::MultitaskLinearMachine(
-     std::shared_ptr<Features> train_features,
+     const std::shared_ptr<Features>& train_features,
      std::shared_ptr<Labels> train_labels, std::shared_ptr<TaskRelation> task_relation) :
 	LinearMachine(), m_current_task(0), m_task_relation(NULL)
 {
 	set_features(train_features->as<DotFeatures>());
-	set_labels(train_labels);
-	set_task_relation(task_relation);
+	set_labels(std::move(train_labels));
+	set_task_relation(std::move(task_relation));
 	register_parameters();
 }
 
@@ -67,7 +68,7 @@ std::shared_ptr<TaskRelation> MultitaskLinearMachine::get_task_relation() const
 
 void MultitaskLinearMachine::set_task_relation(std::shared_ptr<TaskRelation> task_relation)
 {
-	m_task_relation = task_relation;
+	m_task_relation = std::move(task_relation);
 }
 
 bool MultitaskLinearMachine::train_machine(std::shared_ptr<Features> data)
