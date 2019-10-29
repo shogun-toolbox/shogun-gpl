@@ -89,7 +89,7 @@ bool DualLibQPBMSOSVM::train_machine(std::shared_ptr<Features> data)
 
 	if (m_verbose||m_store_train_info)
 	{
-		m_helper = std::shared_ptr<SOSVMHelper>();
+		m_helper = std::make_shared<SOSVMHelper>();
 	}
 
 	// Initialize the model for training
