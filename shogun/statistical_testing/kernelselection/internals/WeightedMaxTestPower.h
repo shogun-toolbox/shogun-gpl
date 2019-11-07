@@ -41,8 +41,8 @@
 namespace shogun
 {
 
-class CKernel;
-class CMMD;
+class Kernel;
+class MMD;
 template <typename T> class SGVector;
 
 namespace internal
@@ -51,7 +51,7 @@ namespace internal
 class WeightedMaxTestPower : public WeightedMaxMeasure
 {
 public:
-	WeightedMaxTestPower(KernelManager&, CMMD*);
+	WeightedMaxTestPower(KernelManager&, std::shared_ptr<MMD>);
 	WeightedMaxTestPower(const WeightedMaxTestPower& other)=delete;
 	~WeightedMaxTestPower();
 	WeightedMaxTestPower& operator=(const WeightedMaxTestPower& other)=delete;

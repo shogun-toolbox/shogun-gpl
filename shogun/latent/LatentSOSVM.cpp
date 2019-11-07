@@ -12,43 +12,42 @@
 #ifdef USE_GPL_SHOGUN
 #include <shogun/structure/DualLibQPBMSOSVM.h>
 
+#include <utility>
+
 using namespace shogun;
 
-CLatentSOSVM::CLatentSOSVM()
-	: CLinearLatentMachine()
+LatentSOSVM::LatentSOSVM()
+	: LinearLatentMachine()
 {
 	register_parameters();
 	m_so_solver=NULL;
 }
 
-CLatentSOSVM::CLatentSOSVM(CLatentModel* model, CLinearStructuredOutputMachine* so_solver, float64_t C)
-	: CLinearLatentMachine(model, C)
+LatentSOSVM::LatentSOSVM(std::shared_ptr<LatentModel> model, std::shared_ptr<LinearStructuredOutputMachine> so_solver, float64_t C)
+	: LinearLatentMachine(std::move(model), C)
 {
 	register_parameters();
-	set_so_solver(so_solver);
+	set_so_solver(std::move(so_solver));
 }
 
-CLatentSOSVM::~CLatentSOSVM()
+LatentSOSVM::~LatentSOSVM()
 {
-	SG_UNREF(m_so_solver);
 }
 
-CLatentLabels* CLatentSOSVM::apply_latent()
+std::shared_ptr<LatentLabels> LatentSOSVM::apply_latent()
 {
 	return NULL;
 }
 
-void CLatentSOSVM::set_so_solver(CLinearStructuredOutputMachine* so)
+void LatentSOSVM::set_so_solver(std::shared_ptr<LinearStructuredOutputMachine> so)
 {
-	SG_REF(so);
-	SG_UNREF(m_so_solver);
-	m_so_solver = so;
+	m_so_solver = std::move(so);
 }
 
-float64_t CLatentSOSVM::do_inner_loop(float64_t cooling_eps)
+float64_t LatentSOSVM::do_inner_loop(float64_t cooling_eps)
 {
 	float64_t lambda = 1/m_C;
-	CDualLibQPBMSOSVM* so = new CDualLibQPBMSOSVM();
+	auto so = std::shared_ptr<DualLibQPBMSOSVM>();
 	so->set_lambda(lambda);
 	so->train();
 
@@ -58,14 +57,12 @@ float64_t CLatentSOSVM::do_inner_loop(float64_t cooling_eps)
 	/* get the primal objective value */
 	float64_t po = so->get_result().Fp;
 
-	SG_UNREF(so);
-
 	return po;
 }
 
-void CLatentSOSVM::register_parameters()
+void LatentSOSVM::register_parameters()
 {
-	m_parameters->add((CSGObject**)&m_so_solver, "so_solver", "Structured Output Solver.");
+	SG_ADD((std::shared_ptr<SGObject>*)&m_so_solver, "so_solver", "Structured Output Solver.");
 }
 
 #endif //USE_GPL_SHOGUN

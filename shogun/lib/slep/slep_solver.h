@@ -36,7 +36,7 @@ namespace shogun
  *
  */
 slep_result_t slep_solver(
-		CDotFeatures* features,
+		const std::shared_ptr<DotFeatures>& features,
 		double* y,
 		double z,
 		const slep_options& options);

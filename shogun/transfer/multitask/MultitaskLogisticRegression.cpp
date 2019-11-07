@@ -10,35 +10,36 @@
 
 #include <shogun/transfer/multitask/MultitaskLogisticRegression.h>
 #ifdef USE_GPL_SHOGUN
-#include <shogun/lib/slep/slep_solver.h>
 #include <shogun/lib/slep/slep_options.h>
+#include <shogun/lib/slep/slep_solver.h>
+#include <utility>
 #include <vector>
 
 namespace shogun
 {
 
-CMultitaskLogisticRegression::CMultitaskLogisticRegression() :
-	CMultitaskLinearMachine()
+MultitaskLogisticRegression::MultitaskLogisticRegression() :
+	MultitaskLinearMachine()
 {
 	initialize_parameters();
 	register_parameters();
 }
 
-CMultitaskLogisticRegression::CMultitaskLogisticRegression(
-     float64_t z, CFeatures* train_features,
-     CBinaryLabels* train_labels, CTaskRelation* task_relation) :
-	CMultitaskLinearMachine(train_features,(CLabels*)train_labels,task_relation)
+MultitaskLogisticRegression::MultitaskLogisticRegression(
+     float64_t z, std::shared_ptr<Features> train_features,
+     const std::shared_ptr<BinaryLabels>& train_labels, std::shared_ptr<TaskRelation> task_relation) :
+	MultitaskLinearMachine(std::move(train_features),train_labels,std::move(task_relation))
 {
 	initialize_parameters();
 	register_parameters();
 	set_z(z);
 }
 
-CMultitaskLogisticRegression::~CMultitaskLogisticRegression()
+MultitaskLogisticRegression::~MultitaskLogisticRegression()
 {
 }
 
-void CMultitaskLogisticRegression::register_parameters()
+void MultitaskLogisticRegression::register_parameters()
 {
 	SG_ADD(&m_z, "z", "regularization coefficient", ParameterProperties::HYPER);
 	SG_ADD(&m_q, "q", "q of L1/Lq", ParameterProperties::HYPER);
@@ -48,7 +49,7 @@ void CMultitaskLogisticRegression::register_parameters()
 	SG_ADD(&m_max_iter, "max_iter", "maximum number of iterations");
 }
 
-void CMultitaskLogisticRegression::initialize_parameters()
+void MultitaskLogisticRegression::initialize_parameters()
 {
 	set_z(0.0);
 	set_q(2.0);
@@ -58,17 +59,18 @@ void CMultitaskLogisticRegression::initialize_parameters()
 	set_max_iter(1000);
 }
 
-bool CMultitaskLogisticRegression::train_machine(CFeatures* data)
+bool MultitaskLogisticRegression::train_machine(std::shared_ptr<Features> data)
 {
-	if (data && (CDotFeatures*)data)
-		set_features((CDotFeatures*)data);
+	if (data)
+		set_features(data->as<DotFeatures>());
 
 	ASSERT(features)
 	ASSERT(m_labels)
 
 	SGVector<float64_t> y(m_labels->get_num_labels());
+	auto bl = binary_labels(m_labels);
 	for (int32_t i=0; i<y.vlen; i++)
-		y[i] = ((CBinaryLabels*)m_labels)->get_label(i);
+		y[i] = bl->get_label(i);
 
 	slep_options options = slep_options::default_options();
 	options.n_tasks = m_task_relation->get_num_tasks();
@@ -84,7 +86,7 @@ bool CMultitaskLogisticRegression::train_machine(CFeatures* data)
 	{
 		case TASK_GROUP:
 		{
-			//CTaskGroup* task_group = (CTaskGroup*)m_task_relation;
+			//TaskGroup* task_group = (TaskGroup*)m_task_relation;
 			options.mode = MULTITASK_GROUP;
 			options.loss = LOGISTIC;
 			slep_result_t result = slep_solver(features, y.vector, m_z, options);
@@ -94,7 +96,7 @@ bool CMultitaskLogisticRegression::train_machine(CFeatures* data)
 		break;
 		case TASK_TREE:
 		{
-			CTaskTree* task_tree = (CTaskTree*)m_task_relation;
+			auto task_tree = m_task_relation->as<TaskTree>();
 			SGVector<float64_t> ind_t = task_tree->get_SLEP_ind_t();
 			options.ind_t = ind_t.vector;
 			options.n_nodes = ind_t.vlen / 3;
@@ -113,14 +115,15 @@ bool CMultitaskLogisticRegression::train_machine(CFeatures* data)
 	return true;
 }
 
-bool CMultitaskLogisticRegression::train_locked_implementation(SGVector<index_t>* tasks)
+bool MultitaskLogisticRegression::train_locked_implementation(SGVector<index_t>* tasks)
 {
 	ASSERT(features)
 	ASSERT(m_labels)
 
 	SGVector<float64_t> y(m_labels->get_num_labels());
+	auto bl = binary_labels(m_labels);
 	for (int32_t i=0; i<y.vlen; i++)
-		y[i] = ((CBinaryLabels*)m_labels)->get_label(i);
+		y[i] = bl->get_label(i);
 
 	slep_options options = slep_options::default_options();
 	options.n_tasks = m_task_relation->get_num_tasks();
@@ -136,7 +139,7 @@ bool CMultitaskLogisticRegression::train_locked_implementation(SGVector<index_t>
 	{
 		case TASK_GROUP:
 		{
-			//CTaskGroup* task_group = (CTaskGroup*)m_task_relation;
+			//TaskGroup* task_group = (TaskGroup*)m_task_relation;
 			options.mode = MULTITASK_GROUP;
 			options.loss = LOGISTIC;
 			slep_result_t result = slep_solver(features, y.vector, m_z, options);
@@ -146,7 +149,7 @@ bool CMultitaskLogisticRegression::train_locked_implementation(SGVector<index_t>
 		break;
 		case TASK_TREE:
 		{
-			CTaskTree* task_tree = (CTaskTree*)m_task_relation;
+			auto task_tree = m_task_relation->as<TaskTree>();
 			SGVector<float64_t> ind_t = task_tree->get_SLEP_ind_t();
 			options.ind_t = ind_t.vector;
 			options.n_nodes = ind_t.vlen / 3;
@@ -163,64 +166,64 @@ bool CMultitaskLogisticRegression::train_locked_implementation(SGVector<index_t>
 	return true;
 }
 
-float64_t CMultitaskLogisticRegression::apply_one(int32_t i)
+float64_t MultitaskLogisticRegression::apply_one(int32_t i)
 {
 	float64_t dot = features->dot(i,m_tasks_w.get_column(m_current_task));
-	//float64_t ep = CMath::exp(-(dot + m_tasks_c[m_current_task]));
+	//float64_t ep = Math::exp(-(dot + m_tasks_c[m_current_task]));
 	//return 2.0/(1.0+ep) - 1.0;
 	return dot + m_tasks_c[m_current_task];
 }
 
-int32_t CMultitaskLogisticRegression::get_max_iter() const
+int32_t MultitaskLogisticRegression::get_max_iter() const
 {
 	return m_max_iter;
 }
-int32_t CMultitaskLogisticRegression::get_regularization() const
+int32_t MultitaskLogisticRegression::get_regularization() const
 {
 	return m_regularization;
 }
-int32_t CMultitaskLogisticRegression::get_termination() const
+int32_t MultitaskLogisticRegression::get_termination() const
 {
 	return m_termination;
 }
-float64_t CMultitaskLogisticRegression::get_tolerance() const
+float64_t MultitaskLogisticRegression::get_tolerance() const
 {
 	return m_tolerance;
 }
-float64_t CMultitaskLogisticRegression::get_z() const
+float64_t MultitaskLogisticRegression::get_z() const
 {
 	return m_z;
 }
-float64_t CMultitaskLogisticRegression::get_q() const
+float64_t MultitaskLogisticRegression::get_q() const
 {
 	return m_q;
 }
 
-void CMultitaskLogisticRegression::set_max_iter(int32_t max_iter)
+void MultitaskLogisticRegression::set_max_iter(int32_t max_iter)
 {
 	ASSERT(max_iter>=0)
 	m_max_iter = max_iter;
 }
-void CMultitaskLogisticRegression::set_regularization(int32_t regularization)
+void MultitaskLogisticRegression::set_regularization(int32_t regularization)
 {
 	ASSERT(regularization==0 || regularization==1)
 	m_regularization = regularization;
 }
-void CMultitaskLogisticRegression::set_termination(int32_t termination)
+void MultitaskLogisticRegression::set_termination(int32_t termination)
 {
 	ASSERT(termination>=0 && termination<=4)
 	m_termination = termination;
 }
-void CMultitaskLogisticRegression::set_tolerance(float64_t tolerance)
+void MultitaskLogisticRegression::set_tolerance(float64_t tolerance)
 {
 	ASSERT(tolerance>0.0)
 	m_tolerance = tolerance;
 }
-void CMultitaskLogisticRegression::set_z(float64_t z)
+void MultitaskLogisticRegression::set_z(float64_t z)
 {
 	m_z = z;
 }
-void CMultitaskLogisticRegression::set_q(float64_t q)
+void MultitaskLogisticRegression::set_q(float64_t q)
 {
 	m_q = q;
 }

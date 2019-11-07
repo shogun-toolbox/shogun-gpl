@@ -72,7 +72,7 @@ namespace shogun
 	typedef struct larank_kcache_s larank_kcache_t;
 	struct larank_kcache_s
 	{
-		CKernel* func;
+		std::shared_ptr<Kernel> func;
 		larank_kcache_t *prevbuddy;
 		larank_kcache_t *nextbuddy;
 		int64_t maxsize;
@@ -107,7 +107,7 @@ namespace shogun
 			}
 
 			// Initializing an output class (basically creating a kernel cache for it)
-			void initialize (CKernel* kfunc, int64_t cache);
+			void initialize (std::shared_ptr<Kernel> kfunc, int64_t cache);
 
 			// Destroying an output class (basically destroying the kernel cache)
 			void destroy ();
@@ -321,12 +321,12 @@ namespace shogun
 	 The current value of the upper limit can be queried
 	 with get_max_iteration() method.
 	 */
-	class CLaRank:  public RandomMixin<CMulticlassSVM>
+	class LaRank:  public RandomMixin<MulticlassSVM>
 	{
 		public:
                         /** Default constructor
                          */
-			CLaRank ();
+			LaRank ();
 
 			/** constructor
 			 *
@@ -334,9 +334,9 @@ namespace shogun
 			 * @param k kernel
 			 * @param lab labels
 			 */
-			CLaRank(float64_t C, CKernel* k, CLabels* lab);
+			LaRank(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab);
 
-			virtual ~CLaRank ();
+			virtual ~LaRank ();
 
 			// LEARNING FUNCTION: add new patterns and run optimization steps
 			// selected with adaptative schedule
@@ -405,7 +405,7 @@ namespace shogun
 
 		protected:
 			/** train machine */
-			bool train_machine(CFeatures* data);
+			bool train_machine(std::shared_ptr<Features> data);
 
 		private:
 			/*

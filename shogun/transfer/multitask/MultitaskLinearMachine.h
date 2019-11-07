@@ -26,12 +26,12 @@ namespace shogun
 /** @brief class MultitaskLinearMachine, a base class
  * for linear multitask classifiers
  */
-class CMultitaskLinearMachine : public CLinearMachine
+class MultitaskLinearMachine : public LinearMachine
 {
 
 	public:
 		/** default constructor */
-		CMultitaskLinearMachine();
+		MultitaskLinearMachine();
 
 		/** constructor
 		 *
@@ -39,12 +39,13 @@ class CMultitaskLinearMachine : public CLinearMachine
 		 * @param training_labels training labels
 		 * @param task_relation task relation
 		 */
-		CMultitaskLinearMachine(
-		     CFeatures* training_data,
-		     CLabels* training_labels, CTaskRelation* task_relation);
+		MultitaskLinearMachine(
+		     const std::shared_ptr<Features>& training_data,
+		     std::shared_ptr<Labels> training_labels,
+		     std::shared_ptr<TaskRelation> task_relation);
 
 		/** destructor */
-		virtual ~CMultitaskLinearMachine();
+		virtual ~MultitaskLinearMachine();
 
 		/** get name */
 		virtual const char* get_name() const
@@ -89,25 +90,25 @@ class CMultitaskLinearMachine : public CLinearMachine
 		/** getter for task relation
 		 * @return task relation
 		 */
-		CTaskRelation* get_task_relation() const;
+		std::shared_ptr<TaskRelation> get_task_relation() const;
 
 		/** setter for task relation
 		 * @param task_relation task relation
 		 */
-		void set_task_relation(CTaskRelation* task_relation);
+		void set_task_relation(std::shared_ptr<TaskRelation> task_relation);
 
 		/** @return whether machine supports locking */
 		virtual bool supports_locking() const { return true; }
 
 		/** post lock */
-		virtual void post_lock(CLabels* labels, CFeatures* features_);
+		virtual void post_lock(std::shared_ptr<Labels> labels, std::shared_ptr<Features> features_);
 
 #ifndef SWIG // SWIG should skip this part
 		/** train on given indices */
 		virtual bool train_locked(SGVector<index_t> indices);
 
 		/** applies on given indices */
-		virtual CBinaryLabels* apply_locked_binary(SGVector<index_t> indices);
+		virtual std::shared_ptr<BinaryLabels> apply_locked_binary(SGVector<index_t> indices);
 #endif // SWIG // SWIG should skip this part
 
 		/** applies to one vector */
@@ -116,10 +117,10 @@ class CMultitaskLinearMachine : public CLinearMachine
 	protected:
 
 		/** apply get outputs */
-		virtual SGVector<float64_t> apply_get_outputs(CFeatures* data=NULL);
+		virtual SGVector<float64_t> apply_get_outputs(std::shared_ptr<Features> data=NULL);
 
 		/** train machine */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
 
 		/** train locked implementation */
 		virtual bool train_locked_implementation(SGVector<index_t>* tasks);
@@ -138,7 +139,7 @@ class CMultitaskLinearMachine : public CLinearMachine
 		int32_t m_current_task;
 
 		/** feature tree */
-		CTaskRelation* m_task_relation;
+		std::shared_ptr<TaskRelation> m_task_relation;
 
 		/** tasks w's */
 		SGMatrix<float64_t> m_tasks_w;

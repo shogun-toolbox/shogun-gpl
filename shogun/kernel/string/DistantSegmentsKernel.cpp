@@ -14,46 +14,46 @@
 
 using namespace shogun;
 
-CDistantSegmentsKernel::CDistantSegmentsKernel() : CStringKernel<char>(),
+DistantSegmentsKernel::DistantSegmentsKernel() : StringKernel<char>(),
 	m_delta(0), m_theta(0)
 {
 	init();
 }
 
-CDistantSegmentsKernel::CDistantSegmentsKernel(int32_t size, int32_t delta,
-		int32_t theta) : CStringKernel<char>(size), m_delta(delta),
+DistantSegmentsKernel::DistantSegmentsKernel(int32_t size, int32_t delta,
+		int32_t theta) : StringKernel<char>(size), m_delta(delta),
 		m_theta(theta)
 {
 	init();
 }
 
-CDistantSegmentsKernel::CDistantSegmentsKernel(CStringFeatures<char>* l,
-		CStringFeatures<char>* r, int32_t size, int32_t delta, int32_t theta) :
-	CStringKernel<char>(size), m_delta(delta), m_theta(theta)
+DistantSegmentsKernel::DistantSegmentsKernel(const std::shared_ptr<StringFeatures<char>>& l,
+		const std::shared_ptr<StringFeatures<char>>& r, int32_t size, int32_t delta, int32_t theta) :
+	StringKernel<char>(size), m_delta(delta), m_theta(theta)
 {
 	init();
-	CStringKernel<char>::init(l, r);
+	StringKernel<char>::init(l, r);
 }
 
-bool CDistantSegmentsKernel::init(CFeatures* l, CFeatures* r)
+bool DistantSegmentsKernel::init(std::shared_ptr<Features> l, std::shared_ptr<Features> r)
 {
-	CKernel::init(l, r);
+	Kernel::init(l, r);
 	return init_normalizer();
 }
 
-void CDistantSegmentsKernel::init()
+void DistantSegmentsKernel::init()
 {
 	SG_ADD(&m_delta, "delta", "Delta parameter of the DS-Kernel", ParameterProperties::HYPER);
 	SG_ADD(&m_theta, "theta", "Theta parameter of the DS-Kernel", ParameterProperties::HYPER);
 }
 
-float64_t CDistantSegmentsKernel::compute(int32_t idx_a, int32_t idx_b)
+float64_t DistantSegmentsKernel::compute(int32_t idx_a, int32_t idx_b)
 {
 	bool free_a, free_b;
 	int32_t aLength=0, bLength=0;
-	char* a=((CStringFeatures<char>*) lhs)->get_feature_vector(idx_a, aLength,
+	char* a=lhs->as<StringFeatures<char>>()->get_feature_vector(idx_a, aLength,
 			free_a);
-	char* b=((CStringFeatures<char>*) rhs)->get_feature_vector(idx_b, bLength,
+	char* b=rhs->as<StringFeatures<char>>()->get_feature_vector(idx_b, bLength,
 			free_b);
 	ASSERT(a && b)
 
@@ -62,13 +62,13 @@ float64_t CDistantSegmentsKernel::compute(int32_t idx_a, int32_t idx_b)
 
 	float64_t result=compute(a, aLength, b, bLength, m_delta, m_theta);
 
-	((CStringFeatures<char>*) lhs)->free_feature_vector(a, idx_a, free_a);
-	((CStringFeatures<char>*) rhs)->free_feature_vector(b, idx_b, free_b);
+	lhs->as<StringFeatures<char>>()->free_feature_vector(a, idx_a, free_a);
+	rhs->as<StringFeatures<char>>()->free_feature_vector(b, idx_b, free_b);
 
 	return result;
 }
 
-int32_t CDistantSegmentsKernel::bin(int32_t j, int32_t i)
+int32_t DistantSegmentsKernel::bin(int32_t j, int32_t i)
 {
 	if (i>j)
 		return 0;
@@ -83,7 +83,7 @@ int32_t CDistantSegmentsKernel::bin(int32_t j, int32_t i)
 	return 0;
 }
 
-int32_t CDistantSegmentsKernel::compute(char* s, int32_t sLength, char* t,
+int32_t DistantSegmentsKernel::compute(char* s, int32_t sLength, char* t,
 		int32_t tLength, int32_t delta_m, int32_t theta_m)
 {
 	int32_t c=0;
@@ -95,7 +95,7 @@ int32_t CDistantSegmentsKernel::compute(char* s, int32_t sLength, char* t,
 		{
 			if (s[j_s-1+1]==t[j_t-1+1])
 			{
-				int32_t n=CMath::min(CMath::min(sLength-j_s, tLength-j_t), delta_m);
+				int32_t n=Math::min(Math::min(sLength-j_s, tLength-j_t), delta_m);
 				int32_t k=-1;
 				int32_t i=1;
 				while (i<=n)
@@ -118,7 +118,7 @@ int32_t CDistantSegmentsKernel::compute(char* s, int32_t sLength, char* t,
 				{
 					c1+=bin(l_[r], 2)-bin(l_[r]-theta_m, 2);
 				}
-				c+=CMath::min(theta_m, i_[1]-i_[0])*c1;
+				c+=Math::min(theta_m, i_[1]-i_[0])*c1;
 			}
 		}
 	}

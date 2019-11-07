@@ -21,13 +21,13 @@ namespace shogun
 
 /** @brief multiclass tree guided logistic regression
  */
-class CMulticlassTreeGuidedLogisticRegression : public CLinearMulticlassMachine
+class MulticlassTreeGuidedLogisticRegression : public LinearMulticlassMachine
 {
 	public:
 		MACHINE_PROBLEM_TYPE(PT_MULTICLASS)
 
 		/** default constructor  */
-		CMulticlassTreeGuidedLogisticRegression();
+		MulticlassTreeGuidedLogisticRegression();
 
 		/** standard constructor
 		 * @param z z regularization constant value
@@ -35,10 +35,10 @@ class CMulticlassTreeGuidedLogisticRegression : public CLinearMulticlassMachine
 		 * @param labs labels
 		 * @param tree tree
 		 */
-		CMulticlassTreeGuidedLogisticRegression(float64_t z, CDotFeatures* feats, CLabels* labs, CIndexBlockTree* tree);
+		MulticlassTreeGuidedLogisticRegression(float64_t z, const std::shared_ptr<DotFeatures>& feats, std::shared_ptr<Labels> labs, std::shared_ptr<IndexBlockTree> tree);
 
 		/** destructor */
-		virtual ~CMulticlassTreeGuidedLogisticRegression();
+		virtual ~MulticlassTreeGuidedLogisticRegression();
 
 		/** get name */
 		virtual const char* get_name() const
@@ -88,25 +88,22 @@ class CMulticlassTreeGuidedLogisticRegression : public CLinearMulticlassMachine
 		/** set index tree
 		 * @param index_tree index tree
 		 */
-		inline void set_index_tree(CIndexBlockTree* index_tree)
+		inline void set_index_tree(std::shared_ptr<IndexBlockTree> index_tree)
 		{
-			SG_REF(index_tree);
-			SG_UNREF(m_index_tree);
 			m_index_tree = index_tree;
 		}
 		/** get index tree
 		 * @return current index tree
 		 */
-		inline CIndexBlockTree* get_index_tree() const
+		inline std::shared_ptr<IndexBlockTree> get_index_tree() const
 		{
-			SG_REF(m_index_tree);
 			return m_index_tree;
 		}
 
 protected:
 
 		/** train machine */
-		virtual bool train_machine(CFeatures* data = NULL);
+		virtual bool train_machine(std::shared_ptr<Features> data = NULL);
 
 private:
 
@@ -119,7 +116,7 @@ private:
 protected:
 
 		/** index tree */
-		CIndexBlockTree* m_index_tree;
+		std::shared_ptr<IndexBlockTree> m_index_tree;
 
 		/** regularization constant for each machine */
 		float64_t m_z;

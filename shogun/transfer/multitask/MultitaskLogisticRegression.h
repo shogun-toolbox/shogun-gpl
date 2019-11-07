@@ -30,7 +30,7 @@ namespace shogun
  * The underlying solver is based on the SLEP library.
  *
  */
-class CMultitaskLogisticRegression : public CMultitaskLinearMachine
+class MultitaskLogisticRegression : public MultitaskLinearMachine
 {
 
 	public:
@@ -38,7 +38,7 @@ class CMultitaskLogisticRegression : public CMultitaskLinearMachine
 		MACHINE_PROBLEM_TYPE(PT_BINARY)
 
 		/** default constructor */
-		CMultitaskLogisticRegression();
+		MultitaskLogisticRegression();
 
 		/** constructor
 		 *
@@ -47,12 +47,12 @@ class CMultitaskLogisticRegression : public CMultitaskLinearMachine
 		 * @param training_labels training labels
 		 * @param task_relation task relation
 		 */
-		CMultitaskLogisticRegression(
-		     float64_t z, CFeatures* training_data,
-		     CBinaryLabels* training_labels, CTaskRelation* task_relation);
+		MultitaskLogisticRegression(
+		     float64_t z, std::shared_ptr<Features> training_data,
+		     const std::shared_ptr<BinaryLabels>& training_labels, std::shared_ptr<TaskRelation> task_relation);
 
 		/** destructor */
-		virtual ~CMultitaskLogisticRegression();
+		virtual ~MultitaskLogisticRegression();
 
 		/** get name */
 		virtual const char* get_name() const
@@ -92,7 +92,7 @@ class CMultitaskLogisticRegression : public CMultitaskLinearMachine
 	protected:
 
 		/** train machine */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
 
 		/** train locked implementation */
 		virtual bool train_locked_implementation(SGVector<index_t>* tasks);

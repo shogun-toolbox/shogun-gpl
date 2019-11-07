@@ -211,7 +211,7 @@ void SplitParts(
 /******************************************************************************/
 /*** Kernel class constructor                                               ***/
 /******************************************************************************/
-sKernel::sKernel (CKernel* k, int32_t l)
+sKernel::sKernel (Kernel* k, int32_t l)
 {
   kernel=k;
   ell=l;

@@ -16,10 +16,10 @@
 
 using namespace shogun;
 
-void CJacobiEllipticFunctions::ellipKKp(Real L, Real &K, Real &Kp)
+void JacobiEllipticFunctions::ellipKKp(Real L, Real &K, Real &Kp)
 {
 	require(L>=0.0,
-		"CJacobiEllipticFunctions::ellipKKp(): \
+		"JacobiEllipticFunctions::ellipKKp(): \
 		Parameter L should be non-negative");
 #if defined HAVE_ARPREC
 	const Real eps=Real(std::numeric_limits<float64_t>::epsilon());
@@ -55,11 +55,11 @@ void CJacobiEllipticFunctions::ellipKKp(Real L, Real &K, Real &Kp)
 	}
 }
 
-void CJacobiEllipticFunctions
+void JacobiEllipticFunctions
 	::ellipJC(Complex u, Real m, Complex &sn, Complex &cn, Complex &dn)
 {
 	require(m>=0.0 && m<=1.0,
-		"CJacobiEllipticFunctions::ellipJC(): \
+		"JacobiEllipticFunctions::ellipJC(): \
 		Parameter m should be >=0 and <=1");
 
 #if defined HAVE_ARPREC

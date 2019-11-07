@@ -23,11 +23,11 @@ namespace shogun
 	 * an structured output based machine for classification
 	 * problems with latent variables.
 	 */
-	class CLatentSOSVM: public CLinearLatentMachine
+	class LatentSOSVM: public LinearLatentMachine
 	{
 		public:
 			/** default ctor*/
-			CLatentSOSVM();
+			LatentSOSVM();
 
 			/**
 			 *
@@ -35,21 +35,21 @@ namespace shogun
 			 * @param so_solver
 			 * @param C
 			 */
-			CLatentSOSVM(CLatentModel* model, CLinearStructuredOutputMachine* so_solver, float64_t C);
+			LatentSOSVM(std::shared_ptr<LatentModel> model, std::shared_ptr<LinearStructuredOutputMachine> so_solver, float64_t C);
 
-			virtual ~CLatentSOSVM();
+			virtual ~LatentSOSVM();
 
 			/** apply linear machine to data
 			 *
 			 * @return classified labels
 			 */
-			virtual CLatentLabels* apply_latent();
+			virtual std::shared_ptr<LatentLabels> apply_latent();
 
 			/** set SO solver that is going to be used
 			 *
 			 * @param so SO machine
 			 */
-			void set_so_solver(CLinearStructuredOutputMachine* so);
+			void set_so_solver(std::shared_ptr<LinearStructuredOutputMachine> so);
 
 			/** Returns the name of the SGSerializable instance.
 			 *
@@ -69,7 +69,7 @@ namespace shogun
 
 		private:
 			/** Linear Structured Solver */
-			CLinearStructuredOutputMachine* m_so_solver;
+			std::shared_ptr<LinearStructuredOutputMachine> m_so_solver;
 	};
 }
 #endif //USE_GPL_SHOGUN

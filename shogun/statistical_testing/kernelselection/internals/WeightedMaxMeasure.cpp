@@ -40,10 +40,12 @@
 #ifdef USE_GPL_SHOGUN
 #include <shogun/statistical_testing/kernelselection/internals/OptimizationSolver.h>
 
+#include <utility>
+
 using namespace shogun;
 using namespace internal;
 
-WeightedMaxMeasure::WeightedMaxMeasure(KernelManager& km, CMMD* est) : MaxMeasure(km, est)
+WeightedMaxMeasure::WeightedMaxMeasure(KernelManager& km, std::shared_ptr<MMD> est) : MaxMeasure(km, std::move(est))
 {
 }
 
@@ -67,7 +69,7 @@ SGMatrix<float64_t> WeightedMaxMeasure::get_measure_matrix()
 	return Q;
 }
 
-CKernel* WeightedMaxMeasure::select_kernel()
+std::shared_ptr<Kernel> WeightedMaxMeasure::select_kernel()
 {
 	init_measures();
 	compute_measures();
@@ -75,7 +77,7 @@ CKernel* WeightedMaxMeasure::select_kernel()
 	OptimizationSolver solver(measures, Q);
 	SGVector<float64_t> weights=solver.solve();
 
-	CCombinedKernel* kernel=new CCombinedKernel();
+	auto kernel=std::make_shared<CombinedKernel>();
 	const size_t num_kernels=kernel_mgr.num_kernels();
 	for (size_t i=0; i<num_kernels; ++i)
 	{

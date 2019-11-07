@@ -21,16 +21,16 @@ namespace shogun
 /** @brief class MultitaskTraceLogisticRegression, a classifier for multitask problems.
  * Supports only task group relations. Based on solver ported from the MALSAR library.
  *
- * @see CTaskGroup
+ * @see TaskGroup
  */
-class CMultitaskTraceLogisticRegression : public CMultitaskLogisticRegression
+class MultitaskTraceLogisticRegression : public MultitaskLogisticRegression
 {
 
 	public:
 		MACHINE_PROBLEM_TYPE(PT_BINARY)
 
 		/** default constructor */
-		CMultitaskTraceLogisticRegression();
+		MultitaskTraceLogisticRegression();
 
 		/** constructor
 		 *
@@ -39,12 +39,12 @@ class CMultitaskTraceLogisticRegression : public CMultitaskLogisticRegression
 		 * @param training_labels training labels
 		 * @param task_relation task relation
 		 */
-		CMultitaskTraceLogisticRegression(
-		     float64_t rho, CFeatures* training_data,
-		     CBinaryLabels* training_labels, CTaskGroup* task_relation);
+		MultitaskTraceLogisticRegression(
+		     float64_t rho, std::shared_ptr<Features> training_data,
+		     std::shared_ptr<BinaryLabels> training_labels, const std::shared_ptr<TaskGroup>& task_relation);
 
 		/** destructor */
-		virtual ~CMultitaskTraceLogisticRegression();
+		virtual ~MultitaskTraceLogisticRegression();
 
 		/** set rho
 		 * @param rho value
@@ -73,7 +73,7 @@ class CMultitaskTraceLogisticRegression : public CMultitaskLogisticRegression
 	protected:
 
 		/** train machine */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
 
 		/** train locked implementation */
 		virtual bool train_locked_implementation(SGVector<index_t>* tasks);

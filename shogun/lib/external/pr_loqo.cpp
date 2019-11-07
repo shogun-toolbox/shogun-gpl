@@ -405,8 +405,8 @@ int32_t pr_loqo(
   if (restart == 1) {
 				/* x, y already preset */
     for (i=0; i<n; i++) {	/* compute g, t for primal feasibility */
-      g[i] = CMath::max(CMath::abs(x[i] - l[i]), bound);
-      t[i] = CMath::max(CMath::abs(u[i] - x[i]), bound);
+      g[i] = Math::max(Math::abs(x[i] - l[i]), bound);
+      t[i] = Math::max(Math::abs(u[i] - x[i]), bound);
     }
 
     matrix_vector(n, h_x, x, h_dot_x); /* h_dot_x = h_x * x */
@@ -445,10 +445,10 @@ int32_t pr_loqo(
 
     /* initialize the other variables */
     for (i=0; i<n; i++) {
-      g[i] = CMath::max(CMath::abs(x[i] - l[i]), bound);
-      z[i] = CMath::max(CMath::abs(x[i]), bound);
-      t[i] = CMath::max(CMath::abs(u[i] - x[i]), bound);
-      s[i] = CMath::max(CMath::abs(x[i]), bound);
+      g[i] = Math::max(Math::abs(x[i] - l[i]), bound);
+      z[i] = Math::max(Math::abs(x[i]), bound);
+      t[i] = Math::max(Math::abs(u[i] - x[i]), bound);
+      s[i] = Math::max(Math::abs(x[i]), bound);
     }
   }
 
@@ -498,12 +498,12 @@ int32_t pr_loqo(
 
     for (i=0; i<n; i++) {
       x_h_x += h_dot_x[i] * x[i];
-      primal_inf += CMath::sq(tau[i]);
-      primal_inf += CMath::sq(nu[i]);
-      dual_inf += CMath::sq(sigma[i]);
+      primal_inf += Math::sq(tau[i]);
+      primal_inf += Math::sq(nu[i]);
+      dual_inf += Math::sq(sigma[i]);
     }
     for (i=0; i<m; i++)
-      primal_inf += CMath::sq(rho[i]);
+      primal_inf += Math::sq(rho[i]);
     primal_inf = sqrt(primal_inf)/b_plus_1;
     dual_inf = sqrt(dual_inf)/c_plus_1;
 
@@ -516,9 +516,9 @@ int32_t pr_loqo(
     for (i=0; i<m; i++)
       dual_obj += b[i] * y[i];
 
-    sigfig = log10(CMath::abs(primal_obj) + 1) -
-             log10(CMath::abs(primal_obj - dual_obj));
-    sigfig = CMath::max(sigfig, 0.0);
+    sigfig = log10(Math::abs(primal_obj) + 1) -
+             log10(Math::abs(primal_obj - dual_obj));
+    sigfig = Math::max(sigfig, 0.0);
 
     /* the diagnostics - after we computed our results we will
        analyze them */
@@ -528,8 +528,8 @@ int32_t pr_loqo(
     if (primal_inf > 10e100)   status = PRIMAL_INFEASIBLE;
     if (dual_inf > 10e100)     status = DUAL_INFEASIBLE;
     if ((primal_inf > 10e100) & (dual_inf > 10e100)) status = PRIMAL_AND_DUAL_INFEASIBLE;
-    if (CMath::abs(primal_obj) > 10e100) status = PRIMAL_UNBOUNDED;
-    if (CMath::abs(dual_obj) > 10e100) status = DUAL_UNBOUNDED;
+    if (Math::abs(primal_obj) > 10e100) status = PRIMAL_UNBOUNDED;
+    if (Math::abs(dual_obj) > 10e100) status = DUAL_UNBOUNDED;
 
     /* write some nice routine to enforce the time limit if you
        _really_ want, however it's quite useless as you can compute
@@ -616,10 +616,10 @@ int32_t pr_loqo(
 
       alfa = -1;
       for (i=0; i<n; i++) {
-	alfa = CMath::min(alfa, delta_g[i]/g[i]);
-	alfa = CMath::min(alfa, delta_t[i]/t[i]);
-	alfa = CMath::min(alfa, delta_s[i]/s[i]);
-	alfa = CMath::min(alfa, delta_z[i]/z[i]);
+	alfa = Math::min(alfa, delta_g[i]/g[i]);
+	alfa = Math::min(alfa, delta_t[i]/t[i]);
+	alfa = Math::min(alfa, delta_s[i]/s[i]);
+	alfa = Math::min(alfa, delta_z[i]/z[i]);
       }
       alfa = (margin - 1) / alfa;
 
@@ -627,7 +627,7 @@ int32_t pr_loqo(
       for (i=0, mu=0; i<n; i++)
 	mu += z[i] * g[i] + s[i] * t[i];
       mu = mu / (2*n);
-      mu = mu * CMath::sq((alfa - 1) / (alfa + 10));
+      mu = mu * Math::sq((alfa - 1) / (alfa + 10));
 
       for (i=0; i<n; i++) {
 	x[i] += alfa * delta_x[i];

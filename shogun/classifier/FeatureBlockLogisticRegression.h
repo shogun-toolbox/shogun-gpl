@@ -20,24 +20,24 @@ namespace shogun
 /** @brief class FeatureBlockLogisticRegression, a linear
  * binary logistic loss classifier for problems with complex feature relations.
  * Currently two feature relations are supported - feature group
- * (done via CIndexBlockGroup) and feature tree (done via CIndexTree).
+ * (done via IndexBlockGroup) and feature tree (done via CIndexTree).
  * Handling of feature relations is done via L1/Lq (for groups) and L1/L2
  * (for trees) regularization.
  *
  * The underlying solver is based on the SLEP library.
  *
  * @see CIndexBlock
- * @see CIndexBlockGroup
- * @see CIndexBlockTree
+ * @see IndexBlockGroup
+ * @see IndexBlockTree
  */
-class CFeatureBlockLogisticRegression : public CLinearMachine
+class FeatureBlockLogisticRegression : public LinearMachine
 {
 
 	public:
 		MACHINE_PROBLEM_TYPE(PT_BINARY)
 
 		/** default constructor */
-		CFeatureBlockLogisticRegression();
+		FeatureBlockLogisticRegression();
 
 		/** constructor
 		 *
@@ -46,12 +46,12 @@ class CFeatureBlockLogisticRegression : public CLinearMachine
 		 * @param training_labels training labels
 		 * @param task_relation task relation
 		 */
-		CFeatureBlockLogisticRegression(
-		     float64_t z, CFeatures* training_data,
-		     CLabels* training_labels, CIndexBlockRelation* task_relation);
+		FeatureBlockLogisticRegression(
+		     float64_t z, const std::shared_ptr<Features>& training_data,
+		     const std::shared_ptr<Labels>& training_labels, std::shared_ptr<IndexBlockRelation> task_relation);
 
 		/** destructor */
-		virtual ~CFeatureBlockLogisticRegression();
+		virtual ~FeatureBlockLogisticRegression();
 
 		/** get name */
 		virtual const char* get_name() const
@@ -62,12 +62,12 @@ class CFeatureBlockLogisticRegression : public CLinearMachine
 		/** getter for feature relation
 		 * @return feature relation
 		 */
-		CIndexBlockRelation* get_feature_relation() const;
+		std::shared_ptr<IndexBlockRelation> get_feature_relation() const;
 
 		/** setter for feature relation
 		 * @param feature_relation feature relation
 		 */
-		void set_feature_relation(CIndexBlockRelation* feature_relation);
+		void set_feature_relation(std::shared_ptr<IndexBlockRelation> feature_relation);
 
 		virtual float64_t apply_one(int32_t vec_idx);
 
@@ -99,10 +99,10 @@ class CFeatureBlockLogisticRegression : public CLinearMachine
 
 	protected:
 
-		virtual SGVector<float64_t> apply_get_outputs(CFeatures* data);
+		virtual SGVector<float64_t> apply_get_outputs(std::shared_ptr<Features> data);
 
 		/** train machine */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
 
 	private:
 
@@ -115,7 +115,7 @@ class CFeatureBlockLogisticRegression : public CLinearMachine
 	protected:
 
 		/** feature tree */
-		CIndexBlockRelation* m_feature_relation;
+		std::shared_ptr<IndexBlockRelation> m_feature_relation;
 
 		/** regularization type */
 		int32_t m_regularization;

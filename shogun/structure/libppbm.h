@@ -40,7 +40,7 @@ namespace shogun
 	 * @return Structure with BMRM algorithm result
 	 */
 	BmrmStatistics svm_ppbm_solver(
-			CDualLibQPBMSOSVM  *machine,
+			DualLibQPBMSOSVM  *machine,
 			SGVector<float64_t>& W,
 			float64_t	TolRel,
 			float64_t	TolAbs,

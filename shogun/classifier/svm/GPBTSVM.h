@@ -21,11 +21,11 @@
 namespace shogun
 {
 /** @brief class GPBTSVM */
-class CGPBTSVM : public CSVM
+class GPBTSVM : public SVM
 {
 	public:
 		/** default constructor */
-		CGPBTSVM();
+		GPBTSVM();
 
 		/** constructor
 		 *
@@ -33,8 +33,8 @@ class CGPBTSVM : public CSVM
 		 * @param k kernel
 		 * @param lab labels
 		 */
-		CGPBTSVM(float64_t C, CKernel* k, CLabels* lab);
-		virtual ~CGPBTSVM();
+		GPBTSVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab);
+		virtual ~GPBTSVM();
 
 		/** @return object name */
 		virtual const char* get_name() const { return "GPBTSVM"; }
@@ -48,7 +48,7 @@ class CGPBTSVM : public CSVM
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(CFeatures* data=NULL);
+		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
 
 	protected:
 		/** SVM model */

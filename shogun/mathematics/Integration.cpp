@@ -26,6 +26,8 @@
 #include <shogun/mathematics/eigen3.h>
 #include <shogun/lib/SGVector.h>
 
+#include <utility>
+
 using namespace shogun;
 using namespace Eigen;
 
@@ -44,20 +46,19 @@ namespace shogun
  * where \f$g(t)=\frac{t}{1-t^2}\f$ and
  * \f$g'(t)=\frac{1+t^2}{(1-t^2)^2}\f$.
  */
-class CITransformFunction : public CFunction
+class ITransformFunction : public Function
 {
 public:
 	/** constructor
 	 *
 	 * @param f function \f$f(x)\f$
 	 */
-	CITransformFunction(CFunction* f)
+	ITransformFunction(std::shared_ptr<Function> f)
 	{
-		SG_REF(f);
-		m_f=f;
+		m_f=std::move(f);
 	}
 
-	virtual ~CITransformFunction() { SG_UNREF(m_f); }
+	virtual ~ITransformFunction() { }
 
 	/** return the real value of the function at given point
 	 *
@@ -68,16 +69,16 @@ public:
 	 */
 	virtual float64_t operator() (float64_t x)
 	{
-		float64_t hx=1.0/(1.0-CMath::sq(x));
+		float64_t hx=1.0/(1.0-Math::sq(x));
 		float64_t gx=x*hx;
-		float64_t dgx=(1.0+CMath::sq(x))*CMath::sq(hx);
+		float64_t dgx=(1.0+Math::sq(x))*Math::sq(hx);
 
 		return (*m_f)(gx)*dgx;
 	}
 
 private:
 	/** function \f$f(x)\f$ */
-	CFunction* m_f;
+	std::shared_ptr<Function> m_f;
 };
 
 /** @brief Class of the function, which is used for singularity
@@ -95,7 +96,7 @@ private:
  *
  * where \f$g(s)=\frac{s}{1+s}\f$ and \f$g'(s)=\frac{1}{(1+s)^2}\f$.
  */
-class CILTransformFunction : public CFunction
+class ILTransformFunction : public Function
 {
 public:
 	/** constructor
@@ -103,14 +104,13 @@ public:
 	 * @param f function \f$f(x)\f$
 	 * @param b upper bound
 	 */
-	CILTransformFunction(CFunction* f, float64_t b)
+	ILTransformFunction(std::shared_ptr<Function> f, float64_t b)
 	{
-		SG_REF(f);
-		m_f=f;
+		m_f=std::move(f);
 		m_b=b;
 	}
 
-	virtual ~CILTransformFunction() { SG_UNREF(m_f); }
+	virtual ~ILTransformFunction() { }
 
 	/** return the real value of the function at given point
 	 *
@@ -123,14 +123,14 @@ public:
 	{
 		float64_t hx=1.0/(1.0+x);
 		float64_t gx=x*hx;
-		float64_t dgx=CMath::sq(hx);
+		float64_t dgx=Math::sq(hx);
 
-		return -(*m_f)(m_b-CMath::sq(gx))*2*gx*dgx;
+		return -(*m_f)(m_b-Math::sq(gx))*2*gx*dgx;
 	}
 
 private:
 	/** function \f$f(x)\f$ */
-	CFunction* m_f;
+	std::shared_ptr<Function> m_f;
 
 	/** upper bound */
 	float64_t m_b;
@@ -151,7 +151,7 @@ private:
  *
  * where \f$g(s)=\frac{s}{1-s}\f$ and \f$g'(s)=\frac{1}{(1-s)^2}\f$.
  */
-class CIUTransformFunction : public CFunction
+class IUTransformFunction : public Function
 {
 public:
 	/** constructor
@@ -159,14 +159,13 @@ public:
 	 * @param f function \f$f(x)\f$
 	 * @param a lower bound
 	 */
-	CIUTransformFunction(CFunction* f, float64_t a)
+	IUTransformFunction(std::shared_ptr<Function> f, float64_t a)
 	{
-		SG_REF(f);
-		m_f=f;
+		m_f=std::move(f);
 		m_a=a;
 	}
 
-	virtual ~CIUTransformFunction() { SG_UNREF(m_f); }
+	virtual ~IUTransformFunction() { }
 
 	/** return the real value of the function at given point
 	 *
@@ -179,14 +178,14 @@ public:
 	{
 		float64_t hx=1.0/(1.0-x);
 		float64_t gx=x*hx;
-		float64_t dgx=CMath::sq(hx);
+		float64_t dgx=Math::sq(hx);
 
-		return (*m_f)(m_a+CMath::sq(gx))*2*gx*dgx;
+		return (*m_f)(m_a+Math::sq(gx))*2*gx*dgx;
 	}
 
 private:
 	/** function \f$f(x)\f$ */
-	CFunction* m_f;
+	std::shared_ptr<Function> m_f;
 
 	/** lower bound */
 	float64_t m_a;
@@ -202,7 +201,7 @@ private:
  * where \f$g(t)=\frac{b-a}{2}(\frac{t}{2}(3-t^2))+\frac{b+a}{2}\f$
  * and \f$g'(t)=\frac{b-a}{4}(3-3t^2)\f$.
  */
-class CTransformFunction : public CFunction
+class TransformFunction : public Function
 {
 public:
 	/** constructor
@@ -211,15 +210,14 @@ public:
 	 * @param a lower bound
 	 * @param b upper bound
 	 */
-	CTransformFunction(CFunction* f, float64_t a, float64_t b)
+	TransformFunction(std::shared_ptr<Function> f, float64_t a, float64_t b)
 	{
-		SG_REF(f);
-		m_f=f;
+		m_f=std::move(f);
 		m_a=a;
 		m_b=b;
 	}
 
-	virtual ~CTransformFunction() { SG_UNREF(m_f); }
+	virtual ~TransformFunction() { }
 
 	/** return the real value of the function at given point
 	 *
@@ -232,15 +230,15 @@ public:
 	virtual float64_t operator() (float64_t x)
 	{
 		float64_t qw=(m_b-m_a)/4.0;
-		float64_t gx=qw*(x*(3.0-CMath::sq(x)))+(m_b+m_a)/2.0;
-		float64_t dgx=qw*3.0*(1.0-CMath::sq(x));
+		float64_t gx=qw*(x*(3.0-Math::sq(x)))+(m_b+m_a)/2.0;
+		float64_t dgx=qw*3.0*(1.0-Math::sq(x));
 
 		return (*m_f)(gx)*dgx;
 	}
 
 private:
 	/** function \f$f(x)\f$ */
-	CFunction* m_f;
+	std::shared_ptr<Function> m_f;
 
 	/** lower bound */
 	float64_t m_a;
@@ -251,7 +249,7 @@ private:
 
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
-float64_t CIntegration::integrate_quadgk(CFunction* f, float64_t a,
+float64_t Integration::integrate_quadgk(std::shared_ptr<Function> f, float64_t a,
 		float64_t b, float64_t abs_tol, float64_t rel_tol, uint32_t max_iter,
 		index_t sn)
 {
@@ -267,13 +265,13 @@ float64_t CIntegration::integrate_quadgk(CFunction* f, float64_t a,
 			"but is {}", sn);
 
 	// integral evaluation function
-	typedef void TQuadGKEvaluationFunction(CFunction* f,
-		CDynamicArray<float64_t>* subs,	CDynamicArray<float64_t>* q,
-		CDynamicArray<float64_t>* err);
+	typedef void TQuadGKEvaluationFunction(std::shared_ptr<Function> f,
+		DynamicArray<float64_t>* subs,	DynamicArray<float64_t>* q,
+		DynamicArray<float64_t>* err);
 
 	TQuadGKEvaluationFunction* evaluate_quadgk;
 
-	CFunction* tf;
+	std::shared_ptr<Function> tf;
 	float64_t ta;
 	float64_t tb;
 	float64_t q_sign;
@@ -293,30 +291,30 @@ float64_t CIntegration::integrate_quadgk(CFunction* f, float64_t a,
 	}
 
 	// transform integrable function and domain of integration
-	if (a==-CMath::INFTY && b==CMath::INFTY)
+	if (a==-Math::INFTY && b==Math::INFTY)
 	{
-		tf=new CITransformFunction(f);
+		tf=std::make_shared<ITransformFunction>(f);
 		evaluate_quadgk=&evaluate_quadgk15;
 		ta=-1.0;
 		tb=1.0;
 	}
-	else if (a==-CMath::INFTY)
+	else if (a==-Math::INFTY)
 	{
-		tf=new CILTransformFunction(f, b);
+		tf=std::make_shared<ILTransformFunction>(f, b);
 		evaluate_quadgk=&evaluate_quadgk15;
 		ta=-1.0;
 		tb=0.0;
 	}
-	else if (b==CMath::INFTY)
+	else if (b==Math::INFTY)
 	{
-		tf=new CIUTransformFunction(f, a);
+		tf=std::make_shared<IUTransformFunction>(f, a);
 		evaluate_quadgk=&evaluate_quadgk15;
 		ta=0.0;
 		tb=1.0;
 	}
 	else
 	{
-		tf=new CTransformFunction(f, a, b);
+		tf=std::make_shared<TransformFunction>(f, a, b);
 		evaluate_quadgk=&evaluate_quadgk21;
 		ta=-1.0;
 		tb=1.0;
@@ -324,7 +322,7 @@ float64_t CIntegration::integrate_quadgk(CFunction* f, float64_t a,
 
 	// compute initial subintervals, by dividing domain [a, b] into sn
 	// parts
-	CDynamicArray<float64_t>* subs=new CDynamicArray<float64_t>();
+	DynamicArray<float64_t>* subs=new DynamicArray<float64_t>();
 
 	// width of each subinterval
 	float64_t sw=(tb-ta)/sn;
@@ -336,8 +334,8 @@ float64_t CIntegration::integrate_quadgk(CFunction* f, float64_t a,
 	}
 
 	// evaluate integrals on initial subintervals
-	CDynamicArray<float64_t>* q_subs=new CDynamicArray<float64_t>();
-	CDynamicArray<float64_t>* err_subs=new CDynamicArray<float64_t>();
+	DynamicArray<float64_t>* q_subs=new DynamicArray<float64_t>();
+	DynamicArray<float64_t>* err_subs=new DynamicArray<float64_t>();
 
 	evaluate_quadgk(tf, subs, q_subs, err_subs);
 
@@ -352,12 +350,12 @@ float64_t CIntegration::integrate_quadgk(CFunction* f, float64_t a,
 		err+=(*err_subs)[i];
 
 	// evaluate tolerance
-	float64_t tol=CMath::max(abs_tol, rel_tol*CMath::abs(q));
+	float64_t tol=Math::max(abs_tol, rel_tol*Math::abs(q));
 
 	// number of iterations
 	uint32_t iter=1;
 
-	CDynamicArray<float64_t>* new_subs=new CDynamicArray<float64_t>();
+	DynamicArray<float64_t>* new_subs=new DynamicArray<float64_t>();
 
 	while (err>tol && iter<max_iter)
 	{
@@ -365,7 +363,7 @@ float64_t CIntegration::integrate_quadgk(CFunction* f, float64_t a,
 		// is larger or equal to tolerance
 		for (index_t i=0; i<subs->get_num_elements()/2; i++)
 		{
-			if (CMath::abs((*err_subs)[i])>=tol*CMath::abs((*subs)[2*i+1]-
+			if (Math::abs((*err_subs)[i])>=tol*Math::abs((*subs)[2*i+1]-
 				(*subs)[2*i])/(tb-ta))
 			{
 				// bisect subinterval
@@ -402,12 +400,11 @@ float64_t CIntegration::integrate_quadgk(CFunction* f, float64_t a,
 			err+=(*err_subs)[i];
 
 		// evaluate tolerance
-		tol=CMath::max(abs_tol, rel_tol*CMath::abs(q));
+		tol=Math::max(abs_tol, rel_tol*Math::abs(q));
 
 		iter++;
 	}
 
-	SG_UNREF(new_subs);
 
 	if (err>tol)
 	{
@@ -415,45 +412,29 @@ float64_t CIntegration::integrate_quadgk(CFunction* f, float64_t a,
 				"after {} iterations", err, iter);
 	}
 
-	// clean up
-	SG_UNREF(subs);
-	SG_UNREF(q_subs);
-	SG_UNREF(err_subs);
-	SG_UNREF(tf);
-
 	return q_sign*q;
 }
 
-float64_t CIntegration::integrate_quadgh(CFunction* f)
+float64_t Integration::integrate_quadgh(std::shared_ptr<Function> f)
 {
-	SG_REF(f);
-
 	// evaluate integral using Gauss-Hermite 64-point rule
-	float64_t q=evaluate_quadgh64(f);
-
-	SG_UNREF(f);
-
+	float64_t q=evaluate_quadgh64(std::move(f));
 	return q;
 }
 
-float64_t CIntegration::integrate_quadgh_customized(CFunction* f,
+float64_t Integration::integrate_quadgh_customized(std::shared_ptr<Function> f,
 	SGVector<float64_t> xgh, SGVector<float64_t> wgh)
 {
 	require(xgh.vlen == wgh.vlen,
 		"The length of node array ({}) and weight array ({}) should be the same",
 		xgh.vlen, wgh.vlen);
 
-	SG_REF(f);
-
-	float64_t q=evaluate_quadgh(f, xgh.vlen, xgh.vector, wgh.vector);
-
-	SG_UNREF(f);
-
+	float64_t q=evaluate_quadgh(std::move(f), xgh.vlen, xgh.vector, wgh.vector);
 	return q;
 }
 
-void CIntegration::evaluate_quadgk(CFunction* f, CDynamicArray<float64_t>* subs,
-		CDynamicArray<float64_t>* q, CDynamicArray<float64_t>* err, index_t n,
+void Integration::evaluate_quadgk(const std::shared_ptr<Function>& f, DynamicArray<float64_t>* subs,
+		DynamicArray<float64_t>* q, DynamicArray<float64_t>* err, index_t n,
 		float64_t* xgk, float64_t* wg, float64_t* wgk)
 {
 	// check the parameters
@@ -506,7 +487,7 @@ void CIntegration::evaluate_quadgk(CFunction* f, CDynamicArray<float64_t>* subs,
 	err->set_array(eigen_err.data(), eigen_err.size());
 }
 
-void CIntegration::generate_gauher(SGVector<float64_t> xgh, SGVector<float64_t> wgh)
+void Integration::generate_gauher(SGVector<float64_t> xgh, SGVector<float64_t> wgh)
 {
 	require(xgh.vlen == wgh.vlen,
 		"The length of node array ({}) and weight array ({}) should be the same",
@@ -545,7 +526,7 @@ void CIntegration::generate_gauher(SGVector<float64_t> xgh, SGVector<float64_t> 
 	}
 }
 
-void CIntegration::generate_gauher20(SGVector<float64_t> xgh, SGVector<float64_t> wgh)
+void Integration::generate_gauher20(SGVector<float64_t> xgh, SGVector<float64_t> wgh)
 {
 	require(xgh.vlen == wgh.vlen,
 		"The length of node array ({}) and weight array ({}) should be the same",
@@ -610,8 +591,8 @@ void CIntegration::generate_gauher20(SGVector<float64_t> xgh, SGVector<float64_t
 
 }
 
-void CIntegration::evaluate_quadgk15(CFunction* f, CDynamicArray<float64_t>* subs,
-		CDynamicArray<float64_t>* q, CDynamicArray<float64_t>* err)
+void Integration::evaluate_quadgk15(std::shared_ptr<Function> f, DynamicArray<float64_t>* subs,
+		DynamicArray<float64_t>* q, DynamicArray<float64_t>* err)
 {
 	static const index_t n=15;
 
@@ -668,11 +649,11 @@ void CIntegration::evaluate_quadgk15(CFunction* f, CDynamicArray<float64_t>* sub
 		};
 
 	// evaluate definite integral on each subinterval using Gauss-Kronrod rule
-	evaluate_quadgk(f, subs, q, err, n, xgk, wg, wgk);
+	evaluate_quadgk(std::move(f), subs, q, err, n, xgk, wg, wgk);
 }
 
-void CIntegration::evaluate_quadgk21(CFunction* f, CDynamicArray<float64_t>* subs,
-		CDynamicArray<float64_t>* q, CDynamicArray<float64_t>* err)
+void Integration::evaluate_quadgk21(std::shared_ptr<Function> f, DynamicArray<float64_t>* subs,
+		DynamicArray<float64_t>* q, DynamicArray<float64_t>* err)
 {
 	static const index_t n=21;
 
@@ -743,10 +724,10 @@ void CIntegration::evaluate_quadgk21(CFunction* f, CDynamicArray<float64_t>* sub
 			0.011694638867371874278064396062192
 		};
 
-	evaluate_quadgk(f, subs, q, err, n, xgk, wg, wgk);
+	evaluate_quadgk(std::move(f), subs, q, err, n, xgk, wg, wgk);
 }
 
-float64_t CIntegration::evaluate_quadgh(CFunction* f, index_t n, float64_t* xgh,
+float64_t Integration::evaluate_quadgh(const std::shared_ptr<Function>& f, index_t n, float64_t* xgh,
 		float64_t* wgh)
 {
 	// check the parameters
@@ -762,7 +743,7 @@ float64_t CIntegration::evaluate_quadgh(CFunction* f, index_t n, float64_t* xgh,
 	return q;
 }
 
-float64_t CIntegration::evaluate_quadgh64(CFunction* f)
+float64_t Integration::evaluate_quadgh64(std::shared_ptr<Function> f)
 {
 	static const index_t n=64;
 
@@ -904,7 +885,7 @@ float64_t CIntegration::evaluate_quadgh64(CFunction* f)
 		5.535706535856942820575463300987E-49
 	};
 
-	return evaluate_quadgh(f, n, xgh, wgh);
+	return evaluate_quadgh(std::move(f), n, xgh, wgh);
 }
 }
 

@@ -15,31 +15,33 @@
 #include <shogun/lib/slep/slep_solver.h>
 #include <shogun/lib/slep/slep_options.h>
 
+#include <utility>
+
 namespace shogun
 {
 
-CMultitaskLeastSquaresRegression::CMultitaskLeastSquaresRegression() :
-	CMultitaskLinearMachine()
+MultitaskLeastSquaresRegression::MultitaskLeastSquaresRegression() :
+	MultitaskLinearMachine()
 {
 	initialize_parameters();
 	register_parameters();
 }
 
-CMultitaskLeastSquaresRegression::CMultitaskLeastSquaresRegression(
-     float64_t z, CFeatures* train_features,
-     CRegressionLabels* train_labels, CTaskRelation* task_relation) :
-	CMultitaskLinearMachine(train_features,(CLabels*)train_labels,task_relation)
+MultitaskLeastSquaresRegression::MultitaskLeastSquaresRegression(
+     float64_t z, std::shared_ptr<Features> train_features,
+     const std::shared_ptr<RegressionLabels>& train_labels, std::shared_ptr<TaskRelation> task_relation) :
+	MultitaskLinearMachine(std::move(train_features),train_labels,std::move(task_relation))
 {
 	set_z(z);
 	initialize_parameters();
 	register_parameters();
 }
 
-CMultitaskLeastSquaresRegression::~CMultitaskLeastSquaresRegression()
+MultitaskLeastSquaresRegression::~MultitaskLeastSquaresRegression()
 {
 }
 
-void CMultitaskLeastSquaresRegression::register_parameters()
+void MultitaskLeastSquaresRegression::register_parameters()
 {
 	SG_ADD(&m_z, "z", "regularization coefficient", ParameterProperties::HYPER);
 	SG_ADD(&m_q, "q", "q of L1/Lq", ParameterProperties::HYPER);
@@ -49,7 +51,7 @@ void CMultitaskLeastSquaresRegression::register_parameters()
 	SG_ADD(&m_max_iter, "max_iter", "maximum number of iterations");
 }
 
-void CMultitaskLeastSquaresRegression::initialize_parameters()
+void MultitaskLeastSquaresRegression::initialize_parameters()
 {
 	set_z(0.0);
 	set_q(2.0);
@@ -59,81 +61,81 @@ void CMultitaskLeastSquaresRegression::initialize_parameters()
 	set_max_iter(1000);
 }
 
-bool CMultitaskLeastSquaresRegression::train_locked_implementation(SGVector<index_t>* tasks)
+bool MultitaskLeastSquaresRegression::train_locked_implementation(SGVector<index_t>* tasks)
 {
 	not_implemented(SOURCE_LOCATION);
 	return false;
 }
 
-float64_t CMultitaskLeastSquaresRegression::apply_one(int32_t i)
+float64_t MultitaskLeastSquaresRegression::apply_one(int32_t i)
 {
 	float64_t dot = features->dot(i,m_tasks_w.get_column(m_current_task));
 	return dot + m_tasks_c[m_current_task];
 }
 
-int32_t CMultitaskLeastSquaresRegression::get_max_iter() const
+int32_t MultitaskLeastSquaresRegression::get_max_iter() const
 {
 	return m_max_iter;
 }
-int32_t CMultitaskLeastSquaresRegression::get_regularization() const
+int32_t MultitaskLeastSquaresRegression::get_regularization() const
 {
 	return m_regularization;
 }
-int32_t CMultitaskLeastSquaresRegression::get_termination() const
+int32_t MultitaskLeastSquaresRegression::get_termination() const
 {
 	return m_termination;
 }
-float64_t CMultitaskLeastSquaresRegression::get_tolerance() const
+float64_t MultitaskLeastSquaresRegression::get_tolerance() const
 {
 	return m_tolerance;
 }
-float64_t CMultitaskLeastSquaresRegression::get_z() const
+float64_t MultitaskLeastSquaresRegression::get_z() const
 {
 	return m_z;
 }
-float64_t CMultitaskLeastSquaresRegression::get_q() const
+float64_t MultitaskLeastSquaresRegression::get_q() const
 {
 	return m_q;
 }
 
-void CMultitaskLeastSquaresRegression::set_max_iter(int32_t max_iter)
+void MultitaskLeastSquaresRegression::set_max_iter(int32_t max_iter)
 {
 	ASSERT(max_iter>=0)
 	m_max_iter = max_iter;
 }
-void CMultitaskLeastSquaresRegression::set_regularization(int32_t regularization)
+void MultitaskLeastSquaresRegression::set_regularization(int32_t regularization)
 {
 	ASSERT(regularization==0 || regularization==1)
 	m_regularization = regularization;
 }
-void CMultitaskLeastSquaresRegression::set_termination(int32_t termination)
+void MultitaskLeastSquaresRegression::set_termination(int32_t termination)
 {
 	ASSERT(termination>=0 && termination<=4)
 	m_termination = termination;
 }
-void CMultitaskLeastSquaresRegression::set_tolerance(float64_t tolerance)
+void MultitaskLeastSquaresRegression::set_tolerance(float64_t tolerance)
 {
 	ASSERT(tolerance>0.0)
 	m_tolerance = tolerance;
 }
-void CMultitaskLeastSquaresRegression::set_z(float64_t z)
+void MultitaskLeastSquaresRegression::set_z(float64_t z)
 {
 	m_z = z;
 }
-void CMultitaskLeastSquaresRegression::set_q(float64_t q)
+void MultitaskLeastSquaresRegression::set_q(float64_t q)
 {
 	m_q = q;
 }
 
-bool CMultitaskLeastSquaresRegression::train_machine(CFeatures* data)
+bool MultitaskLeastSquaresRegression::train_machine(std::shared_ptr<Features> data)
 {
-	if (data && (CDotFeatures*)data)
-		set_features((CDotFeatures*)data);
+	if (data)
+		set_features(data->as<DotFeatures>());
 
 	ASSERT(features)
 	ASSERT(m_labels)
 
-	SGVector<float64_t> y = ((CRegressionLabels*)m_labels)->get_labels();
+	SGVector<float64_t> y = regression_labels(m_labels)->get_labels();
 
 	slep_options options = slep_options::default_options();
 	options.n_tasks = m_task_relation->get_num_tasks();
@@ -149,7 +151,7 @@ bool CMultitaskLeastSquaresRegression::train_machine(CFeatures* data)
 	{
 		case TASK_GROUP:
 		{
-			//CTaskGroup* task_group = (CTaskGroup*)m_task_relation;
+			//TaskGroup* task_group = (TaskGroup*)m_task_relation;
 			options.mode = MULTITASK_GROUP;
 			options.loss = LEAST_SQUARES;
 			m_tasks_w = slep_solver(features, y.vector, m_z, options).w;
@@ -159,7 +161,7 @@ bool CMultitaskLeastSquaresRegression::train_machine(CFeatures* data)
 		break;
 		case TASK_TREE:
 		{
-			CTaskTree* task_tree = (CTaskTree*)m_task_relation;
+			auto task_tree = m_task_relation->as<TaskTree>();
 			SGVector<float64_t> ind_t = task_tree->get_SLEP_ind_t();
 			options.ind_t = ind_t.vector;
 			options.n_nodes = ind_t.vlen/3;

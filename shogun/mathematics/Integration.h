@@ -39,7 +39,7 @@ template<class T> class SGVector;
 /** @brief Class that contains certain methods related to numerical
  * integration
  */
-class CIntegration : public CSGObject
+class Integration : public SGObject
 {
 public:
 	/** numerically evaluate definite integral \f$\int_a^b f(x) dx\f$,
@@ -70,7 +70,7 @@ public:
 	 * @return approximate value of definite integral of the function
 	 * on given domain
 	 */
-	static float64_t integrate_quadgk(CFunction* f, float64_t a,
+	static float64_t integrate_quadgk(std::shared_ptr<Function> f, float64_t a,
 			float64_t b, float64_t abs_tol=1e-10, float64_t rel_tol=1e-5,
 			uint32_t max_iter=1000, index_t sn=10);
 
@@ -95,7 +95,7 @@ public:
 	 * @return approximate value of the
 	 * integral \f$\int_{-\infty}^{\infty}e^{-x^2}f(x)dx\f$
 	 */
-	static float64_t integrate_quadgh(CFunction* f);
+	static float64_t integrate_quadgh(std::shared_ptr<Function> f);
 
 	/** numerically evaluate integral of the following kind
 	 *
@@ -121,7 +121,7 @@ public:
 	 * integral \f$\int_{-\infty}^{\infty}e^{-x^2}f(x)dx\f$
 	 */
 
-	static float64_t integrate_quadgh_customized(CFunction* f,
+	static float64_t integrate_quadgh_customized(std::shared_ptr<Function> f,
 		SGVector<float64_t> xgh, SGVector<float64_t> wgh);
 
 
@@ -170,8 +170,8 @@ private:
 	 * @param wg Gauss weights
 	 * @param wgk Gauss-Kronrod weights
 	 */
-	static void evaluate_quadgk(CFunction* f, CDynamicArray<float64_t>* subs,
-			CDynamicArray<float64_t>* q, CDynamicArray<float64_t>* err, index_t n,
+	static void evaluate_quadgk(const std::shared_ptr<Function>& f, DynamicArray<float64_t>* subs,
+			DynamicArray<float64_t>* q, DynamicArray<float64_t>* err, index_t n,
 			float64_t* xgk, float64_t* wg, float64_t* wgk);
 
 	/** evaluate definite integral of a function and error on each
@@ -189,8 +189,8 @@ private:
 	 * on each subinterval
 	 * @param err error on each subinterval
 	 */
-	static void evaluate_quadgk15(CFunction* f, CDynamicArray<float64_t>* subs,
-			CDynamicArray<float64_t>* q, CDynamicArray<float64_t>* err);
+	static void evaluate_quadgk15(std::shared_ptr<Function> f, DynamicArray<float64_t>* subs,
+			DynamicArray<float64_t>* q, DynamicArray<float64_t>* err);
 
 	/** evaluate definite integral of a function and error on each
 	 * subinterval using Gauss-Kronrod quadrature formula of order 21.
@@ -207,8 +207,8 @@ private:
 	 * on each subinterval
 	 * @param err error on each subinterval
 	 */
-	static void evaluate_quadgk21(CFunction* f, CDynamicArray<float64_t>* subs,
-			CDynamicArray<float64_t>* q, CDynamicArray<float64_t>* err);
+	static void evaluate_quadgk21(std::shared_ptr<Function> f, DynamicArray<float64_t>* subs,
+			DynamicArray<float64_t>* q, DynamicArray<float64_t>* err);
 
 	/** evaluate integral \f$\int_{-\infty}^{\infty}e^{-x^2}f(x)dx\f$
 	 * using Gauss-Hermite quadrature formula of order n
@@ -221,7 +221,7 @@ private:
 	 * @return approximate value of the integral
 	 * \f$\int_{-\infty}^{\infty}e^{-x^2}f(x)dx\f$
 	 */
-	static float64_t evaluate_quadgh(CFunction* f, index_t n, float64_t* xh,
+	static float64_t evaluate_quadgh(const std::shared_ptr<Function>& f, index_t n, float64_t* xh,
 			float64_t* wh);
 
 	/** evaluate integral \f$\int_{-\infty}^{\infty}e^{-x^2}f(x)dx\f$
@@ -237,7 +237,7 @@ private:
 	 * @return approximate value of the integral
 	 * \f$\int_{-\infty}^{\infty}e^{-x^2}f(x)dx\f$
 	 */
-	static float64_t evaluate_quadgh64(CFunction* f);
+	static float64_t evaluate_quadgh64(std::shared_ptr<Function> f);
 };
 }
 #endif /* _INTEGRATION_H_ */
