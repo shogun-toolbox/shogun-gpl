@@ -19,6 +19,9 @@
 namespace shogun
 {
 
+namespace detail
+{
+
 /** @brief Class v_array taken directly from JL's implementation */
 template<class T>
 class v_array{
@@ -51,6 +54,8 @@ class v_array{
 
 };
 
+} // namespace detail
+
 /**
  * Insert a new element at the end of the vector
  *
@@ -58,12 +63,13 @@ class v_array{
  * @param new_ele element to insert
  */
 template<class T>
-void push(v_array<T>& v, const T &new_ele)
+void push(detail::v_array<T>& v, const T &new_ele)
 {
+	auto old_len = v.length;
 	while(v.index >= v.length)
 	{
 		v.length = 2*v.length + 3;
-		v.elements = (T *)realloc(v.elements,sizeof(T) * v.length);
+		v.elements = (T *)SG_REALLOC(T, v.elements, old_len, v.length);
 	}
 	v[v.index++] = new_ele;
 }
@@ -75,9 +81,9 @@ void push(v_array<T>& v, const T &new_ele)
  * @param length the new length of the vector
  */
 template<class T>
-void alloc(v_array<T>& v, int length)
+void alloc(detail::v_array<T>& v, int length)
 {
-	v.elements = (T *)realloc(v.elements, sizeof(T) * length);
+	v.elements = (T *)SG_REALLOC(T, v.elements, v.length, length);
 	v.length = length;
 }
 
@@ -91,12 +97,12 @@ void alloc(v_array<T>& v, int length)
  * @return the adequate vector according to the previous conditions
  */
 template<class T>
-v_array<T> pop(v_array<v_array<T> > &stack)
+detail::v_array<T> pop(detail::v_array<detail::v_array<T> > &stack)
 {
 	if (stack.index > 0)
 		return stack[--stack.index];
 	else
-		return v_array<T>();
+		return detail::v_array<T>();
 }
 
 /**
@@ -180,7 +186,7 @@ float distance(JLCoverTreePoint p1, JLCoverTreePoint p2, float64_t upper_bound)
 }
 
 /** Fills up a v_array of JLCoverTreePoint objects */
-v_array< JLCoverTreePoint > parse_points(std::shared_ptr<Distance> distance, EFeaturesContainer fc)
+detail::v_array< JLCoverTreePoint > parse_points(std::shared_ptr<Distance> distance, EFeaturesContainer fc)
 {
 	std::shared_ptr<Features> features;
 	if ( fc == FC_LHS )
@@ -188,7 +194,7 @@ v_array< JLCoverTreePoint > parse_points(std::shared_ptr<Distance> distance, EFe
 	else
 		features = distance->get_rhs();
 
-	v_array< JLCoverTreePoint > parsed;
+	detail::v_array< JLCoverTreePoint > parsed;
 	for ( int32_t i = 0 ; i < features->get_num_vectors() ; ++i )
 	{
 		JLCoverTreePoint new_point;

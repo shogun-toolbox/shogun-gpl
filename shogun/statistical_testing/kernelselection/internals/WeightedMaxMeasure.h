@@ -55,7 +55,7 @@ public:
 	WeightedMaxMeasure(const WeightedMaxMeasure& other)=delete;
 	~WeightedMaxMeasure();
 	WeightedMaxMeasure& operator=(const WeightedMaxMeasure& other)=delete;
-	virtual std::shared_ptr<Kernel> select_kernel();
+	virtual std::shared_ptr<shogun::Kernel> select_kernel();
 	virtual SGMatrix<float64_t> get_measure_matrix();
 protected:
 	virtual void compute_measures();

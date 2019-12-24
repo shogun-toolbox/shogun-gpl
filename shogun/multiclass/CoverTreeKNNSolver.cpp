@@ -22,9 +22,9 @@ std::shared_ptr<MulticlassLabels> CoverTreeKNNSolver::classify_objects(std::shar
 
 	// From the sets of features (lhs and rhs) stored in distance,
 	// build arrays of cover tree points
-	v_array< JLCoverTreePoint > set_of_points  =
+	detail::v_array< JLCoverTreePoint > set_of_points  =
 		parse_points(knn_distance, FC_LHS);
-	v_array< JLCoverTreePoint > set_of_queries =
+	detail::v_array< JLCoverTreePoint > set_of_queries =
 		parse_points(knn_distance, FC_RHS);
 
 	// Build the cover trees, one for the test vectors (rhs features)
@@ -37,7 +37,7 @@ std::shared_ptr<MulticlassLabels> CoverTreeKNNSolver::classify_objects(std::shar
 
 	// Get the k nearest neighbors to all the test vectors (batch method)
 	knn_distance->replace_lhs(l);
-	v_array< v_array< JLCoverTreePoint > > res;
+	detail::v_array<detail::v_array< JLCoverTreePoint > > res;
 	k_nearest_neighbor(top, top_query, res, m_k);
 
 if (env()->io()->get_loglevel()<= io::MSG_DEBUG)
@@ -79,9 +79,9 @@ SGVector<int32_t> CoverTreeKNNSolver::classify_objects_k(std::shared_ptr<Distanc
 
 	// From the sets of features (lhs and rhs) stored in distance,
 	// build arrays of cover tree points
-	v_array< JLCoverTreePoint > set_of_points  =
+	detail::v_array< JLCoverTreePoint > set_of_points  =
 		parse_points(knn_distance, FC_LHS);
-	v_array< JLCoverTreePoint > set_of_queries =
+	detail::v_array< JLCoverTreePoint > set_of_queries =
 		parse_points(knn_distance, FC_RHS);
 
 	// Build the cover trees, one for the test vectors (rhs features)
@@ -94,7 +94,7 @@ SGVector<int32_t> CoverTreeKNNSolver::classify_objects_k(std::shared_ptr<Distanc
 
 	// Get the k nearest neighbors to all the test vectors (batch method)
 	knn_distance->replace_lhs(l);
-	v_array< v_array< JLCoverTreePoint > > res;
+	detail::v_array<detail::v_array< JLCoverTreePoint > > res;
 	k_nearest_neighbor(top, top_query, res, m_k);
 
 	for ( index_t i = 0 ; i < res.index ; ++i )
