@@ -35,18 +35,10 @@ DualLibQPBMSOSVM::DualLibQPBMSOSVM(
 	init();
 	set_lambda(_lambda);
 
-	// get dimension of w
-	int32_t nDim=this->m_model->get_dim();
-
 	// Check for initial solution
-	if (W.vlen==0)
+	if (W.vlen!=0)
 	{
-		set_w(SGVector< float64_t >(nDim));
-		get_w().zero();
-	}
-	else
-	{
-		ASSERT(W.size() == nDim);
+		ASSERT(W.size() == m_model->get_dim());
 		set_w(W);
 	}
 }
@@ -69,6 +61,18 @@ void DualLibQPBMSOSVM::init()
 	SG_ADD(&m_Tmax, "m_Tmax", "Parameter Tmax", ParameterProperties::HYPER);
 	SG_ADD(&m_cp_models, "m_cp_models", "Number of cutting plane models");
 
+	// TODO(gf712) should be replaced with an extension of Constraint class
+	// which has a customisation point with lambdas, rather than write a whole struct
+	add_callback_function("w", [&](){
+		if (auto dim = m_model->get_dim(); get_w().vlen != dim)
+		{
+			set_w(SGVector<float64_t>(dim));
+			get_w().zero();
+			error("Dimension of the initial solution {} must match the model's "
+				  "dimension {}.", get_w().vlen, dim);
+		}
+	});
+
 	set_TolRel(0.001);
 	set_TolAbs(0.0);
 	set_BufSize(1000);
@@ -84,6 +88,13 @@ void DualLibQPBMSOSVM::init()
 
 bool DualLibQPBMSOSVM::train_machine(std::shared_ptr<Features> data)
 {
+	require(m_model, "Model has not been set.");
+	if (!m_w)
+	{
+		set_w(SGVector<float64_t>(m_model->get_dim()));
+		get_w().zero();
+	}
+
 	if (data)
 		set_features(data);
 
