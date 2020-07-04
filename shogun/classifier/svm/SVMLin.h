@@ -35,10 +35,8 @@ class SVMLin : public LinearMachine
 		 * @param traindat training features
 		 * @param trainlab labels for features
 		 */
-		SVMLin(
-			float64_t C, std::shared_ptr<DotFeatures> traindat,
-			std::shared_ptr<Labels> trainlab);
-		~SVMLin() override;
+		SVMLin(float64_t C);
+		virtual ~SVMLin();
 
 		/** set C
 		 *
@@ -96,7 +94,8 @@ class SVMLin : public LinearMachine
 		 *
 		 * @return whether training was successful
 		 */
-		bool train_machine(std::shared_ptr<Features> data=NULL) override;
+		virtual bool train_machine(const std::shared_ptr<Features>& data, 
+			const std::shared_ptr<Labels>& labs) override;
 
 		/** set up parameters */
 		void init();

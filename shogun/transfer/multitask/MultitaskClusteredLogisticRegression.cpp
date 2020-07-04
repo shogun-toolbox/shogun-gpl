@@ -25,9 +25,8 @@ MultitaskClusteredLogisticRegression::MultitaskClusteredLogisticRegression() :
 }
 
 MultitaskClusteredLogisticRegression::MultitaskClusteredLogisticRegression(
-     float64_t rho1, float64_t rho2, std::shared_ptr<Features> train_features,
-     std::shared_ptr<BinaryLabels> train_labels, const std::shared_ptr<TaskGroup>& task_group, int32_t n_clusters) :
-	MultitaskLogisticRegression(0.0,std::move(train_features),std::move(train_labels),task_group->as<TaskRelation>())
+     float64_t rho1, float64_t rho2, const std::shared_ptr<TaskGroup>& task_group, int32_t n_clusters) :
+	MultitaskLogisticRegression(0.0, task_group->as<TaskRelation>())
 {
 	set_rho1(rho1);
 	set_rho2(rho2);
@@ -68,10 +67,12 @@ MultitaskClusteredLogisticRegression::~MultitaskClusteredLogisticRegression()
 {
 }
 
-bool MultitaskClusteredLogisticRegression::train_locked_implementation(SGVector<index_t>* tasks)
+bool MultitaskClusteredLogisticRegression::train_locked_implementation(const std::shared_ptr<Features>& data, 
+			const std::shared_ptr<Labels>& labs, SGVector<index_t>* tasks)
 {
-	SGVector<float64_t> y(m_labels->get_num_labels());
-	auto bl = binary_labels(m_labels);
+	SGVector<float64_t> y(labs->get_num_labels());
+	auto bl = binary_labels(labs);
+	const auto features = data->as<DotFeatures>();
 	for (int32_t i=0; i<y.vlen; i++)
 		y[i] = bl->get_label(i);
 
@@ -92,17 +93,14 @@ bool MultitaskClusteredLogisticRegression::train_locked_implementation(SGVector<
     return true;
 }
 
-bool MultitaskClusteredLogisticRegression::train_machine(std::shared_ptr<Features> data)
+bool MultitaskClusteredLogisticRegression::train_machine(const std::shared_ptr<Features>& data,
+	const std::shared_ptr<Labels>& labs)
 {
-	if (data)
-		set_features(data->as<DotFeatures>());
-
-	ASSERT(features)
-	ASSERT(m_labels)
-	ASSERT(m_task_relation)
-
+	const auto features = data->as<DotFeatures>();
+	
+	require(m_task_relation, "Task relation not set");
 	SGVector<float64_t> y(m_labels->get_num_labels());
-	auto bl = binary_labels(m_labels);
+	auto bl = binary_labels(labs);
 	for (int32_t i=0; i<y.vlen; i++)
 		y[i] = bl->get_label(i);
 

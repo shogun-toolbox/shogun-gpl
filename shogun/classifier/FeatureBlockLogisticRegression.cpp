@@ -28,15 +28,12 @@ FeatureBlockLogisticRegression::FeatureBlockLogisticRegression() :
 }
 
 FeatureBlockLogisticRegression::FeatureBlockLogisticRegression(
-     float64_t z, const std::shared_ptr<Features>& train_features,
-     const std::shared_ptr<Labels>& train_labels, std::shared_ptr<IndexBlockRelation> feature_relation) :
+     float64_t z, std::shared_ptr<IndexBlockRelation> feature_relation) :
 	LinearMachine()
 {
 	init();
 	set_feature_relation(std::move(feature_relation));
 	set_z(z);
-	set_features(train_features->as<DotFeatures>());
-	set_labels(train_labels->as<BinaryLabels>());
 	register_parameters();
 }
 
@@ -144,18 +141,15 @@ void FeatureBlockLogisticRegression::set_q(float64_t q)
 	m_q = q;
 }
 
-bool FeatureBlockLogisticRegression::train_machine(std::shared_ptr<Features> data)
+bool FeatureBlockLogisticRegression::train_machine(const std::shared_ptr<Features>& data,
+	 const std::shared_ptr<Labels>& labs)
 {
-	if (data)
-		set_features(data->as<DotFeatures>());
+	const auto features = data->as<DotFeatures>();
 
-	ASSERT(features)
-	ASSERT(m_labels)
-
-	int32_t n_vecs = m_labels->get_num_labels();
+	int32_t n_vecs = labs->get_num_labels();
 	SGVector<float64_t> y(n_vecs);
 	for (int32_t i=0; i<n_vecs; i++)
-		y[i] = m_labels->as<BinaryLabels>()->get_label(i);
+		y[i] = labs->as<BinaryLabels>()->get_label(i);
 
 	slep_options options = slep_options::default_options();
 	options.q = m_q;
@@ -232,7 +226,8 @@ bool FeatureBlockLogisticRegression::train_machine(std::shared_ptr<Features> dat
 	return true;
 }
 
-float64_t FeatureBlockLogisticRegression::apply_one(int32_t vec_idx)
+float64_t FeatureBlockLogisticRegression::apply_one(const std::shared_ptr<DotFeatures>& features, 
+	int32_t vec_idx)
 {
 	SGVector<float64_t> w = get_w();
 	return std::exp(-(features->dot(vec_idx, w) + bias));
@@ -240,16 +235,7 @@ float64_t FeatureBlockLogisticRegression::apply_one(int32_t vec_idx)
 
 SGVector<float64_t> FeatureBlockLogisticRegression::apply_get_outputs(std::shared_ptr<Features> data)
 {
-	if (data)
-	{
-		if (!data->has_property(FP_DOT))
-			error("Specified features are not of type CDotFeatures");
-
-		set_features(data->as<DotFeatures>());
-	}
-
-	if (!features)
-		return SGVector<float64_t>();
+	const auto features = data->as<DotFeatures>();
 
 	int32_t num=features->get_num_vectors();
 	SGVector<float64_t> w = get_w();

@@ -48,8 +48,7 @@ class MultitaskLogisticRegression : public MultitaskLinearMachine
 		 * @param task_relation task relation
 		 */
 		MultitaskLogisticRegression(
-		     float64_t z, std::shared_ptr<Features> training_data,
-		     const std::shared_ptr<BinaryLabels>& training_labels, std::shared_ptr<TaskRelation> task_relation);
+		     float64_t z, std::shared_ptr<TaskRelation> task_relation);
 
 		/** destructor */
 		~MultitaskLogisticRegression() override;
@@ -87,15 +86,17 @@ class MultitaskLogisticRegression : public MultitaskLinearMachine
 		void set_z(float64_t z);
 
 		/** applies to one vector */
-		float64_t apply_one(int32_t i) override;
+		virtual float64_t apply_one(const std::shared_ptr<DotFeatures>& features, int32_t i);
 
 	protected:
 
 		/** train machine */
-		bool train_machine(std::shared_ptr<Features> data=NULL) override;
+		bool train_machine(const std::shared_ptr<Features>& data,
+			const std::shared_ptr<Labels>& labs) override;
 
 		/** train locked implementation */
-		bool train_locked_implementation(SGVector<index_t>* tasks) override;
+		bool train_locked_implementation(const std::shared_ptr<Features>&, 
+			const std::shared_ptr<Labels>&,SGVector<index_t>* tasks) override;
 
 	private:
 

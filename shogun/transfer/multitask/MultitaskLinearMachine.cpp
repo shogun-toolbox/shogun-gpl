@@ -29,13 +29,9 @@ MultitaskLinearMachine::MultitaskLinearMachine() :
 	register_parameters();
 }
 
-MultitaskLinearMachine::MultitaskLinearMachine(
-     const std::shared_ptr<Features>& train_features,
-     std::shared_ptr<Labels> train_labels, std::shared_ptr<TaskRelation> task_relation) :
+MultitaskLinearMachine::MultitaskLinearMachine(std::shared_ptr<TaskRelation> task_relation) :
 	LinearMachine(), m_current_task(0), m_task_relation(NULL)
 {
-	set_features(train_features->as<DotFeatures>());
-	set_labels(std::move(train_labels));
 	set_task_relation(std::move(task_relation));
 	register_parameters();
 }
@@ -79,7 +75,7 @@ bool MultitaskLinearMachine::train_machine(std::shared_ptr<Features> data)
 
 void MultitaskLinearMachine::post_lock(std::shared_ptr<Labels> labels, std::shared_ptr<Features> features_)
 {
-	set_features(features_->as<DotFeatures>());
+	const auto features = features_->as<DotFeatures>();
 	int n_tasks = m_task_relation->as<TaskGroup>()->get_num_tasks();
 	SGVector<index_t>* tasks_indices = m_task_relation->as<TaskGroup>()->get_tasks_indices();
 
@@ -97,7 +93,8 @@ void MultitaskLinearMachine::post_lock(std::shared_ptr<Labels> labels, std::shar
 	SG_FREE(tasks_indices);
 }
 
-bool MultitaskLinearMachine::train_locked(SGVector<index_t> indices)
+bool MultitaskLinearMachine::train_locked(const std::shared_ptr<Features>& data, 
+			const std::shared_ptr<Labels>& labs,SGVector<index_t> indices)
 {
 	int n_tasks = m_task_relation->as<TaskGroup>()->get_num_tasks();
 	ASSERT((int)m_tasks_indices.size()==n_tasks)
@@ -123,18 +120,19 @@ bool MultitaskLinearMachine::train_locked(SGVector<index_t> indices)
 			tasks[i][j] = cutted_task_indices[i][j];
 		//tasks[i].display_vector();
 	}
-	bool res = train_locked_implementation(tasks);
+	bool res = train_locked_implementation(data, labs, tasks);
 	SG_FREE(tasks);
 	return res;
 }
 
-bool MultitaskLinearMachine::train_locked_implementation(SGVector<index_t>* tasks)
+bool MultitaskLinearMachine::train_locked_implementation(const std::shared_ptr<Features>&, 
+			const std::shared_ptr<Labels>&, SGVector<index_t>* tasks)
 {
 	not_implemented(SOURCE_LOCATION);
 	return false;
 }
 
-std::shared_ptr<BinaryLabels> MultitaskLinearMachine::apply_locked_binary(SGVector<index_t> indices)
+std::shared_ptr<BinaryLabels> MultitaskLinearMachine::apply_locked_binary(const std::shared_ptr<DotFeatures>& features,SGVector<index_t> indices)
 {
 	int n_tasks = m_task_relation->as<TaskGroup>()->get_num_tasks();
 	SGVector<float64_t> result(indices.vlen);
@@ -146,7 +144,7 @@ std::shared_ptr<BinaryLabels> MultitaskLinearMachine::apply_locked_binary(SGVect
 			if (m_tasks_indices[j].count(indices[i]))
 			{
 				set_current_task(j);
-				result[i] = apply_one(indices[i]);
+				result[i] = apply_one(features, indices[i]);
 				break;
 			}
 		}
@@ -154,7 +152,7 @@ std::shared_ptr<BinaryLabels> MultitaskLinearMachine::apply_locked_binary(SGVect
 	return std::make_shared<BinaryLabels>(result);
 }
 
-float64_t MultitaskLinearMachine::apply_one(int32_t i)
+float64_t MultitaskLinearMachine::apply_one(const std::shared_ptr<DotFeatures>& features, int32_t i)
 {
 	not_implemented(SOURCE_LOCATION);
 	return 0.0;
@@ -162,22 +160,13 @@ float64_t MultitaskLinearMachine::apply_one(int32_t i)
 
 SGVector<float64_t> MultitaskLinearMachine::apply_get_outputs(std::shared_ptr<Features> data)
 {
-	if (data)
-	{
-		if (!data->has_property(FP_DOT))
-			error("Specified features are not of type DotFeatures");
-
-		set_features(data->as<DotFeatures>());
-	}
-
-	if (!features)
-		return SGVector<float64_t>();
+	const auto features = data->as<DotFeatures>();
 
 	int32_t num=features->get_num_vectors();
 	ASSERT(num>0)
 	float64_t* out=SG_MALLOC(float64_t, num);
 	for (int32_t i=0; i<num; i++)
-		out[i] = apply_one(i);
+		out[i] = apply_one(data->as<DotFeatures>(), i);
 
 	return SGVector<float64_t>(out,num);
 }
@@ -206,7 +195,7 @@ float64_t MultitaskLinearMachine::get_bias() const
 	return m_tasks_c[m_current_task];
 }
 
-SGVector<index_t>* MultitaskLinearMachine::get_subset_tasks_indices()
+SGVector<index_t>* MultitaskLinearMachine::get_subset_tasks_indices(const std::shared_ptr<DotFeatures>& features)
 {
 	int n_tasks = m_task_relation->as<TaskGroup>()->get_num_tasks();
 	SGVector<index_t>* tasks_indices = m_task_relation->as<TaskGroup>()->get_tasks_indices();

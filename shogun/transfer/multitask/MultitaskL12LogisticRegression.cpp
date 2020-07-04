@@ -40,9 +40,8 @@ MultitaskL12LogisticRegression::MultitaskL12LogisticRegression() :
 }
 
 MultitaskL12LogisticRegression::MultitaskL12LogisticRegression(
-     float64_t rho1, float64_t rho2, std::shared_ptr<Features> train_features,
-     std::shared_ptr<BinaryLabels> train_labels, const std::shared_ptr<TaskGroup>& task_group) :
-	MultitaskLogisticRegression(0.0,std::move(train_features),std::move(train_labels),task_group->as<TaskRelation>())
+     float64_t rho1, float64_t rho2, const std::shared_ptr<TaskGroup>& task_group) :
+	MultitaskLogisticRegression(0.0, task_group->as<TaskRelation>())
 {
 	set_rho1(rho1);
 	set_rho2(rho2);
@@ -79,10 +78,12 @@ MultitaskL12LogisticRegression::~MultitaskL12LogisticRegression()
 {
 }
 
-bool MultitaskL12LogisticRegression::train_locked_implementation(SGVector<index_t>* tasks)
+bool MultitaskL12LogisticRegression::train_locked_implementation(const std::shared_ptr<Features>& data, 
+			const std::shared_ptr<Labels>& labs, SGVector<index_t>* tasks)
 {
-	SGVector<float64_t> y(m_labels->get_num_labels());
-	auto bl = binary_labels(m_labels);
+	SGVector<float64_t> y(labs->get_num_labels());
+	auto bl = binary_labels(labs);
+	const auto features = data->as<DotFeatures>();
 	for (int32_t i=0; i<y.vlen; i++)
 		y[i] = bl->get_label(i);
 
@@ -101,17 +102,13 @@ bool MultitaskL12LogisticRegression::train_locked_implementation(SGVector<index_
 	return true;
 }
 
-bool MultitaskL12LogisticRegression::train_machine(std::shared_ptr<Features> data)
+bool MultitaskL12LogisticRegression::train_machine(const std::shared_ptr<Features>& data,
+			const std::shared_ptr<Labels>& labs)
 {
-	if (data)
-		set_features(data->as<DotFeatures>());
+	const auto features = data->as<DotFeatures>();
 
-	ASSERT(features)
-	ASSERT(m_labels)
-	ASSERT(m_task_relation)
-
-	SGVector<float64_t> y(m_labels->get_num_labels());
-	auto bl = binary_labels(m_labels);
+	SGVector<float64_t> y(labs->get_num_labels());
+	auto bl = binary_labels(labs);
 	for (int32_t i=0; i<y.vlen; i++)
 		y[i] = bl->get_label(i);
 

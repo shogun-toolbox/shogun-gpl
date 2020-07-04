@@ -46,16 +46,6 @@ SVMSGD::SVMSGD(float64_t C)
 	C2 = C;
 }
 
-SVMSGD::SVMSGD(float64_t C, std::shared_ptr<DotFeatures> traindat, std::shared_ptr<Labels> trainlab)
-: LinearMachine()
-{
-	init();
-	C1 = C;
-	C2 = C;
-
-	set_features(std::move(traindat));
-	set_labels(std::move(trainlab));
-}
 
 SVMSGD::~SVMSGD()
 {
@@ -66,19 +56,12 @@ void SVMSGD::set_loss_function(std::shared_ptr<LossFunction> loss_func)
 	loss=std::move(loss_func);
 }
 
-bool SVMSGD::train_machine(std::shared_ptr<Features> data)
+bool SVMSGD::train_machine(const std::shared_ptr<Features>& data, 
+	const std::shared_ptr<Labels>& labs)
 {
 	// allocate memory for w and initialize everyting w and bias with 0
-	auto labels = binary_labels(m_labels);
-
-	if (data)
-	{
-		if (!data->has_property(FP_DOT))
-			error("Specified features are not of type CDotFeatures");
-		set_features(data->as<DotFeatures>());
-	}
-
-	ASSERT(features)
+	auto labels = binary_labels(labs);
+	const auto features = data->as<DotFeatures>();
 
 	int32_t num_train_labels = labels->get_num_labels();
 	int32_t num_vec=features->get_num_vectors();
@@ -104,7 +87,7 @@ bool SVMSGD::train_machine(std::shared_ptr<Features> data)
 
 
 	//do the sgd
-	calibrate();
+	calibrate(features);
 
 	io::info("Training on {} vectors", num_vec);
 
@@ -155,9 +138,8 @@ bool SVMSGD::train_machine(std::shared_ptr<Features> data)
 	return true;
 }
 
-void SVMSGD::calibrate()
+void SVMSGD::calibrate(const std::shared_ptr<DotFeatures>& features)
 {
-	ASSERT(features)
 	int32_t num_vec=features->get_num_vectors();
 	int32_t c_dim=features->get_dim_feature_space();
 
