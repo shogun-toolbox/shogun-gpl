@@ -99,7 +99,7 @@ bool MultitaskClusteredLogisticRegression::train_machine(const std::shared_ptr<F
 	const auto features = data->as<DotFeatures>();
 	
 	require(m_task_relation, "Task relation not set");
-	SGVector<float64_t> y(m_labels->get_num_labels());
+	SGVector<float64_t> y(labs->get_num_labels());
 	auto bl = binary_labels(labs);
 	for (int32_t i=0; i<y.vlen; i++)
 		y[i] = bl->get_label(i);
