@@ -58,11 +58,9 @@ void MultitaskLogisticRegression::initialize_parameters()
 	set_max_iter(1000);
 }
 
-bool MultitaskLogisticRegression::train_machine(const std::shared_ptr<Features>& data,
+bool MultitaskLogisticRegression::train_machine(const std::shared_ptr<DotFeatures>& features,
 	const std::shared_ptr<Labels>& labs)
 {
-	const auto features = data->as<DotFeatures>();
-	
 	SGVector<float64_t> y(labs->get_num_labels());
 	auto bl = binary_labels(labs);
 	for (int32_t i=0; i<y.vlen; i++)

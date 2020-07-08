@@ -93,11 +93,9 @@ bool MultitaskClusteredLogisticRegression::train_locked_implementation(const std
     return true;
 }
 
-bool MultitaskClusteredLogisticRegression::train_machine(const std::shared_ptr<Features>& data,
+bool MultitaskClusteredLogisticRegression::train_machine(const std::shared_ptr<DotFeatures>& features,
 	const std::shared_ptr<Labels>& labs)
 {
-	const auto features = data->as<DotFeatures>();
-	
 	require(m_task_relation, "Task relation not set");
 	SGVector<float64_t> y(labs->get_num_labels());
 	auto bl = binary_labels(labs);

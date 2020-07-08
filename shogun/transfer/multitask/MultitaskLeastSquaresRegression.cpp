@@ -127,11 +127,9 @@ void MultitaskLeastSquaresRegression::set_q(float64_t q)
 	m_q = q;
 }
 
-bool MultitaskLeastSquaresRegression::train_machine(const std::shared_ptr<Features>& data, 
+bool MultitaskLeastSquaresRegression::train_machine(const std::shared_ptr<DotFeatures>& features, 
 			const std::shared_ptr<Labels>& labs)
 {
-	
-	const auto features = data->as<DotFeatures>();
 	SGVector<float64_t> y = regression_labels(labs)->get_labels();
 
 	slep_options options = slep_options::default_options();

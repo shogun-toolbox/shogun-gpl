@@ -50,11 +50,9 @@ void SVMLin::init()
 	SG_ADD(&epsilon, "epsilon", "Convergence precision.");
 }
 
-bool SVMLin::train_machine(const std::shared_ptr<Features>& data, 
+bool SVMLin::train_machine(const std::shared_ptr<DotFeatures>& features, 
 	const std::shared_ptr<Labels>& labs)
 {
-	const auto features = data->as<DotFeatures>();
-
 	SGVector<float64_t> train_labels=labs->as<BinaryLabels>()->get_labels();
 	int32_t num_feat=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();

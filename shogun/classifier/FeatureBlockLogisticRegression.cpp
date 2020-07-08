@@ -141,11 +141,9 @@ void FeatureBlockLogisticRegression::set_q(float64_t q)
 	m_q = q;
 }
 
-bool FeatureBlockLogisticRegression::train_machine(const std::shared_ptr<Features>& data,
+bool FeatureBlockLogisticRegression::train_machine(const std::shared_ptr<DotFeatures>& features,
 	 const std::shared_ptr<Labels>& labs)
 {
-	const auto features = data->as<DotFeatures>();
-
 	int32_t n_vecs = labs->get_num_labels();
 	SGVector<float64_t> y(n_vecs);
 	for (int32_t i=0; i<n_vecs; i++)

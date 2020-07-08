@@ -56,12 +56,11 @@ void SVMSGD::set_loss_function(std::shared_ptr<LossFunction> loss_func)
 	loss=std::move(loss_func);
 }
 
-bool SVMSGD::train_machine(const std::shared_ptr<Features>& data, 
+bool SVMSGD::train_machine(const std::shared_ptr<DotFeatures>& features, 
 	const std::shared_ptr<Labels>& labs)
 {
 	// allocate memory for w and initialize everyting w and bias with 0
 	auto labels = binary_labels(labs);
-	const auto features = data->as<DotFeatures>();
 
 	int32_t num_train_labels = labels->get_num_labels();
 	int32_t num_vec=features->get_num_vectors();

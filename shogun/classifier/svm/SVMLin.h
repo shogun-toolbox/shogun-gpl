@@ -94,7 +94,7 @@ class SVMLin : public LinearMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(const std::shared_ptr<Features>& data, 
+		virtual bool train_machine(const std::shared_ptr<DotFeatures>& data, 
 			const std::shared_ptr<Labels>& labs) override;
 
 		/** set up parameters */

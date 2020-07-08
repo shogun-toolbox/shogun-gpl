@@ -67,7 +67,7 @@ void MultitaskLinearMachine::set_task_relation(std::shared_ptr<TaskRelation> tas
 	m_task_relation = std::move(task_relation);
 }
 
-bool MultitaskLinearMachine::train_machine(std::shared_ptr<Features> data)
+bool MultitaskLinearMachine::train_machine(std::shared_ptr<DotFeatures> data)
 {
 	not_implemented(SOURCE_LOCATION);
 	return false;

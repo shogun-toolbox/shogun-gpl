@@ -72,7 +72,7 @@ class MultitaskTraceLogisticRegression : public MultitaskLogisticRegression
 	protected:
 
 		/** train machine */
-		bool train_machine(const std::shared_ptr<Features>& data, 
+		bool train_machine(const std::shared_ptr<DotFeatures>& data, 
 			const std::shared_ptr<Labels>& labs) override;
 
 		/** train locked implementation */

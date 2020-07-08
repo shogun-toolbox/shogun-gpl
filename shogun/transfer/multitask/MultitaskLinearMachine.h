@@ -110,11 +110,7 @@ class MultitaskLinearMachine : public LinearMachine
 #endif // SWIG // SWIG should skip this part
 
 		/** applies to one vector */
-<<<<<<< HEAD
-		float64_t apply_one(int32_t i) override;
-=======
 		virtual float64_t apply_one(const std::shared_ptr<DotFeatures>& features, int32_t i);
->>>>>>> refactor linear machine
 
 	protected:
 
@@ -122,7 +118,7 @@ class MultitaskLinearMachine : public LinearMachine
 		SGVector<float64_t> apply_get_outputs(std::shared_ptr<Features> data=NULL) override;
 
 		/** train machine */
-		bool train_machine(std::shared_ptr<Features> data=NULL) override;
+		virtual bool train_machine(std::shared_ptr<DotFeatures> data=NULL);
 
 		/** train locked implementation */
 		virtual bool train_locked_implementation(const std::shared_ptr<Features>&, 
