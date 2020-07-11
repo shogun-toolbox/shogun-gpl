@@ -59,7 +59,7 @@ class SVMSGD : public LinearMachine
 			float64_t C, std::shared_ptr<DotFeatures> traindat,
 			std::shared_ptr<Labels> trainlab);
 
-		virtual ~SVMSGD();
+		~SVMSGD() override;
 
 		/** set C
 		 *
@@ -130,7 +130,7 @@ class SVMSGD : public LinearMachine
 		inline std::shared_ptr<LossFunction> get_loss_function() { return loss; }
 
 		/** @return object name */
-		virtual const char* get_name() const { return "SVMSGD"; }
+		const char* get_name() const override { return "SVMSGD"; }
 
 	protected:
 		/** calibrate */
@@ -144,7 +144,7 @@ class SVMSGD : public LinearMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+		bool train_machine(std::shared_ptr<Features> data=NULL) override;
 
 	private:
 		void init();

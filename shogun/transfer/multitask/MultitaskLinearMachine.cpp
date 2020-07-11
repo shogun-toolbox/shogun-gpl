@@ -201,7 +201,7 @@ void MultitaskLinearMachine::set_bias(float64_t b)
 	m_tasks_c[m_current_task] = b;
 }
 
-float64_t MultitaskLinearMachine::get_bias()
+float64_t MultitaskLinearMachine::get_bias() const
 {
 	return m_tasks_c[m_current_task];
 }

@@ -53,11 +53,11 @@ class WeightedMaxTestPower : public WeightedMaxMeasure
 public:
 	WeightedMaxTestPower(KernelManager&, std::shared_ptr<MMD>);
 	WeightedMaxTestPower(const WeightedMaxTestPower& other)=delete;
-	~WeightedMaxTestPower();
+	~WeightedMaxTestPower() override;
 	WeightedMaxTestPower& operator=(const WeightedMaxTestPower& other)=delete;
 protected:
-	virtual void init_measures();
-	virtual void compute_measures();
+	void init_measures() override;
+	void compute_measures() override;
 	float64_t lambda;
 };
 #endif // DOXYGEN_SHOULD_SKIP_THIS

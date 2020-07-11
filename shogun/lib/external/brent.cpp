@@ -1471,7 +1471,7 @@ public:
   func_wrapper(DoubleOfDouble* f) {
     func = f;
   }
-  virtual double operator() (double x){
+  double operator() (double x) override{
     return func(x);
   }
 };

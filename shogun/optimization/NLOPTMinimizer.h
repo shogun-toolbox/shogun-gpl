@@ -60,23 +60,23 @@ public:
 	 *
 	 * @return name NLOPTMinimizer
 	 */
-	virtual const char* get_name() const { return "NLOPTMinimizer"; }
+	const char* get_name() const override { return "NLOPTMinimizer"; }
 
 
 	/** Destructor */
-	virtual ~NLOPTMinimizer();
+	~NLOPTMinimizer() override;
 
 	/** Do minimization and get the optimal value 
 	 * 
 	 * @return optimal value
 	 */
-	virtual float64_t minimize();
+	float64_t minimize() override;
 
 	/** Does minimizer support batch update?
 	 * 
 	 * @return whether minimizer supports batch update
 	 */
-	virtual bool supports_batch_update() const {return true;}
+	bool supports_batch_update() const override {return true;}
 
 #ifdef HAVE_NLOPT
 	/* Set parameters used in NLOPT

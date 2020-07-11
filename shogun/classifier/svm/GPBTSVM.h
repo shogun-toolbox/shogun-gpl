@@ -34,10 +34,10 @@ class GPBTSVM : public SVM
 		 * @param lab labels
 		 */
 		GPBTSVM(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab);
-		virtual ~GPBTSVM();
+		~GPBTSVM() override;
 
 		/** @return object name */
-		virtual const char* get_name() const { return "GPBTSVM"; }
+		const char* get_name() const override { return "GPBTSVM"; }
 
 	protected:
 		/** train SVM classifier
@@ -48,7 +48,7 @@ class GPBTSVM : public SVM
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+		bool train_machine(std::shared_ptr<Features> data=NULL) override;
 
 	protected:
 		/** SVM model */

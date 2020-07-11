@@ -48,10 +48,10 @@ class MultitaskLeastSquaresRegression : public MultitaskLinearMachine
 		     const std::shared_ptr<RegressionLabels>& training_labels, std::shared_ptr<TaskRelation> task_relation);
 
 		/** destructor */
-		virtual ~MultitaskLeastSquaresRegression();
+		~MultitaskLeastSquaresRegression() override;
 
 		/** get name */
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "MultitaskLeastSquaresRegression";
 		}
@@ -83,15 +83,15 @@ class MultitaskLeastSquaresRegression : public MultitaskLinearMachine
 		void set_z(float64_t z);
 
 		/** applies to one vector */
-		virtual float64_t apply_one(int32_t i);
+		float64_t apply_one(int32_t i) override;
 
 	protected:
 
 		/** train machine */
-		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+		bool train_machine(std::shared_ptr<Features> data=NULL) override;
 
 		/** train locked implementation */
-		virtual bool train_locked_implementation(SGVector<index_t>* tasks);
+		bool train_locked_implementation(SGVector<index_t>* tasks) override;
 
 	private:
 

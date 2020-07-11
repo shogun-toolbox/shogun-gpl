@@ -37,13 +37,13 @@ namespace shogun
 			 */
 			LatentSOSVM(std::shared_ptr<LatentModel> model, std::shared_ptr<LinearStructuredOutputMachine> so_solver, float64_t C);
 
-			virtual ~LatentSOSVM();
+			~LatentSOSVM() override;
 
 			/** apply linear machine to data
 			 *
 			 * @return classified labels
 			 */
-			virtual std::shared_ptr<LatentLabels> apply_latent();
+			std::shared_ptr<LatentLabels> apply_latent() override;
 
 			/** set SO solver that is going to be used
 			 *
@@ -55,14 +55,14 @@ namespace shogun
 			 *
 			 * @return name of the SGSerializable
 			 */
-			virtual const char* get_name() const { return "LatentSOSVM"; }
+			const char* get_name() const override { return "LatentSOSVM"; }
 
 		protected:
 			/** do inner loop with given cooling epsilon
 			 *
 			 * @param cooling_eps cooling epsilon
 			 */
-			virtual float64_t do_inner_loop(float64_t cooling_eps);
+			float64_t do_inner_loop(float64_t cooling_eps) override;
 
 		private:
 			void register_parameters();

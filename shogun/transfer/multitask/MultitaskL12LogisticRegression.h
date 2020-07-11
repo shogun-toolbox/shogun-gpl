@@ -47,7 +47,7 @@ class MultitaskL12LogisticRegression : public MultitaskLogisticRegression
 		     std::shared_ptr<BinaryLabels> training_labels, const std::shared_ptr<TaskGroup>& task_group);
 
 		/** destructor */
-		virtual ~MultitaskL12LogisticRegression();
+		~MultitaskL12LogisticRegression() override;
 
 		/** set rho1 regularization coefficient
 		 * @param rho1 value
@@ -73,7 +73,7 @@ class MultitaskL12LogisticRegression : public MultitaskLogisticRegression
 		 *
 		 * @return name of the object
 		 */
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "MultitaskL12LogisticRegression";
 		}
@@ -89,13 +89,13 @@ class MultitaskL12LogisticRegression : public MultitaskLogisticRegression
 		 *
 		 * @param data features to use for training
 		 */
-		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+		bool train_machine(std::shared_ptr<Features> data=NULL) override;
 
 		/** train locked implementation
 		 *
 		 * @param tasks array of tasks indices
 		 */
-		virtual bool train_locked_implementation(SGVector<index_t>* tasks);
+		bool train_locked_implementation(SGVector<index_t>* tasks) override;
 
 	protected:
 

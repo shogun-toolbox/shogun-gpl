@@ -67,10 +67,10 @@ class DualLibQPBMSOSVM : public LinearStructuredOutputMachine
 				SGVector< float64_t >	W=0);
 
 		/** destructor */
-		virtual ~DualLibQPBMSOSVM();
+		~DualLibQPBMSOSVM() override;
 
 		/** @return name of SGSerializable */
-		virtual const char* get_name() const { return "DualLibQPBMSOSVM"; }
+		const char* get_name() const override { return "DualLibQPBMSOSVM"; }
 
 		/** set lambda
 		 *
@@ -227,13 +227,13 @@ class DualLibQPBMSOSVM : public LinearStructuredOutputMachine
 		 *
 		 * @return classifier type CT_LIBQPSOSVM
 		 */
-		virtual EMachineType get_classifier_type();
+		EMachineType get_classifier_type() override;
 
 	protected:
 		/** train dual SO-SVM
 		 *
 		 */
-		bool train_machine(std::shared_ptr<Features> data=NULL);
+		bool train_machine(std::shared_ptr<Features> data=NULL) override;
 
 	private:
 		/** init parameters

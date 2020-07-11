@@ -71,7 +71,7 @@ class QPBSVMLib: public RandomMixin<SGObject>
 			m_solver=solver;
 		}
 
-		virtual ~QPBSVMLib();
+		~QPBSVMLib() override;
 
 	protected:
 		/** get col
@@ -123,7 +123,7 @@ class QPBSVMLib: public RandomMixin<SGObject>
 #endif
 
 		/** @return object name */
-		inline const char* get_name() const { return "QPBSVMLib"; }
+		inline const char* get_name() const override { return "QPBSVMLib"; }
 
 	protected:
 		/** matrix H */

@@ -45,10 +45,10 @@ class MultitaskLinearMachine : public LinearMachine
 		     std::shared_ptr<TaskRelation> task_relation);
 
 		/** destructor */
-		virtual ~MultitaskLinearMachine();
+		~MultitaskLinearMachine() override;
 
 		/** get name */
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "MultitaskLinearMachine";
 		}
@@ -67,25 +67,25 @@ class MultitaskLinearMachine : public LinearMachine
 		 *
 		 * @return weight vector
 		 */
-		virtual SGVector<float64_t> get_w() const;
+		SGVector<float64_t> get_w() const override;
 
 		/** set w
 		 *
 		 * @param src_w new w
 		 */
-		virtual void set_w(const SGVector<float64_t> src_w);
+		void set_w(const SGVector<float64_t> src_w) override;
 
 		/** set bias
 		 *
 		 * @param b new bias
 		 */
-		virtual void set_bias(float64_t b);
+		void set_bias(float64_t b) override;
 
 		/** get bias
 		 *
 		 * @return bias
 		 */
-		virtual float64_t get_bias();
+		float64_t get_bias() const override;
 
 		/** getter for task relation
 		 * @return task relation
@@ -112,15 +112,15 @@ class MultitaskLinearMachine : public LinearMachine
 #endif // SWIG // SWIG should skip this part
 
 		/** applies to one vector */
-		virtual float64_t apply_one(int32_t i);
+		float64_t apply_one(int32_t i) override;
 
 	protected:
 
 		/** apply get outputs */
-		virtual SGVector<float64_t> apply_get_outputs(std::shared_ptr<Features> data=NULL);
+		SGVector<float64_t> apply_get_outputs(std::shared_ptr<Features> data=NULL) override;
 
 		/** train machine */
-		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+		bool train_machine(std::shared_ptr<Features> data=NULL) override;
 
 		/** train locked implementation */
 		virtual bool train_locked_implementation(SGVector<index_t>* tasks);

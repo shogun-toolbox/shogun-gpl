@@ -38,7 +38,7 @@ class SVMLin : public LinearMachine
 		SVMLin(
 			float64_t C, std::shared_ptr<DotFeatures> traindat,
 			std::shared_ptr<Labels> trainlab);
-		virtual ~SVMLin();
+		~SVMLin() override;
 
 		/** set C
 		 *
@@ -85,7 +85,7 @@ class SVMLin : public LinearMachine
 		inline float64_t get_epsilon() { return epsilon; }
 
 		/** @return object name */
-		virtual const char* get_name() const { return "SVMLin"; }
+		const char* get_name() const override { return "SVMLin"; }
 
 	protected:
 		/** train SVM classifier
@@ -96,7 +96,7 @@ class SVMLin : public LinearMachine
 		 *
 		 * @return whether training was successful
 		 */
-		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+		bool train_machine(std::shared_ptr<Features> data=NULL) override;
 
 		/** set up parameters */
 		void init();

@@ -29,7 +29,7 @@ class CoverTreeKNNSolver : public KNNSolver
 		{ /* nothing to do */ }
 
 		/** deconstructor */
-		virtual ~CoverTreeKNNSolver() { /* nothing to do */ }
+		~CoverTreeKNNSolver() override { /* nothing to do */ }
 
 		/** constructor
 		 *
@@ -41,12 +41,12 @@ class CoverTreeKNNSolver : public KNNSolver
 		 */
 		CoverTreeKNNSolver(const int32_t k, const float64_t q, const int32_t num_classes, const int32_t min_label, const SGVector<int32_t>& train_labels);
 
-		virtual std::shared_ptr<MulticlassLabels> classify_objects(std::shared_ptr<Distance> d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<float64_t>& classes) const;
+		std::shared_ptr<MulticlassLabels> classify_objects(std::shared_ptr<Distance> d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<float64_t>& classes) const override;
 
-		virtual SGVector<int32_t> classify_objects_k(std::shared_ptr<Distance> d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<int32_t>& classes) const;
+		SGVector<int32_t> classify_objects_k(std::shared_ptr<Distance> d, const int32_t num_lab, SGVector<int32_t>& train_lab, SGVector<int32_t>& classes) const override;
 
 		/** @return object name */
-		const char* get_name() const { return "CoverTreeKNNSolver"; }
+		const char* get_name() const override { return "CoverTreeKNNSolver"; }
 
 };
 }

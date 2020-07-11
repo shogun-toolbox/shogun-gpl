@@ -10,7 +10,7 @@ public:
 class monicPoly : public func_base {
 public:
   std::vector<double> coeff;
-  virtual double operator() (double x);
+  double operator() (double x) override;
 // constructors:
   monicPoly(const size_t degree)
    : coeff(degree) {}
@@ -23,7 +23,7 @@ public:
 class Poly : public func_base {
 public:
   std::vector<double> coeff;    // a vector of size nterms i.e. 1+degree
-  virtual double operator() (double x);
+  double operator() (double x) override;
 // constructors:
   Poly(const size_t degree)
    : coeff(1+degree) {}

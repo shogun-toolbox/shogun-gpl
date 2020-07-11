@@ -64,12 +64,12 @@ public:
 	 * @param r features of right-side
 	 * @return true if successful
 	 */
-	virtual bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r);
+	bool init(std::shared_ptr<Features> l, std::shared_ptr<Features> r) override;
 
 	/**
 	 * @return kernel type
 	 */
-	virtual EKernelType get_kernel_type()
+	EKernelType get_kernel_type() override
 	{
 		return K_DISTANTSEGMENTS;
 	}
@@ -77,7 +77,7 @@ public:
 	/**
 	 * @return name of kernel
 	 */
-	virtual const char* get_name() const
+	const char* get_name() const override
 	{
 		return "DistantSegmentsKernel";
 	}
@@ -92,7 +92,7 @@ protected:
 	 * @param idx_b index b
 	 * @return computed kernel function at indices a,b
 	 */
-	virtual float64_t compute(int32_t idx_a, int32_t idx_b);
+	float64_t compute(int32_t idx_a, int32_t idx_b) override;
 
 private:
 	/** initializes kernel parameters and registers them */

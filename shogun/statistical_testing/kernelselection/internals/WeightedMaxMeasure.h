@@ -53,12 +53,12 @@ class WeightedMaxMeasure : public MaxMeasure
 public:
 	WeightedMaxMeasure(KernelManager&, std::shared_ptr<MMD>);
 	WeightedMaxMeasure(const WeightedMaxMeasure& other)=delete;
-	~WeightedMaxMeasure();
+	~WeightedMaxMeasure() override;
 	WeightedMaxMeasure& operator=(const WeightedMaxMeasure& other)=delete;
-	virtual std::shared_ptr<Kernel> select_kernel();
-	virtual SGMatrix<float64_t> get_measure_matrix();
+	std::shared_ptr<Kernel> select_kernel() override;
+	SGMatrix<float64_t> get_measure_matrix() override;
 protected:
-	virtual void compute_measures();
+	void compute_measures() override;
 	SGMatrix<float64_t> Q;
 };
 #endif // DOXYGEN_SHOULD_SKIP_THIS

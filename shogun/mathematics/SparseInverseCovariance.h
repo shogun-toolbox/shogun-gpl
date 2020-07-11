@@ -31,7 +31,7 @@ public:
 	SparseInverseCovariance();
 
 	/** destructor */
-	virtual ~SparseInverseCovariance();
+	~SparseInverseCovariance() override;
 
 	/** estimate inverse covariance matrix
 	 *
@@ -41,7 +41,7 @@ public:
 	SGMatrix<float64_t> estimate(SGMatrix<float64_t> S, float64_t lambda_c);
 
 	/** get name */
-	const char* get_name() const { return "SparseInverseCovariance"; };
+	const char* get_name() const override { return "SparseInverseCovariance"; };
 
 
 	/** get lasso max iter

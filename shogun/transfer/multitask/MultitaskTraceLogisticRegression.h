@@ -44,7 +44,7 @@ class MultitaskTraceLogisticRegression : public MultitaskLogisticRegression
 		     std::shared_ptr<BinaryLabels> training_labels, const std::shared_ptr<TaskGroup>& task_relation);
 
 		/** destructor */
-		virtual ~MultitaskTraceLogisticRegression();
+		~MultitaskTraceLogisticRegression() override;
 
 		/** set rho
 		 * @param rho value
@@ -60,7 +60,7 @@ class MultitaskTraceLogisticRegression : public MultitaskLogisticRegression
 		 *
 		 * @return name of the object
 		 */
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "MultitaskTraceLogisticRegression";
 		}
@@ -73,10 +73,10 @@ class MultitaskTraceLogisticRegression : public MultitaskLogisticRegression
 	protected:
 
 		/** train machine */
-		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+		bool train_machine(std::shared_ptr<Features> data=NULL) override;
 
 		/** train locked implementation */
-		virtual bool train_locked_implementation(SGVector<index_t>* tasks);
+		bool train_locked_implementation(SGVector<index_t>* tasks) override;
 
 	protected:
 

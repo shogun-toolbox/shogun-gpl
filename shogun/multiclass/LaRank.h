@@ -336,7 +336,7 @@ namespace shogun
 			 */
 			LaRank(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab);
 
-			virtual ~LaRank ();
+			~LaRank () override;
 
 			// LEARNING FUNCTION: add new patterns and run optimization steps
 			// selected with adaptative schedule
@@ -376,7 +376,7 @@ namespace shogun
 			float64_t getDual ();
 
 			/** @return object name */
-			virtual const char* get_name() const { return "LaRank"; }
+			const char* get_name() const override { return "LaRank"; }
 
 			/** set batch mode
 			 * @param enable
@@ -405,7 +405,7 @@ namespace shogun
 
 		protected:
 			/** train machine */
-			bool train_machine(std::shared_ptr<Features> data);
+			bool train_machine(std::shared_ptr<Features> data) override;
 
 		private:
 			/*

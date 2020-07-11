@@ -38,10 +38,10 @@ class MulticlassTreeGuidedLogisticRegression : public LinearMulticlassMachine
 		MulticlassTreeGuidedLogisticRegression(float64_t z, const std::shared_ptr<DotFeatures>& feats, std::shared_ptr<Labels> labs, std::shared_ptr<IndexBlockTree> tree);
 
 		/** destructor */
-		virtual ~MulticlassTreeGuidedLogisticRegression();
+		~MulticlassTreeGuidedLogisticRegression() override;
 
 		/** get name */
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "MulticlassTreeGuidedLogisticRegression";
 		}
@@ -103,7 +103,7 @@ class MulticlassTreeGuidedLogisticRegression : public LinearMulticlassMachine
 protected:
 
 		/** train machine */
-		virtual bool train_machine(std::shared_ptr<Features> data = NULL);
+		bool train_machine(std::shared_ptr<Features> data = NULL) override;
 
 private:
 

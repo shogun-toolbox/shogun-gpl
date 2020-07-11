@@ -152,7 +152,7 @@ public:
 	 *
 	 * @return name Integration
 	 */
-	virtual const char* get_name() const { return "Integration"; }
+	const char* get_name() const override { return "Integration"; }
 
 private:
 	/** evaluate definite integral of a function and error on each

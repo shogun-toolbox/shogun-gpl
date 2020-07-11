@@ -58,7 +58,7 @@ public:
 		m_f=std::move(f);
 	}
 
-	virtual ~ITransformFunction() { }
+	~ITransformFunction() override { }
 
 	/** return the real value of the function at given point
 	 *
@@ -67,7 +67,7 @@ public:
 	 * @return \f$f(g(x))*g'(x)\f$, where \f$g(x)=\frac{x}{1-x^2}\f$
 	 * and \f$g'(t)=\frac{1+t^2}{(1-t^2)^2}\f$
 	 */
-	virtual float64_t operator() (float64_t x)
+	float64_t operator() (float64_t x) override
 	{
 		float64_t hx=1.0/(1.0-Math::sq(x));
 		float64_t gx=x*hx;
@@ -110,7 +110,7 @@ public:
 		m_b=b;
 	}
 
-	virtual ~ILTransformFunction() { }
+	~ILTransformFunction() override { }
 
 	/** return the real value of the function at given point
 	 *
@@ -119,7 +119,7 @@ public:
 	 * @return \f$f(b-g(x)^2)2g(x)g'(x)dx\f$, where
 	 * \f$g(x)=\frac{x}{1+x}\f$ and \f$g'(x)=\frac{1}{(1+x)^2}\f$
 	 */
-	virtual float64_t operator() (float64_t x)
+	float64_t operator() (float64_t x) override
 	{
 		float64_t hx=1.0/(1.0+x);
 		float64_t gx=x*hx;
@@ -165,7 +165,7 @@ public:
 		m_a=a;
 	}
 
-	virtual ~IUTransformFunction() { }
+	~IUTransformFunction() override { }
 
 	/** return the real value of the function at given point
 	 *
@@ -174,7 +174,7 @@ public:
 	 * @return \f$f(a+g(x)^2)2g(x)g'(x)\f$, where
 	 * \f$g(x)=\frac{x}{1-x}\f$ and \f$g'(x)=\frac{1}{(1-x)^2}\f$
 	 */
-	virtual float64_t operator() (float64_t x)
+	float64_t operator() (float64_t x) override
 	{
 		float64_t hx=1.0/(1.0-x);
 		float64_t gx=x*hx;
@@ -217,7 +217,7 @@ public:
 		m_b=b;
 	}
 
-	virtual ~TransformFunction() { }
+	~TransformFunction() override { }
 
 	/** return the real value of the function at given point
 	 *
@@ -227,7 +227,7 @@ public:
 	 * \f$g(t)=\frac{b-a}{2}(\frac{t}{2}(3-t^2))+\frac{b+a}{2}\f$ and
 	 * \f$g'(t)=\frac{b-a}{4}(3-3t^2)\f$
 	 */
-	virtual float64_t operator() (float64_t x)
+	float64_t operator() (float64_t x) override
 	{
 		float64_t qw=(m_b-m_a)/4.0;
 		float64_t gx=qw*(x*(3.0-Math::sq(x)))+(m_b+m_a)/2.0;

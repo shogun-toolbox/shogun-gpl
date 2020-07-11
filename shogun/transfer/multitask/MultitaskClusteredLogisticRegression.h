@@ -47,7 +47,7 @@ class MultitaskClusteredLogisticRegression : public MultitaskLogisticRegression
 		     int32_t num_clusters);
 
 		/** destructor */
-		virtual ~MultitaskClusteredLogisticRegression();
+		~MultitaskClusteredLogisticRegression() override;
 
 		/** get rho1 regularization coefficient
 		 *
@@ -84,7 +84,7 @@ class MultitaskClusteredLogisticRegression : public MultitaskLogisticRegression
 		 *
 		 * @return name of the object
 		 */
-		virtual const char* get_name() const
+		const char* get_name() const override
 		{
 			return "MultitaskClusteredLogisticRegression";
 		}
@@ -95,13 +95,13 @@ class MultitaskClusteredLogisticRegression : public MultitaskLogisticRegression
 		 *
 		 * @param data features to use for training
 		 */
-		virtual bool train_machine(std::shared_ptr<Features> data=NULL);
+		bool train_machine(std::shared_ptr<Features> data=NULL) override;
 
 		/** train locked implementation
 		 *
 		 * @param tasks array of tasks indices
 		 */
-		virtual bool train_locked_implementation(SGVector<index_t>* tasks);
+		bool train_locked_implementation(SGVector<index_t>* tasks) override;
 
 	protected:
 
