@@ -26,9 +26,8 @@ MultitaskLogisticRegression::MultitaskLogisticRegression() :
 }
 
 MultitaskLogisticRegression::MultitaskLogisticRegression(
-     float64_t z, std::shared_ptr<Features> train_features,
-     const std::shared_ptr<BinaryLabels>& train_labels, std::shared_ptr<TaskRelation> task_relation) :
-	MultitaskLinearMachine(std::move(train_features),train_labels,std::move(task_relation))
+     float64_t z, std::shared_ptr<TaskRelation> task_relation) :
+	MultitaskLinearMachine(std::move(task_relation))
 {
 	initialize_parameters();
 	register_parameters();
@@ -59,16 +58,11 @@ void MultitaskLogisticRegression::initialize_parameters()
 	set_max_iter(1000);
 }
 
-bool MultitaskLogisticRegression::train_machine(std::shared_ptr<Features> data)
+bool MultitaskLogisticRegression::train_machine(const std::shared_ptr<DotFeatures>& features,
+	const std::shared_ptr<Labels>& labs)
 {
-	if (data)
-		set_features(data->as<DotFeatures>());
-
-	ASSERT(features)
-	ASSERT(m_labels)
-
-	SGVector<float64_t> y(m_labels->get_num_labels());
-	auto bl = binary_labels(m_labels);
+	SGVector<float64_t> y(labs->get_num_labels());
+	auto bl = binary_labels(labs);
 	for (int32_t i=0; i<y.vlen; i++)
 		y[i] = bl->get_label(i);
 
@@ -115,13 +109,13 @@ bool MultitaskLogisticRegression::train_machine(std::shared_ptr<Features> data)
 	return true;
 }
 
-bool MultitaskLogisticRegression::train_locked_implementation(SGVector<index_t>* tasks)
+bool MultitaskLogisticRegression::train_locked_implementation(const std::shared_ptr<Features>& data, 
+			const std::shared_ptr<Labels>& labs,SGVector<index_t>* tasks)
 {
-	ASSERT(features)
-	ASSERT(m_labels)
+	const auto features = data->as<DotFeatures>();
 
-	SGVector<float64_t> y(m_labels->get_num_labels());
-	auto bl = binary_labels(m_labels);
+	SGVector<float64_t> y(labs->get_num_labels());
+	auto bl = binary_labels(labs);
 	for (int32_t i=0; i<y.vlen; i++)
 		y[i] = bl->get_label(i);
 
@@ -166,7 +160,7 @@ bool MultitaskLogisticRegression::train_locked_implementation(SGVector<index_t>*
 	return true;
 }
 
-float64_t MultitaskLogisticRegression::apply_one(int32_t i)
+float64_t MultitaskLogisticRegression::apply_one(const std::shared_ptr<DotFeatures>& features, int32_t i)
 {
 	float64_t dot = features->dot(i,m_tasks_w.get_column(m_current_task));
 	//float64_t ep = Math::exp(-(dot + m_tasks_c[m_current_task]));

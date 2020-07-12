@@ -49,15 +49,6 @@ class SVMSGD : public LinearMachine
 		 */
 		SVMSGD(float64_t C);
 
-		/** constructor
-		 *
-		 * @param C constant C
-		 * @param traindat training features
-		 * @param trainlab labels for training features
-		 */
-		SVMSGD(
-			float64_t C, std::shared_ptr<DotFeatures> traindat,
-			std::shared_ptr<Labels> trainlab);
 
 		~SVMSGD() override;
 
@@ -134,7 +125,7 @@ class SVMSGD : public LinearMachine
 
 	protected:
 		/** calibrate */
-		void calibrate();
+		void calibrate(const std::shared_ptr<DotFeatures>& features);
 
 		/** train classifier
 		 *
@@ -144,7 +135,7 @@ class SVMSGD : public LinearMachine
 		 *
 		 * @return whether training was successful
 		 */
-		bool train_machine(std::shared_ptr<Features> data=NULL) override;
+		bool train_machine(const std::shared_ptr<DotFeatures>& data, const std::shared_ptr<Labels>& labs) override;
 
 	private:
 		void init();

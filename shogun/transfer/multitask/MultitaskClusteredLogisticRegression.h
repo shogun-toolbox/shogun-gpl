@@ -42,8 +42,7 @@ class MultitaskClusteredLogisticRegression : public MultitaskLogisticRegression
 		 * @param num_clusters number of task clusters
 		 */
 		MultitaskClusteredLogisticRegression(
-		     float64_t rho1, float64_t rho2, std::shared_ptr<Features> training_data,
-		     std::shared_ptr<BinaryLabels> training_labels, const std::shared_ptr<TaskGroup>& task_group,
+		     float64_t rho1, float64_t rho2, const std::shared_ptr<TaskGroup>& task_group,
 		     int32_t num_clusters);
 
 		/** destructor */
@@ -95,13 +94,15 @@ class MultitaskClusteredLogisticRegression : public MultitaskLogisticRegression
 		 *
 		 * @param data features to use for training
 		 */
-		bool train_machine(std::shared_ptr<Features> data=NULL) override;
+		bool train_machine(const std::shared_ptr<DotFeatures>& data, 
+			const std::shared_ptr<Labels>& labs) override;
 
 		/** train locked implementation
 		 *
 		 * @param tasks array of tasks indices
 		 */
-		bool train_locked_implementation(SGVector<index_t>* tasks) override;
+		virtual bool train_locked_implementation(const std::shared_ptr<Features>&, 
+			const std::shared_ptr<Labels>&, SGVector<index_t>* tasks);
 
 	protected:
 

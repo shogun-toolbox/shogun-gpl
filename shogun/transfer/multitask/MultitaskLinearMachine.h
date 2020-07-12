@@ -39,10 +39,7 @@ class MultitaskLinearMachine : public LinearMachine
 		 * @param training_labels training labels
 		 * @param task_relation task relation
 		 */
-		MultitaskLinearMachine(
-		     const std::shared_ptr<Features>& training_data,
-		     std::shared_ptr<Labels> training_labels,
-		     std::shared_ptr<TaskRelation> task_relation);
+		MultitaskLinearMachine(std::shared_ptr<TaskRelation> task_relation);
 
 		/** destructor */
 		~MultitaskLinearMachine() override;
@@ -105,14 +102,15 @@ class MultitaskLinearMachine : public LinearMachine
 
 #ifndef SWIG // SWIG should skip this part
 		/** train on given indices */
-		virtual bool train_locked(SGVector<index_t> indices);
+		virtual bool train_locked(const std::shared_ptr<Features>&, 
+			const std::shared_ptr<Labels>&, SGVector<index_t> indices);
 
 		/** applies on given indices */
-		virtual std::shared_ptr<BinaryLabels> apply_locked_binary(SGVector<index_t> indices);
+		virtual std::shared_ptr<BinaryLabels> apply_locked_binary(const std::shared_ptr<DotFeatures>&, SGVector<index_t> indices);
 #endif // SWIG // SWIG should skip this part
 
 		/** applies to one vector */
-		float64_t apply_one(int32_t i) override;
+		virtual float64_t apply_one(const std::shared_ptr<DotFeatures>& features, int32_t i);
 
 	protected:
 
@@ -120,13 +118,14 @@ class MultitaskLinearMachine : public LinearMachine
 		SGVector<float64_t> apply_get_outputs(std::shared_ptr<Features> data=NULL) override;
 
 		/** train machine */
-		bool train_machine(std::shared_ptr<Features> data=NULL) override;
+		virtual bool train_machine(std::shared_ptr<DotFeatures> data=NULL);
 
 		/** train locked implementation */
-		virtual bool train_locked_implementation(SGVector<index_t>* tasks);
+		virtual bool train_locked_implementation(const std::shared_ptr<Features>&, 
+			const std::shared_ptr<Labels>&, SGVector<index_t>* tasks);
 
 		/** subset mapped task indices */
-		SGVector<index_t>* get_subset_tasks_indices();
+		SGVector<index_t>* get_subset_tasks_indices(const std::shared_ptr<DotFeatures>&);
 
 	private:
 

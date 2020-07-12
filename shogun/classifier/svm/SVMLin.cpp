@@ -26,13 +26,9 @@ SVMLin::SVMLin()
 	init();
 }
 
-SVMLin::SVMLin(
-	float64_t C, std::shared_ptr<DotFeatures> traindat, std::shared_ptr<Labels> trainlab)
+SVMLin::SVMLin(float64_t C)
 : LinearMachine(), C1(C), C2(C), epsilon(1e-5), use_bias(true)
 {
-	set_features(std::move(traindat));
-	set_labels(std::move(trainlab));
-
 	init();
 }
 
@@ -54,20 +50,10 @@ void SVMLin::init()
 	SG_ADD(&epsilon, "epsilon", "Convergence precision.");
 }
 
-bool SVMLin::train_machine(std::shared_ptr<Features> data)
+bool SVMLin::train_machine(const std::shared_ptr<DotFeatures>& features, 
+	const std::shared_ptr<Labels>& labs)
 {
-	ASSERT(m_labels)
-
-	if (data)
-	{
-		if (!data->has_property(FP_DOT))
-			error("Specified features are not of type CDotFeatures");
-		set_features(data->as<DotFeatures>());
-	}
-
-	ASSERT(features)
-
-	SGVector<float64_t> train_labels=m_labels->as<BinaryLabels>()->get_labels();
+	SGVector<float64_t> train_labels=labs->as<BinaryLabels>()->get_labels();
 	int32_t num_feat=features->get_dim_feature_space();
 	int32_t num_vec=features->get_num_vectors();
 

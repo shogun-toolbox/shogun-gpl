@@ -47,8 +47,7 @@ class FeatureBlockLogisticRegression : public LinearMachine
 		 * @param task_relation task relation
 		 */
 		FeatureBlockLogisticRegression(
-		     float64_t z, const std::shared_ptr<Features>& training_data,
-		     const std::shared_ptr<Labels>& training_labels, std::shared_ptr<IndexBlockRelation> task_relation);
+		     float64_t z, std::shared_ptr<IndexBlockRelation> task_relation);
 
 		/** destructor */
 		~FeatureBlockLogisticRegression() override;
@@ -69,7 +68,7 @@ class FeatureBlockLogisticRegression : public LinearMachine
 		 */
 		void set_feature_relation(std::shared_ptr<IndexBlockRelation> feature_relation);
 
-		float64_t apply_one(int32_t vec_idx) override;
+		float64_t apply_one(const std::shared_ptr<DotFeatures>& features, int32_t vec_idx) override;
 
 		/** get max iter */
 		int32_t get_max_iter() const;
@@ -102,7 +101,7 @@ class FeatureBlockLogisticRegression : public LinearMachine
 		SGVector<float64_t> apply_get_outputs(std::shared_ptr<Features> data) override;
 
 		/** train machine */
-		bool train_machine(std::shared_ptr<Features> data=NULL) override;
+		bool train_machine(const std::shared_ptr<DotFeatures>& data, const std::shared_ptr<Labels>& labs) override;
 
 	private:
 
