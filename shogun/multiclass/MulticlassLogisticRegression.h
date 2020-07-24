@@ -31,10 +31,8 @@ class MulticlassLogisticRegression : public LinearMulticlassMachine
 
 		/** standard constructor
 		 * @param z z regularization constant value
-		 * @param feats features
-		 * @param labs labels
 		 */
-		MulticlassLogisticRegression(float64_t z, const std::shared_ptr<DotFeatures>& feats, std::shared_ptr<Labels> labs);
+		MulticlassLogisticRegression(float64_t z);
 
 		/** destructor */
 		~MulticlassLogisticRegression() override;
@@ -87,7 +85,7 @@ class MulticlassLogisticRegression : public LinearMulticlassMachine
 	protected:
 
 		/** train machine */
-		bool train_machine(std::shared_ptr<Features> data = NULL) override;
+		bool train_machine(const std::shared_ptr<Features> &data, const std::shared_ptr<Labels>& labs) override;
 
 private:
 
