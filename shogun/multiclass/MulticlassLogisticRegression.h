@@ -85,7 +85,7 @@ class MulticlassLogisticRegression : public LinearMulticlassMachine
 	protected:
 
 		/** train machine */
-		bool train_machine(const std::shared_ptr<Features> &data, const std::shared_ptr<Labels>& labs) override;
+		bool train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs) override;
 
 private:
 

@@ -53,7 +53,7 @@ MulticlassLogisticRegression::~MulticlassLogisticRegression()
 {
 }
 
-bool MulticlassLogisticRegression::train_machine(const std::shared_ptr<Features> &data, const std::shared_ptr<Labels>& labs)
+bool MulticlassLogisticRegression::train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
 {
 	require(m_multiclass_strategy, "No multiclass strategy"
 			" attached!");

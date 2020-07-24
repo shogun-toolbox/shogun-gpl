@@ -52,7 +52,7 @@ MulticlassTreeGuidedLogisticRegression::~MulticlassTreeGuidedLogisticRegression(
 {
 }
 
-bool MulticlassTreeGuidedLogisticRegression::train_machine(const std::shared_ptr<Features> &data, const std::shared_ptr<Labels>& labs)
+bool MulticlassTreeGuidedLogisticRegression::train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
 {
 	require(m_multiclass_strategy, "Multiclass strategy not set.");
 	require(m_index_tree, "Index tree not set.");

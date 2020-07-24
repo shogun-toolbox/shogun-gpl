@@ -610,7 +610,7 @@ LaRank::~LaRank ()
 	destroy();
 }
 
-bool LaRank::train_machine(const std::shared_ptr<Features> &data, const std::shared_ptr<Labels>& labs)
+bool LaRank::train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
 {
 	tau = 0.0001;
 
