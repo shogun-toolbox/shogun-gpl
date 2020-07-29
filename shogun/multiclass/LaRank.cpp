@@ -596,8 +596,8 @@ LaRank::LaRank (): RandomMixin<MulticlassSVM>(std::make_shared<MulticlassOneVsRe
 {
 }
 
-LaRank::LaRank (float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab):
-	RandomMixin<MulticlassSVM>(std::make_shared<MulticlassOneVsRestStrategy>(), C, std::move(k), std::move(lab)),
+LaRank::LaRank (float64_t C, std::shared_ptr<Kernel> k ):
+	RandomMixin<MulticlassSVM>(std::make_shared<MulticlassOneVsRestStrategy>(), C, std::move(k)),
 	nb_seen_examples (0), nb_removed (0),
 	n_pro (0), n_rep (0), n_opt (0),
 	w_pro (1), w_rep (1), w_opt (1), y0 (0), m_dual (0),
@@ -610,28 +610,28 @@ LaRank::~LaRank ()
 	destroy();
 }
 
-bool LaRank::train_machine(std::shared_ptr<Features> data)
+bool LaRank::train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
 {
 	tau = 0.0001;
 
 	ASSERT(m_kernel)
-	ASSERT(m_labels && m_labels->get_num_labels())
-	ASSERT(m_labels->get_label_type() == LT_MULTICLASS)
-	init_strategy();
+	ASSERT(labs && labs->get_num_labels())
+	ASSERT(labs->get_label_type() == LT_MULTICLASS)
+	init_strategy(labs);
 
 	if (data)
 	{
-		if (data->get_num_vectors() != m_labels->get_num_labels())
+		if (data->get_num_vectors() != labs->get_num_labels())
 		{
 			error("Numbert of vectors ({}) does not match number of labels ({})",
-					data->get_num_vectors(), m_labels->get_num_labels());
+					data->get_num_vectors(), labs->get_num_labels());
 		}
 		m_kernel->init(data, data);
 	}
 
 	ASSERT(m_kernel->get_num_vec_lhs() && m_kernel->get_num_vec_rhs())
 
-	nb_train=m_labels->get_num_labels();
+	nb_train=labs->get_num_labels();
 	cache = m_kernel->get_cache_size();
 
 	int32_t n_it = 1;
@@ -639,7 +639,7 @@ bool LaRank::train_machine(std::shared_ptr<Features> data)
 
 	auto pb = SG_PROGRESS(range(0, 10));
 	io::info("Training on {} examples", nb_train);
-	auto mc = multiclass_labels(m_labels);
+	auto mc = multiclass_labels(labs);
 	while (gap > get_C() && (!cancel_computation()) &&
 	       n_it < max_iteration) // stopping criteria
 	{

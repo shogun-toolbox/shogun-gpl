@@ -27,8 +27,8 @@ MulticlassLogisticRegression::MulticlassLogisticRegression() :
 	register_parameters();
 }
 
-MulticlassLogisticRegression::MulticlassLogisticRegression(float64_t z, const std::shared_ptr<DotFeatures>& feats, std::shared_ptr<Labels> labs) :
-	LinearMulticlassMachine(std::make_shared<MulticlassOneVsRestStrategy>(),feats,NULL,std::move(labs))
+MulticlassLogisticRegression::MulticlassLogisticRegression(float64_t z) :
+	LinearMulticlassMachine(std::make_shared<MulticlassOneVsRestStrategy>(), nullptr)
 {
 	init_defaults();
 	register_parameters();
@@ -53,19 +53,13 @@ MulticlassLogisticRegression::~MulticlassLogisticRegression()
 {
 }
 
-bool MulticlassLogisticRegression::train_machine(std::shared_ptr<Features> data)
+bool MulticlassLogisticRegression::train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
 {
-	if (data)
-		set_features(data->as<DotFeatures>());
-
-	require(m_features, "No features attached!");
-	require(m_labels, "No labels attached!");
 	require(m_multiclass_strategy, "No multiclass strategy"
 			" attached!");
-
-	auto mc_labels = multiclass_labels(m_labels);
+	auto mc_labels = multiclass_labels(labs);
 	int32_t n_classes = mc_labels->get_num_classes();
-	int32_t n_feats = m_features->get_dim_feature_space();
+	int32_t n_feats = data->as<DotFeatures>()->get_dim_feature_space();
 
 	slep_options options = slep_options::default_options();
 	if (!m_machines.empty())
@@ -85,7 +79,7 @@ bool MulticlassLogisticRegression::train_machine(std::shared_ptr<Features> data)
 	}
 	options.tolerance = m_epsilon;
 	options.max_iter = m_max_iter;
-	slep_result_t result = slep_mc_plain_lr(m_features,mc_labels,m_z,options);
+	slep_result_t result = slep_mc_plain_lr(data->as<DotFeatures>(),mc_labels,m_z,options);
 
 	SGMatrix<float64_t> all_w = result.w;
 	SGVector<float64_t> all_c = result.c;

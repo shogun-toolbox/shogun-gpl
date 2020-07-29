@@ -35,7 +35,7 @@ class MulticlassTreeGuidedLogisticRegression : public LinearMulticlassMachine
 		 * @param labs labels
 		 * @param tree tree
 		 */
-		MulticlassTreeGuidedLogisticRegression(float64_t z, const std::shared_ptr<DotFeatures>& feats, std::shared_ptr<Labels> labs, std::shared_ptr<IndexBlockTree> tree);
+		MulticlassTreeGuidedLogisticRegression(float64_t z, std::shared_ptr<IndexBlockTree> tree);
 
 		/** destructor */
 		~MulticlassTreeGuidedLogisticRegression() override;
@@ -103,7 +103,7 @@ class MulticlassTreeGuidedLogisticRegression : public LinearMulticlassMachine
 protected:
 
 		/** train machine */
-		bool train_machine(std::shared_ptr<Features> data = NULL) override;
+		bool train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs) override;
 
 private:
 

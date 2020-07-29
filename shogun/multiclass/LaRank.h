@@ -334,7 +334,7 @@ namespace shogun
 			 * @param k kernel
 			 * @param lab labels
 			 */
-			LaRank(float64_t C, std::shared_ptr<Kernel> k, std::shared_ptr<Labels> lab);
+			LaRank(float64_t C, std::shared_ptr<Kernel> k );
 
 			~LaRank () override;
 
@@ -405,7 +405,7 @@ namespace shogun
 
 		protected:
 			/** train machine */
-			bool train_machine(std::shared_ptr<Features> data) override;
+			bool train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs) override;
 
 		private:
 			/*

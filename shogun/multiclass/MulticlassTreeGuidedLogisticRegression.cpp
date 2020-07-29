@@ -25,8 +25,8 @@ MulticlassTreeGuidedLogisticRegression::MulticlassTreeGuidedLogisticRegression()
 	init_defaults();
 }
 
-MulticlassTreeGuidedLogisticRegression::MulticlassTreeGuidedLogisticRegression(float64_t z, const std::shared_ptr<DotFeatures>& feats, std::shared_ptr<Labels> labs, std::shared_ptr<IndexBlockTree> tree) :
-	LinearMulticlassMachine(std::make_shared<MulticlassOneVsRestStrategy>(),feats,NULL,std::move(labs))
+MulticlassTreeGuidedLogisticRegression::MulticlassTreeGuidedLogisticRegression(float64_t z, std::shared_ptr<IndexBlockTree> tree) :
+	LinearMulticlassMachine(std::make_shared<MulticlassOneVsRestStrategy>(), nullptr)
 {
 	init_defaults();
 	set_z(z);
@@ -52,18 +52,13 @@ MulticlassTreeGuidedLogisticRegression::~MulticlassTreeGuidedLogisticRegression(
 {
 }
 
-bool MulticlassTreeGuidedLogisticRegression::train_machine(std::shared_ptr<Features> data)
+bool MulticlassTreeGuidedLogisticRegression::train_machine(const std::shared_ptr<Features>& data, const std::shared_ptr<Labels>& labs)
 {
-	if (data)
-		set_features(data->as<DotFeatures>());
-
-	ASSERT(m_features)
-	ASSERT(m_labels && m_labels->get_label_type()==LT_MULTICLASS)
-	ASSERT(m_multiclass_strategy)
-	ASSERT(m_index_tree)
-
-	int32_t n_classes = m_labels->as<MulticlassLabels>()->get_num_classes();
-	int32_t n_feats = m_features->get_dim_feature_space();
+	require(m_multiclass_strategy, "Multiclass strategy not set.");
+	require(m_index_tree, "Index tree not set.");
+	auto features = data->as<DotFeatures>();
+	int32_t n_classes = labs->as<MulticlassLabels>()->get_num_classes();
+	int32_t n_feats = features->get_dim_feature_space();
 
 	slep_options options = slep_options::default_options();
 	if (!m_machines.empty())
@@ -91,7 +86,7 @@ bool MulticlassTreeGuidedLogisticRegression::train_machine(std::shared_ptr<Featu
 	options.n_nodes = ind_t.size()/3;
 	options.tolerance = m_epsilon;
 	options.max_iter = m_max_iter;
-	slep_result_t result = slep_mc_tree_lr(m_features,m_labels->as<MulticlassLabels>(),m_z,options);
+	slep_result_t result = slep_mc_tree_lr(features,labs->as<MulticlassLabels>(),m_z,options);
 
 	SGMatrix<float64_t> all_w = result.w;
 	SGVector<float64_t> all_c = result.c;
